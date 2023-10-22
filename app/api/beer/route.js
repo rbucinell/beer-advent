@@ -3,11 +3,10 @@ import connectDB from '@/app/lib/mongodb';
 import Beer from '../../models/beer';
 import { NextResponse } from "next/server";
 
-export async function GET( query = '') {
+export async function GET() {
     try{
         await connectDB();
         const res = await Beer.find({});
-        console.log( res );
         return NextResponse.json({beers: res})
     }catch( error ) {
         console.log( error );
@@ -30,8 +29,6 @@ export async function POST( req ) {
     catch(error){
         if( error instanceof mongoose.Error.ValidationError){
             let errorList = [];
-            console.log('------------------------------------------')
-            console.log( error );
             for( let e in error.errors ){
                 errorList.push( error.errors[e].message);
             }
