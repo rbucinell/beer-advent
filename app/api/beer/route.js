@@ -3,7 +3,7 @@ import connectDB from '@/app/lib/mongodb';
 import Beer from '../../models/beer';
 import { NextResponse } from "next/server";
 
-export async function GET() {
+export async function GET( req ) {
     try{
         await connectDB();
         const res = await Beer.find({});
