@@ -1,10 +1,9 @@
 "use client";
 
-import { useState, useEffect, Component } from "react";
-import Button from '@mui/material/Button';
-import Beer,{IBeer} from "@/app/models/beer";
+import { Component } from "react";
+import {IBeer} from "@/app/models/beer";
 import {ListItem, ListItemButton, ListItemIcon,ListItemText } from '@mui/material';
-import DraftsIcon from '@mui/icons-material/Drafts';
+import {SportsBar} from '@mui/icons-material';
 
 
 export default class BeerListItem extends Component<IBeer>{
@@ -17,10 +16,8 @@ export default class BeerListItem extends Component<IBeer>{
         return (
         <ListItem disablePadding>
         <ListItemButton>
-          <ListItemIcon>
-            <DraftsIcon />
-          </ListItemIcon>
-          <ListItemText primary={this.props.beer} />
+          <ListItemIcon><SportsBar /></ListItemIcon>
+          <ListItemText primary={this.props.beer} secondary={this.props.brewer}/>
         </ListItemButton>
       </ListItem>);        
     }

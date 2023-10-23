@@ -12,7 +12,7 @@ export default function Nav() {
     return (
         <nav>
             <Box sx={{ flexGrow: 1 }}>
-                <AppBar position="static">
+                <AppBar component="nav" position="static" >
                     <Toolbar>
                     {/*<IconButton
                             size="large"
@@ -29,10 +29,9 @@ export default function Nav() {
                     <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
                         <Link href="/history">History </Link>
                     </Typography>
-                    <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
-                        <Link href="/addbeer">Add Beer </Link>
-                    </Typography>
-                    {/* <Button color="inherit">Login</Button> */}
+                    {/* <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
+                        <Link className='disabled-link' href="/addbeer">Add Beer </Link>
+                    </Typography> */}
                     </Toolbar>
                 </AppBar>
             </Box>

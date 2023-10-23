@@ -4,6 +4,7 @@ import '@fontsource/roboto/300.css';
 import '@fontsource/roboto/400.css';
 import '@fontsource/roboto/500.css';
 import '@fontsource/roboto/700.css';
+import {Box, Container, CssBaseline} from '@mui/material';
 import './globals.css'
 import Nav from '@/components/Nav';
 
@@ -23,8 +24,13 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={inter.className}>
-        <Nav />
-        <main>{children}</main>
+        <CssBaseline />        
+        <Container sx={{minHeight: '100vh', height: '100%' }}>
+          <Nav />
+          <Box sx={{}}>
+            {children}
+          </Box>
+        </Container>
       </body>
     </html>
   )
