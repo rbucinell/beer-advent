@@ -1,12 +1,13 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import Button from '@mui/material/Button';
+import {Box,List,Button} from '@mui/material';
+import BeerListItem from "./BeerListItem";
+import { IBeer } from "@/app/models/beer";
 
 export default function BeerForm() {
 
-    const [data, setData] = useState(null);
-
+  const [data, setData] = useState<IBeer[]>([]);
   const [name, setName] = useState("");
   const [brewer, setBrewer] = useState("");
   const [type, setType] = useState("");
@@ -23,7 +24,8 @@ export default function BeerForm() {
         });
         if (response.ok) {
           const result = await response.json();
-          setData(result);
+          setData(result.beers );
+          console.log( result.beers );
         } else {
           // Handle errors, e.g., set an error state
           console.error('Failed to fetch data');
@@ -67,18 +69,13 @@ export default function BeerForm() {
   return (
     <>
     <Button variant="contained">Hello world</Button>
-    <div>
-      {data ? (
-        // Display the fetched data
-        <div>
-          <h1>Data from API:</h1>
-          <pre>{JSON.stringify(data, null, 2)}</pre>
-        </div>
-      ) : (
-        // You can also display a loading indicator or an error message
-        <p>Loading...</p>
-      )}
-    </div>
+    <Box sx={{ width: '100%', maxWidth: 360, bgcolor: 'background.paper' }}>
+      { data ? (
+        <List>
+          {data.map( beer => <BeerListItem key={`${beer.year}${beer.day}${beer.beer}`} {...beer}/>)}
+          </List>
+      ) : (<p>Loading...</p> )}
+    </Box>
 
       <form onSubmit={handleSubmit} className="py-4 mt-4 border-t flex flex-col gap-5" >
         <div>

@@ -1,4 +1,4 @@
-import BeerForm from '@/components/BeerForm';
+import BeerForm from '@/components/Beer/BeerForm';
 import Image from 'next/image'
 
 export default function Home() {
