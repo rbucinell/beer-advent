@@ -1,14 +1,17 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import {Box,List,Button, Divider} from '@mui/material';
+import {Box,List, Divider} from '@mui/material';
 import { IBeer } from "@/app/models/beer";
 import BeerListItem from "@/components/Beer/BeerListItem";
+import TextField from '@mui/material/TextField';
 
 
 export default function History() {
 
   const [data, setData] = useState<IBeer[]>([]);
+  const [q, setQ] = useState("");
+  const [searchParamters] = useState(["beer", "brewer"]);
 
   useEffect(() => {
     // Create an async function to fetch data from the API
@@ -33,15 +36,29 @@ export default function History() {
     fetchData();
   }, []); // The empty dependency array [] ensures the effect runs only once on component mount
 
+  function search(items:any): IBeer[] {
+      return items.filter((item:any) => {
+          return searchParamters.some((newItem:any) => {
+              return (
+                  item[newItem]
+                      .toString()
+                      .toLowerCase()
+                      .indexOf(q.toLowerCase()) > -1
+              );
+          });
+      });
+  }
+
   return (
     <>
-      <Box sx={{ width: '100%', height:'100%', bgcolor: 'background.paper' }}>
+      <Box sx={{ width: '100%', height:'90vh', overflow:'clip', bgcolor: 'background.paper' }}>
+      <TextField value={q} onChange={(e:any) => setQ(e.target.value)} sx={{my: 1}} fullWidth id="outlined-basic" label="Search" variant="outlined" />
       { data ? (
-        <List>
-          {data.map( beer => 
+        <List style={{maxHeight: '100%', overflow: 'auto'}}>
+          {search(data).map( beer => 
             <>
               <BeerListItem key={`${beer.year}${beer.day}${beer.beer}`} {...beer}/>
-              <Divider variant="middle" component="li"  />
+              <Divider variant="middle" component="li" color="black" />
             </>
           )}
         </List>
