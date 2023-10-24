@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import {Box,List,Button} from '@mui/material';
+import {Box,List,Button, Divider} from '@mui/material';
 import { IBeer } from "@/app/models/beer";
 import BeerListItem from "@/components/Beer/BeerListItem";
 
@@ -38,8 +38,13 @@ export default function History() {
       <Box sx={{ width: '100%', height:'100%', bgcolor: 'background.paper' }}>
       { data ? (
         <List>
-          {data.map( beer => <BeerListItem key={`${beer.year}${beer.day}${beer.beer}`} {...beer}/>)}
-          </List>
+          {data.map( beer => 
+            <>
+              <BeerListItem key={`${beer.year}${beer.day}${beer.beer}`} {...beer}/>
+              <Divider variant="middle" component="li"  />
+            </>
+          )}
+        </List>
       ) : (<p>Loading...</p> )}
     </Box>
     </>
