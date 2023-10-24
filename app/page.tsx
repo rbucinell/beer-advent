@@ -5,6 +5,7 @@ import { IEvent } from "@/app/models/event";
 import { IParticipant } from "@/app/models/participant";
 import {Box, Button, ButtonGroup, Divider, Paper, Stack, Typography} from '@mui/material';
 import { styled } from '@mui/material/styles';
+import ParticipantItem from "@/components/ParticipantItem";
 
 const Item = styled(Paper)(({ theme }) => ({
   backgroundColor: theme.palette.mode === 'dark' ? '#1A2027' : '#fff',
@@ -27,7 +28,7 @@ export default function Home() {
           const eventJSON = await eventResposne.json();
           setAdvent(eventJSON);
 
-          const participantsResponse = await fetch('api/participants', { method: 'GET'});
+          const participantsResponse = await fetch('api/participant', { method: 'GET'});
           if( participantsResponse.ok )
           {
             const participantsJSON = await participantsResponse.json();
@@ -48,22 +49,9 @@ export default function Home() {
       <Typography variant="h4" sx={{ m: 1 }}>{ advent ? advent.name : "Beer Advent"} </Typography>
       <Stack spacing={1}>
         { participants ? 
-          participants.map( (p) =>
+          participants.map( (participant) =>
           (
-            <Item key={p._id.toString()} sx={{ 
-                display: "flex", 
-                flexDirection:'row', 
-                flexGrow:'1',
-                alignItems: 'center'
-              }}>
-                <Typography variant="h5" sx={{ m: 2 }}>
-              {p.name.substring(0,1).toUpperCase()+p.name.substring(1)}
-              </Typography>
-              <ButtonGroup sx={{justifyContent: 'end'}} disabled variant="contained" aria-label="outlined primary button group">
-                <Button>{Math.min(...p.days)}</Button>
-                <Button>{Math.max(...p.days)}</Button>
-            </ButtonGroup>
-            </Item>
+            <ParticipantItem key={participant._id.toString()} {...participant}/>
           ) )
           : (<Item> Loading Participants </Item>)
         }

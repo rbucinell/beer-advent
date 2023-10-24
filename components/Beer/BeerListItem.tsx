@@ -8,7 +8,6 @@ import {SportsBar} from '@mui/icons-material';
 
 export default class BeerListItem extends Component<IBeer>{
     constructor( props:IBeer ){
-        console.log( props )
         super(props);
     }
 
