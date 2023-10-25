@@ -14,27 +14,21 @@ export default function History() {
   const [searchParamters] = useState(["beer", "brewer"]);
 
   useEffect(() => {
-    // Create an async function to fetch data from the API
     const fetchData = async () => {
       try {
-        const response = await fetch('api/beer', {
-            method: 'GET'
-        });
+        const response = await fetch('api/beer', { method: 'GET' });
         if (response.ok) {
           const result = await response.json();
           setData(result.beers );
         } else {
-          // Handle errors, e.g., set an error state
           console.error('Failed to fetch data');
         }
       } catch (error) {
         console.error('An error occurred:', error);
       }
     };
-
-    // Call the fetchData function when the component mounts
     fetchData();
-  }, []); // The empty dependency array [] ensures the effect runs only once on component mount
+  }, []);
 
   function search(items:any): IBeer[] {
       return items.filter((item:any) => {
