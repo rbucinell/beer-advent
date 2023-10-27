@@ -29,9 +29,9 @@ export default function Nav() {
                     <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
                         <Link href="/history">History </Link>
                     </Typography>
-                    {/* <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
-                        <Link className='disabled-link' href="/addbeer">Add Beer </Link>
-                    </Typography> */}
+                    <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
+                        <Link className='disabled-link' href="/submitbeer">Submit Beer</Link>
+                    </Typography>
                     </Toolbar>
                 </AppBar>
             </Box>

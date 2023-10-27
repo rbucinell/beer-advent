@@ -1,5 +1,6 @@
 "use client";
 import { IParticipant } from "@/app/models/participant";
+import { ParticipantName } from "@/app/models/participant_util";
 import { Component, ReactNode } from "react";
 import {Box, Button, ButtonGroup, Divider, Paper, Stack, Typography} from '@mui/material';
 import { styled } from '@mui/material/styles';
@@ -17,10 +18,6 @@ export default class ParticipantItem extends Component<IParticipant> {
         super(props);
     }
 
-    get CapitalizedName():String {
-        return this.props.name.substring(0,1).toUpperCase()+this.props.name.substring(1);
-    }
-
     render(): ReactNode {
         return(
             <Item key={ this.props._id.toString()} sx={{ 
@@ -29,8 +26,8 @@ export default class ParticipantItem extends Component<IParticipant> {
                 flexGrow:'1',
                 alignItems: 'center'
               }}>
-                <Typography variant="h5" sx={{ m: 2 }}>{this.CapitalizedName}</Typography>
-                <ButtonGroup sx={{justifyContent: 'end'}} disabled variant="contained" aria-label="outlined primary button group">
+                <Typography variant="h5" sx={{ m: 2 }}>{ParticipantName(this.props)}</Typography>
+                <ButtonGroup sx={{ color: 'black'}} disabled variant="contained" aria-label="outlined primary button group">
                     <Button>{Math.min(...this.props.days)}</Button>
                     <Button>{Math.max(...this.props.days)}</Button>
                 </ButtonGroup>
