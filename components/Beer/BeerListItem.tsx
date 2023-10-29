@@ -3,7 +3,7 @@
 import { Component } from "react";
 import Image from "next/image";
 import {IBeer} from "@/app/models/beer";
-import {Button, ListItem, ListItemIcon,ListItemText } from '@mui/material';
+import {Button, Divider, ListItem, ListItemIcon,ListItemText } from '@mui/material';
 import CalendarWithBadge from "../CalendarWithBadge";
 
 interface IBeerButton{
@@ -26,8 +26,8 @@ export default class BeerListItem extends Component<IBeer>{
     }
 
     render() {
-      return (
-        <ListItem >
+      return (<>
+        <ListItem>
           <ListItemIcon>
             <CalendarWithBadge num={this.props.year}/>
           </ListItemIcon>
@@ -37,6 +37,8 @@ export default class BeerListItem extends Component<IBeer>{
             {this.props.untappd ?      <BeerButton url={this.props.untappd}      source="untappd" /> : null}
           </span>
         </ListItem>
-      );        
+        <Divider key={`${this.props.year}${this.props.day}${this.props.beer}-divider`} variant="middle" component="li" color="black" />
+        
+      </>);        
     }
 }

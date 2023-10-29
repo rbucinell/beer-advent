@@ -2,7 +2,7 @@
 import { IParticipant } from "@/app/models/participant";
 import { ParticipantName } from "@/app/models/participant_util";
 import { Component, ReactNode } from "react";
-import {Box, Button, ButtonGroup, Divider, Paper, Stack, Typography} from '@mui/material';
+import { Avatar, Button, ButtonGroup, Paper, Stack, Typography} from '@mui/material';
 import { styled } from '@mui/material/styles';
 
 const Item = styled(Paper)(({ theme }) => ({
@@ -14,23 +14,26 @@ const Item = styled(Paper)(({ theme }) => ({
   }));
 
 export default class ParticipantItem extends Component<IParticipant> {
+    
     constructor( props: IParticipant ){
         super(props);
     }
 
     render(): ReactNode {
         return(
-            <Item key={ this.props._id.toString()} sx={{ 
-                display: "flex", 
-                flexDirection:'row', 
-                flexGrow:'1',
-                alignItems: 'center'
-              }}>
-                <Typography variant="h5" sx={{ m: 2 }}>{ParticipantName(this.props)}</Typography>
-                <ButtonGroup sx={{ color: 'black'}} disabled variant="contained" aria-label="outlined primary button group">
-                    <Button>{Math.min(...this.props.days)}</Button>
-                    <Button>{Math.max(...this.props.days)}</Button>
-                </ButtonGroup>
+            <Item key={ this.props._id.toString()} 
+                sx={{ 
+                    display: "flex", 
+                    flexDirection:'row', 
+                    alignItems: 'center',
+                    justifyContent: 'space-between',
+                }}
+            >
+                <Typography variant="h6">{ParticipantName(this.props)}</Typography>
+                <Stack direction={'row'} spacing={2}>
+                    <Avatar variant="rounded" sx={{ bgcolor: 'lightcoral' }}>{Math.min(...this.props.days)}</Avatar>
+                    <Avatar variant="rounded" sx={{ bgcolor: 'lightcoral' }}>{Math.max(...this.props.days)}</Avatar>
+                </Stack>
             </Item>
         );
     }

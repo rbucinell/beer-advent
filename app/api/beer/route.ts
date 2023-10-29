@@ -9,7 +9,7 @@ export async function GET( req:NextRequest ) {
     try{
         await connectDB();
         const res = await Beer.find({});
-        return NextResponse.json({beers: res})
+        return NextResponse.json(res)
     }catch( error ) {
         console.log( error );
         return NextResponse.json({msg: ["Unable to send message"] });
@@ -21,7 +21,7 @@ export async function POST( req:NextRequest ) {
     const { beer, brewer, beerType, abv, beerAdvocate, untapd, img, participant:IParticipant} = json;
 
     const existingBeers = await Beer.find();
-    console.log( existingBeers.length);
+    console.log( existingBeers);
     const comparisons = existingBeers.map( (existingBeer:IBeer) => {
         return { 
             ...existingBeer,
