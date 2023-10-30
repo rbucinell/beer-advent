@@ -2,7 +2,7 @@ import mongoose from 'mongoose';
 import connectDB from '@/app/lib/mongodb';
 import { NextRequest, NextResponse } from "next/server";
 import jaroWinkler from 'jaro-winkler';
-import Participant, {IParticipant} from '@/app/models/participant';
+import {IParticipant} from '@/app/models/participant';
 import Beer, {IBeer} from '@/app/models/beer';
 
 export async function GET( req:NextRequest ) {
@@ -17,44 +17,53 @@ export async function GET( req:NextRequest ) {
 }
 
 export async function POST( req:NextRequest ) {
-    const json = await req.json();
-    const { beer, brewer, beerType, abv, beerAdvocate, untapd, img, participant:IParticipant} = json;
-
-    const existingBeers = await Beer.find();
-    console.log( existingBeers);
-    const comparisons = existingBeers.map( (existingBeer:IBeer) => {
-        return { 
-            ...existingBeer,
-            beerSimilarity:jaroWinkler(existingBeer.beer, beer),
-            brewerSimiliatriy: jaroWinkler(existingBeer.brewer, brewer),
-            beerAdvocateSimiliatriy: jaroWinkler(existingBeer.beeradvocate, beerAdvocate)
-        }
-    });
-
-    if( Math.max(...comparisons.map( b => b.beerSimilarity)) >= .8 &&
-        Math.max(...comparisons.map( b => b.brewerSimiliatriy)) >= .8 ) {
-        return NextResponse.json({error:true, msg: [`"${beer}" by ${brewer}. Too close to tell, text Ryan`]});
-    } 
-    console.log( comparisons[0] );
-    /*
-    const comparisons = existingBeers.map( b => { 
-        "beer": b.name, 
-        "similarity":jaroWinkler(b,beer) 
-    });
-    
-    console.log( existingBeers);
-    */
-
-    console.log( json );
-    return NextResponse.json({
-        success: true,
-        msg: ["Message sent failed", "Message sent failed"]
-    });
-
-    
     try{
+        const json = await req.json();
+        let beer:IBeer = json;
+        let participant:IParticipant = json.participant;
+        const existingBeers:IBeer[] = await Beer.find();
+        const comparisons = existingBeers.map( (existingBeer:IBeer) => {
+            return { 
+                beerSimilarity:jaroWinkler(existingBeer.beer || '', beer.beer || ''),
+                brewerSimiliatriy: jaroWinkler(existingBeer.brewer || '', beer.brewer || ''),
+                beerAdvocateSimiliatriy: jaroWinkler(existingBeer.beeradvocate || '', beer.beeradvocate || ''),
+                ...existingBeer,
+            }
+        });
+
+        comparisons.sort( (a,b) => b.beerSimilarity - a.beerSimilarity );
+        console.log( comparisons[0])
+
+        if( Math.max(...comparisons.map( b => b.beerSimilarity)) >= .8 &&
+            Math.max(...comparisons.map( b => b.brewerSimiliatriy)) >= .8 ) {
+            return NextResponse.json({error:true, msg: [`"${beer.beer}" by ${beer.brewer}. Too close to tell, text Ryan`]});
+        }
+        // return NextResponse.json({
+        //     success: true,
+        //     msg: ["Message sent failed", "Message sent failed"]
+        // });
+
+
+
+        let participantBeers = existingBeers.filter( b => b.person === participant.name);
+        console.log( participantBeers );
+
+        if( participantBeers.length >= 2 ) {
+            return NextResponse.json({msg: ["User already submitted two beers"] });
+        }
+        
+
+        const today = new Date();
+        beer.year = today.getFullYear();
+        beer.day = participant.days[participantBeers.length];
+        
+        beer.person = participant.name;
+    
         await connectDB();
-        await Beer.create({ ...json, state:'pending' });
+        await Beer.create({...json, state: 'pending'});
+
+        //participant.beers.push( beer.beer )
+        //await Participant.findByIdAndUpdate( participant._id, { beers: participant.beers });
         
         return NextResponse.json({
             msg: ["Message sent successfully"],
@@ -63,10 +72,10 @@ export async function POST( req:NextRequest ) {
     }
     catch(error){
         if( error instanceof mongoose.Error.ValidationError){
-            let errorList = [];
-            // for( let e in error.errors ){
-            //     errorList.push( error.errors[e].message);
-            // }
+            let errorList:string[] = [];
+            for( let e in error.errors ){
+                errorList.push( error.errors[e].message);
+            }
             return NextResponse.json({msg: errorList})
         }
         else{

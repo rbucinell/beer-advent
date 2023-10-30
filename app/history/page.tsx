@@ -14,7 +14,11 @@ export default function History() {
   const [searchParamters] = useState(["beer", "brewer"]);
 
   useEffect(() => {
-    (async () => { setBeers(await Get<IBeer[]>('api/beer')); })(); 
+    (async () => { 
+      let beers:IBeer[] = await Get<IBeer[]>('api/beer');
+      beers = beers.filter<IBeer>( (b): b is IBeer => b.state !== "pending" );
+      setBeers( await Get<IBeer[]>('api/beer')); 
+    })(); 
   }, [] );
 
   function search(items:any): IBeer[] {
@@ -39,7 +43,7 @@ export default function History() {
           sx={{mb: 1}} className="bg-slate-200 l border-b-2 border-solid border-black" 
           fullWidth id="outlined-basic" label="Search" variant="outlined" />
         { beers ? (
-          <List style={{maxHeight: '100%', overflow: 'auto'}}>
+          <List sx={{ mb: 2}} style={{maxHeight: '100%', overflow: 'auto'}}>
             {search(beers).map( beer => 
                 <BeerListItem  key={`${beer.year}${beer.day}${beer.beer}`} {...beer}/>
             )}

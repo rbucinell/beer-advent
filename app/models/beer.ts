@@ -11,6 +11,7 @@ export interface IBeer extends Document {
     person: string;
     beeradvocate: string;
     untappd: string;
+    state: string;
 }
 
 const beerSchema = new Schema<IBeer>(
@@ -41,6 +42,9 @@ const beerSchema = new Schema<IBeer>(
             type: String
         },
         untappd: {
+            type: String
+        },
+        state: {
             type: String
         }
     },
