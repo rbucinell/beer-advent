@@ -6,6 +6,7 @@ import {IParticipant} from '@/app/models/participant';
 import Beer, {IBeer} from '@/app/models/beer';
 
 export async function GET( req:NextRequest ) {
+    console.log( req.nextUrl.searchParams );
     try{
         await connectDB();
         const res = await Beer.find({});
@@ -17,7 +18,8 @@ export async function GET( req:NextRequest ) {
 }
 
 export async function POST( req:NextRequest ) {
-    try{
+    try
+    {
         const json = await req.json();
         let beer:IBeer = json;
         let participant:IParticipant = json.participant;
@@ -34,16 +36,12 @@ export async function POST( req:NextRequest ) {
         comparisons.sort( (a,b) => b.beerSimilarity - a.beerSimilarity );
         console.log( comparisons[0])
 
-        if( Math.max(...comparisons.map( b => b.beerSimilarity)) >= .8 &&
-            Math.max(...comparisons.map( b => b.brewerSimiliatriy)) >= .8 ) {
-            return NextResponse.json({error:true, msg: [`"${beer.beer}" by ${beer.brewer}. Too close to tell, text Ryan`]});
+        if( Math.max(...comparisons.map( b => b.beerSimilarity)) >= .85)
+        {
+            if( Math.max(...comparisons.map( b => b.brewerSimiliatriy)) >= .85 ) {
+                return NextResponse.json({error:true, msg: [`"${beer.beer}" by ${beer.brewer}. Too close to tell, text Ryan`]});
+            }
         }
-        // return NextResponse.json({
-        //     success: true,
-        //     msg: ["Message sent failed", "Message sent failed"]
-        // });
-
-
 
         let participantBeers = existingBeers.filter( b => b.person === participant.name);
         console.log( participantBeers );
@@ -58,7 +56,7 @@ export async function POST( req:NextRequest ) {
         beer.day = participant.days[participantBeers.length];
         
         beer.person = participant.name;
-    
+        //todo: fix day here
         await connectDB();
         await Beer.create({...json, state: 'pending'});
 

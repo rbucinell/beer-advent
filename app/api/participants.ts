@@ -1,8 +1,8 @@
 import connectDB from '@/app/lib/mongodb';
 import Participant from '@/app/models/participant';
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 
-export async function GET( req ) {
+export async function GET( req:NextRequest ) {
     try{
         await connectDB();
         const participantResponse = await Participant.find();

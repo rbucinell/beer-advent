@@ -1,10 +1,8 @@
-import mongoose from 'mongoose';
 import connectDB from '@/app/lib/mongodb';
 import Event from '../../models/event';
-import Participant from '@/app/models/participant';
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 
-export async function GET( req ) {
+export async function GET( req:NextRequest ) {
     try{
         await connectDB();
         const res = await Event.findOne({ year: (new Date()).getFullYear() });
@@ -13,4 +11,4 @@ export async function GET( req ) {
         console.log( error );
         return NextResponse.json({msg: ["Unable to retrieve event config"] });
     }
-}Event
+}

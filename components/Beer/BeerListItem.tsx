@@ -4,6 +4,7 @@ import { Component } from "react";
 import Image from "next/image";
 import {IBeer} from "@/app/models/beer";
 import {Button, Divider, ListItem, ListItemIcon,ListItemText } from '@mui/material';
+import { Capitalize, ParticipantName } from "@/app/models/participant_util";
 import CalendarWithBadge from "../CalendarWithBadge";
 
 interface IBeerButton{
@@ -27,11 +28,12 @@ export default class BeerListItem extends Component<IBeer>{
 
     render() {
       return (<>
-        <ListItem>
+        <ListItem sx={{ background: `${ this.props.state ==='pending'? 'lightgreen' : ''}`}}>
           <ListItemIcon>
             <CalendarWithBadge num={this.props.year}/>
           </ListItemIcon>
           <ListItemText primary={this.props.beer} secondary={this.props.brewer}/>
+          <span>{Capitalize(this.props.person)}</span>
           <span style={{ display:"flex", flexDirection:"column" }}>
             {this.props.beeradvocate ? <BeerButton url={this.props.beeradvocate} source="beeradvocate" /> : null}
             {this.props.untappd ?      <BeerButton url={this.props.untappd}      source="untappd" /> : null}

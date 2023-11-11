@@ -16,11 +16,7 @@ export const metadata: Metadata = {
   viewport: 'initial-scale=1, width=device-width'
 }
 
-export default function RootLayout({
-  children,
-}: {
-  children: React.ReactNode
-}) {
+export default function RootLayout({ children, }: { children: React.ReactNode }) {
   return (
     <html lang="en">
       <body className={`${inter.className} bg-green-200 repeating-beer-bg`}>
