@@ -26,13 +26,17 @@ export default class BeerListItem extends Component<IBeer>{
         super(props);
     }
 
+    beerWithABV() {
+      return `${this.props.beer} ${this.props.abv ? `[${this.props.abv}% ABV]` : ''}`;
+    }
+
     render() {
       return (<>
         <ListItem sx={{ background: `${ this.props.state ==='pending'? 'lightgreen' : ''}`}}>
           <ListItemIcon>
             <CalendarWithBadge num={this.props.year}/>
           </ListItemIcon>
-          <ListItemText primary={this.props.beer} secondary={this.props.brewer}/>
+          <ListItemText primary={this.beerWithABV()} secondary={this.props.brewer}/>
           {/* <span>{Capitalize(this.props.person)}</span> */}
           <Stack direction={"row"}>          
             {this.props.beeradvocate ? <BeerButton url={this.props.beeradvocate} source="beeradvocate" /> : null}

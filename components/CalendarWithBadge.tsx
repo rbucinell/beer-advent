@@ -16,7 +16,7 @@ export default class CalendarWithBadge extends Component<ICalendarWithBadgeProps
         return (
             <IconButton style={{position: 'relative'}} color="primary">
                 <Badge 
-                    badgeContent={`'${year % 100}`} 
+                    badgeContent={`${year % 100}`} 
                     color="default" 
                     overlap="circular"
                     anchorOrigin={{

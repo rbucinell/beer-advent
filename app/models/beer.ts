@@ -8,6 +8,7 @@ export interface IBeer extends Document {
     img: string;
     year: number;
     day: number;
+    abv: number;
     person: string;
     beeradvocate: string;
     untappd: string;
@@ -18,6 +19,7 @@ const beerSchema = new Schema<IBeer>(
     {
         brewer: {
             type: String,
+            required: [true, "Brewery is required"],
         },
         beer: {
             type: String,
@@ -33,6 +35,9 @@ const beerSchema = new Schema<IBeer>(
             type: Number,
         },
         day: {
+            type: Number,
+        },
+        abv: {
             type: Number,
         },
         person: {
