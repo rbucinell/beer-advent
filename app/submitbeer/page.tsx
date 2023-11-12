@@ -8,7 +8,7 @@ export default function SubmitBeer() {
   return (
     <>
       <Box display="flex" justifyContent="center" sx={{p:2, bgcolor:'white'}} alignItems="center" height="100%" width="100%" flexDirection={'column'}>
-        <Typography fontFamily={roboto.className} variant='h3'>Submit your beer here!</Typography>
+        <Typography fontFamily={roboto.className} variant='h5'>Submit your beer here!</Typography>
         <BeerForm />
     </Box>
     </>    
