@@ -8,7 +8,7 @@ export interface IEvent extends Document {
 const eventSchema = new Schema<IEvent>(
     {
         name: String,
-        year: Number,
+        year: Number
     },
     {
         collection: 'events'

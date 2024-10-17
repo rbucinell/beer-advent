@@ -2,8 +2,9 @@
 import { IParticipant } from "@/app/models/participant";
 import { ParticipantName } from "@/app/models/participant_util";
 import { Component, ReactNode } from "react";
-import { Avatar, Button, ButtonGroup, Paper, Stack, Typography} from '@mui/material';
+import { Avatar, Button, ButtonGroup, Paper, Skeleton, Stack, Typography} from '@mui/material';
 import { styled } from '@mui/material/styles';
+import { IEventParticipant } from "@/app/models/event-participant";
 
 const Item = styled(Paper)(({ theme }) => ({
     backgroundColor: theme.palette.mode === 'dark' ? '#1A2027' : '#fff',
@@ -13,10 +14,11 @@ const Item = styled(Paper)(({ theme }) => ({
     color: theme.palette.text.secondary,
   }));
 
-export default class ParticipantItem extends Component<IParticipant> {
+export default class ParticipantItem extends Component<IEventParticipant> {
     
-    constructor( props: IParticipant ){
+    constructor( props: IEventParticipant ){
         super(props);
+        console.log( props);
     }
 
     render(): ReactNode {
@@ -29,10 +31,13 @@ export default class ParticipantItem extends Component<IParticipant> {
                     justifyContent: 'space-between',
                 }}
             >
-                <Typography variant="h6">{ParticipantName(this.props)}</Typography>
                 <Stack direction={'row'} spacing={2}>
-                    <Avatar variant="rounded" sx={{ bgcolor: 'lightcoral' }}>{Math.min(...this.props.days)}</Avatar>
-                    <Avatar variant="rounded" sx={{ bgcolor: 'lightcoral' }}>{Math.max(...this.props.days)}</Avatar>
+                { this.props.user?.hasImage ? <Avatar src={this.props.user?.imageUrl} /> : <Skeleton variant="circular" width={40} height={40} animation={false} /> }
+                <Typography variant="h6">{ParticipantName(this.props)}</Typography>
+                </Stack>
+                <Stack direction={'row'} spacing={2}>
+                    <Avatar variant="rounded" sx={{ bgcolor: 'lightcoral' }}>{this.props.days[0] === null ? '?' :Math.min(...this.props.days)}</Avatar>
+                    <Avatar variant="rounded" sx={{ bgcolor: 'lightcoral' }}>{this.props.days[1] === null ? '?' :Math.max(...this.props.days)}</Avatar>
                 </Stack>
             </Item>
         );

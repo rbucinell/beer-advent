@@ -3,7 +3,7 @@
 import { Component } from "react";
 import Image from "next/image";
 import {IBeer} from "@/app/models/beer";
-import { Divider, IconButton, ListItem, ListItemIcon,ListItemText, Stack } from '@mui/material';
+import { Divider, IconButton, ListItem, ListItemButton, ListItemIcon,ListItemText, Stack } from '@mui/material';
 // import { Capitalize, ParticipantName } from "@/app/models/participant_util";
 import CalendarWithBadge from "../CalendarWithBadge";
 
@@ -32,7 +32,7 @@ export default class BeerListItem extends Component<IBeer>{
 
     render() {
       return (<>
-        <ListItem sx={{ background: `${ this.props.state ==='pending'? 'lightgreen' : ''}`}}>
+        <ListItemButton  sx={{ background: `${ this.props.state ==='pending'? 'lightgreen' : ''}`}}>
           <ListItemIcon>
             <CalendarWithBadge num={this.props.year}/>
           </ListItemIcon>
@@ -42,7 +42,7 @@ export default class BeerListItem extends Component<IBeer>{
             {this.props.beeradvocate ? <BeerButton url={this.props.beeradvocate} source="beeradvocate" /> : null}
             {this.props.untappd ?      <BeerButton url={this.props.untappd}      source="untappd" /> : null}
           </Stack>
-        </ListItem>
+        </ListItemButton >
         <Divider key={`${this.props.year}${this.props.day}${this.props.beer}-divider`} variant="middle" component="li" color="black" />
       </>);        
     }

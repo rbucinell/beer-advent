@@ -7,6 +7,7 @@ export interface IParticipant extends Document{
     days: number[];
     beers: string[];
     event: Types.ObjectId;
+    user: Types.ObjectId;
 }
 
 export const participantSchema = new Schema<IParticipant>(
@@ -18,6 +19,10 @@ export const participantSchema = new Schema<IParticipant>(
         event: {
             type: Schema.Types.ObjectId,
             ref: 'Event'
+        },
+        user: {
+            type: Schema.Types.ObjectId,
+            ref: 'User'
         }
     }, {
         collection: 'participants',
