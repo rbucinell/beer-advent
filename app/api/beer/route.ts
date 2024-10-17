@@ -53,7 +53,7 @@ export async function POST( req:NextRequest ) {
 
         const today = new Date();
         beer.year = today.getFullYear();
-        beer.day = participant.days[participantBeers.length];
+        beer.day = 0;
         
         beer.person = participant.name;
         //todo: fix day here
