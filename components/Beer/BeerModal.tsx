@@ -23,7 +23,7 @@ export default function BasicModal( ope:any ) {
 
     React.useEffect(()=>{
         setOpen(ope);
-    });
+    }, [ope]);
 
 
     return (

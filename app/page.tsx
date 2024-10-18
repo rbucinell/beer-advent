@@ -23,7 +23,7 @@ const Item = styled(Paper)(({ theme }) => ({
 export default function Home() {
   const [advent, setAdvent] = useState<IEvent>();
   const [participants, setParticipants] = useState<IEventParticipant[]>([]);
-  const [users, setUser] = useState<IUser>();
+  //const [users, setUser] = useState<IUser>();
   const { isSignedIn, user, isLoaded } = useUser();
 
   useEffect(() => {
@@ -50,7 +50,7 @@ export default function Home() {
       } );
       setParticipants( ipartipants );
     })();
-  }, [] );
+  }, [user] );
 
   function sortParticipantsAlpha( event:any )
   {
