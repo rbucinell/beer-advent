@@ -1,5 +1,6 @@
 "use client";
 
+import { IEventParticipant } from "@/app/models/event-participant";
 import { IParticipant } from "@/app/models/participant";
 import { ParticipantName } from "@/app/models/participant_util";
 import { Get } from "@/app/util/RequestHelper";
@@ -33,13 +34,13 @@ const initBeer:BeerData = {
 export default function BeerForm() {
 
   const [beer, setBeer]                 = useState<BeerData>(initBeer);
-  const [participant, setParticipant]   = useState<IParticipant|null>();
-  const [participants, setParticipants] = useState<IParticipant[]>([]);
+  const [participant, setParticipant]   = useState<IEventParticipant|null>();
+  const [participants, setParticipants] = useState<IEventParticipant[]>([]);
   const [error, setError]               = useState([]);
   const [success, setSuccess]           = useState(false);
   
   useEffect(() => {
-    (async () => setParticipants( await Get<IParticipant[]>('/api/participant')))();
+    (async () => setParticipants( await Get<IEventParticipant[]>('/api/participant')))();
   }, []);
 
   const handleSubmit = async ( e: React.FormEvent<HTMLFormElement> ) => {
@@ -90,7 +91,7 @@ export default function BeerForm() {
             <Typography>Who is submitting this beer?</Typography>
             <Autocomplete  id="brewerName"  options={participants} 
               onChange={(e,newVal) => { setParticipant(newVal); }}
-              getOptionLabel={(o:IParticipant)=>ParticipantName(o)}
+              getOptionLabel={(o:IEventParticipant)=>ParticipantName(o)}
               renderOption={(props, option) => (<li {...props} key={props.id} >{ParticipantName(option)}</li>)}
               renderInput={(params) => <TextField key={params.id} required {...params} label="Name" />}
             />
