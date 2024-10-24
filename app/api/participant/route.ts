@@ -4,8 +4,6 @@ import User from '@/app/models/user';
 import { IEventParticipant } from '@/app/models/event-participant';
 import Participant from '@/app/models/participant';
 import { NextRequest, NextResponse } from "next/server";
-import { createClerkClient } from '@clerk/backend';
-const clerkClient = createClerkClient({ secretKey: process.env.CLERK_SECRET_KEY });
 
 export async function GET( req:NextRequest ) {
     try{
@@ -18,13 +16,15 @@ export async function GET( req:NextRequest ) {
         for( let p of participants ) {
             let { beers, days, event } = p;
 
-            let dbXmas = await User.findOne({ _id: p.xmas?._id });
-            let xmas = dbXmas != null ? await clerkClient.users.getUser( dbXmas?.clerkId ): null;
+            let xmas = await User.findOne({ _id: p.xmas?._id });
+            let user = await User.findOne({ _id: p.user?._id });
+            // let dbXmas = await User.findOne({ _id: p.xmas?._id });
+            // let xmas = dbXmas != null ? await clerkClient.users.getUser( dbXmas?.clerkId ): null;
 
-            let dbUser = await User.findOne({ _id: p.user?._id });
-            let user = dbUser != null ? await clerkClient.users.getUser( dbUser.clerkId ): null;
+            // let dbUser = await User.findOne({ _id: p.user?._id });
+            // let user = dbUser != null ? await clerkClient.users.getUser( dbUser.clerkId ): null;
             const name = user?.fullName ?? user?.lastName;
-            const role = dbUser?.role;
+            const role = user?.role;
 
             eventParticipants.push({
                 _id: p._id,

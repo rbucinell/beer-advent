@@ -3,8 +3,6 @@ import Event from '@/app/models/event';
 import User from '@/app/models/user';
 import Participant from '@/app/models/participant';
 import { NextRequest, NextResponse } from "next/server";
-import { createClerkClient } from '@clerk/backend';
-const clerkClient = createClerkClient({ secretKey: process.env.CLERK_SECRET_KEY });
 
 export async function POST( req:NextRequest, res:NextResponse ) {
     try{
@@ -13,7 +11,6 @@ export async function POST( req:NextRequest, res:NextResponse ) {
 
         //Get Data
         await connectDB();
-        //let clerkUser = await clerkClient.users.getUser( user );
         if( !user ) {
             return NextResponse.json({ msg: ["Could not find user, try logging in"], success: false }, { status: 404 });
         }

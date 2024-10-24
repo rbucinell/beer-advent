@@ -9,7 +9,6 @@ import { styled } from '@mui/material/styles';
 import ParticipantItem from "@/components/ParticipantItem";
 import { Get } from "./util/RequestHelper";
 import { DateRange, SortByAlpha } from "@mui/icons-material";
-import { useUser } from "@clerk/nextjs";
 import { IEventParticipant } from "./models/event-participant";
 
 const Item = styled(Paper)(({ theme }) => ({
@@ -23,12 +22,9 @@ const Item = styled(Paper)(({ theme }) => ({
 export default function Home() {
   const [advent, setAdvent] = useState<IEvent>();
   const [participants, setParticipants] = useState<IEventParticipant[]>([]);
-  //const [users, setUser] = useState<IUser>();
-  const { isSignedIn, user, isLoaded } = useUser();
 
   useEffect(() => {
     (async () => {
-      console.log( user );
       //const currentYear = (new Date()).getFullYear();
       const currentYear = 2024;
       setAdvent( await Get<IEvent>(`api/event?year=${currentYear}`) );
@@ -50,7 +46,7 @@ export default function Home() {
       } );
       setParticipants( ipartipants );
     })();
-  }, [user] );
+  }, [] );
 
   function sortParticipantsAlpha( event:any )
   {
@@ -70,7 +66,7 @@ export default function Home() {
       headers: { "Content-type": "application/json" },
       body: JSON.stringify({
           "event": advent,
-          "user": user
+          //"user": user
       })
     }); 
     const { msg, success } = await res.json();
@@ -109,7 +105,7 @@ export default function Home() {
           )
         ))}
       </Stack>
-      { isSignedIn && isLoaded && participants.length < 12 && (
+      { participants.length < 12 && (
         <Button 
           sx={{ mt: 2 }} 
           color="primary" 

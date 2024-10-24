@@ -7,7 +7,6 @@ import '@fontsource/roboto/700.css';
 import { Container, CssBaseline } from '@mui/material';
 import './globals.css'
 import Nav from '@/components/Nav';
-import { ClerkProvider } from '@clerk/nextjs';
 
 const inter = Inter({ subsets: ['latin'] })
 
@@ -20,18 +19,14 @@ export const metadata: Metadata = {
 
 export default function RootLayout({ children, }: { children: React.ReactNode }) {
   return (
-    <ClerkProvider>
-      <html lang="en">
-        
+      <html lang="en">        
           <body className={`${inter.className} bg-green-200 repeating-beer-bg`}>
             <CssBaseline /> 
-            <Nav />      
-
+            <Nav />
             <Container sx={{ p:2, minHeight: '70vh'}}>          
               {children}
             </Container>
           </body>
       </html>
-    </ClerkProvider>
   )
 }

@@ -5,13 +5,15 @@ export interface IUser extends mongoose.Document {
     clerkId: string;
     role: string;
     fullName: string;
+    imageUrl: string;
 }
 
 export const userSchema = new Schema<IUser>(
     {
         clerkId: String,
         role: String,
-        fullName: String
+        fullName: String,
+        imageUrl: String
     },
     {
         collection: 'users',

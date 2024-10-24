@@ -1,11 +1,11 @@
 import mongoose, {Schema, Types } from "mongoose";
-import { User } from "@clerk/backend";
+import {IUser} from "./user";
 
 export interface IEventParticipant {
     _id: mongoose.Types.ObjectId,
     event: Types.ObjectId,
-    user: User | null,
-    xmas: User | null,
+    user: IUser | null,
+    xmas: IUser | null,
     days: number[],
     beers: string[],
     role: string,

@@ -6,7 +6,6 @@ import Box from '@mui/material/Box';
 import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
 import { Container } from '@mui/material';
-import { SignedIn, SignInButton, SignedOut, UserButton } from '@clerk/nextjs';
 export default function Nav() {
     const responseMessage = (response:any) => {
         console.log(response);
@@ -32,12 +31,7 @@ export default function Nav() {
                             </Typography>
                             <div>
                                 <Typography variant="h6" component="div" sx={{flexGrow: 1}}>
-                                <SignedOut>
-                                    <SignInButton />
-                                </SignedOut>
-                                <SignedIn>
-                                    <UserButton />
-                                </SignedIn>
+                                SignIn/SignOut Here
                                 </Typography>                            
                             </div>
                         </Toolbar>

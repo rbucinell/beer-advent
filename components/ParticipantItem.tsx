@@ -32,7 +32,7 @@ export default class ParticipantItem extends Component<IEventParticipant> {
                 }}
             >
                 <Stack direction={'row'} spacing={2}>
-                { this.props.user?.hasImage ? <Avatar src={this.props.user?.imageUrl} /> : <Skeleton variant="circular" width={40} height={40} animation={false} /> }
+                { this.props.user?.imageUrl ? <Avatar src={this.props.user?.imageUrl} /> : <Skeleton variant="circular" width={40} height={40} animation={false} /> }
                 <Typography variant="h6">{ParticipantName(this.props)}</Typography>
                 </Stack>
                 <Stack direction={'row'} spacing={2}>
