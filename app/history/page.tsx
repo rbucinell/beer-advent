@@ -3,10 +3,10 @@
 import { useState, useEffect } from "react";
 import { Box,Button,List, Modal, Typography } from '@mui/material';
 import { IBeer } from "@/app/models/beer";
-import BeerListItem from "@/components/Beer/BeerListItem";
+import BeerListItem from "@/app/components/Beer/BeerListItem";
 import TextField from '@mui/material/TextField';
-import { Get } from "../util/RequestHelper";
-import BeerModal from "@/components/Beer/BeerModal";
+import { Get } from "@/app/util/RequestHelper";
+import BeerModal from "@/app/components/Beer/BeerModal";
 
 export default function History() {
 

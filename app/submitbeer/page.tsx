@@ -1,4 +1,4 @@
-import BeerForm from '@/components/Beer/BeerForm';
+import BeerForm from '@/app/components/Beer/BeerForm';
 import { Box, Typography } from '@mui/material';
 import { Roboto } from 'next/font/google';
 

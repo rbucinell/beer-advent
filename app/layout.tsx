@@ -6,7 +6,8 @@ import '@fontsource/roboto/500.css';
 import '@fontsource/roboto/700.css';
 import { Container, CssBaseline } from '@mui/material';
 import './globals.css'
-import Nav from '@/components/Nav';
+import Nav from '@/app/components/Nav';
+import AuthProvider from '@/app/context/AuthProvider';
 
 const inter = Inter({ subsets: ['latin'] })
 
@@ -14,18 +15,20 @@ export const metadata: Metadata = {
   title: 'Beer Advent',
   description: 'Cheers for beers',
   icons: 'favicon.ico',
-  viewport: 'initial-scale=1, width=device-width'
+  // viewport: 'initial-scale=1, width=device-width'
 }
 
-export default function RootLayout({ children, }: { children: React.ReactNode }) {
+export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
       <html lang="en">        
           <body className={`${inter.className} bg-green-200 repeating-beer-bg`}>
-            <CssBaseline /> 
-            <Nav />
-            <Container sx={{ p:2, minHeight: '70vh'}}>          
-              {children}
-            </Container>
+            <AuthProvider>
+              <CssBaseline /> 
+              <Nav />
+              <Container sx={{ p:2, minHeight: '70vh'}}>          
+                {children}
+              </Container>
+            </AuthProvider>
           </body>
       </html>
   )

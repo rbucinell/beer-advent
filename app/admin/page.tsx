@@ -3,10 +3,10 @@
 import { useState, useEffect } from "react";
 import { Box,List } from '@mui/material';
 import { IBeer } from "@/app/models/beer";
-import BeerListItem from "@/components/Beer/BeerListItem";
+import BeerListItem from "@/app/components/Beer/BeerListItem";
 import TextField from '@mui/material/TextField';
 import { Get } from "@/app/util/RequestHelper";
-import { IParticipant } from "../models/participant";
+import { IParticipant } from "@/app/models/participant";
 
 export default function History() {
 
