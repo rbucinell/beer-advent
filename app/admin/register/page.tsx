@@ -46,10 +46,10 @@ export default function History() {
         setParticipants(participantResp);  
         
         //Get all Users
-        let userResponse = await await Get<IUser[]>('/api/user');
+        let userResponse = await Get<IUser[]>('/api/user');
         setUsers(userResponse);
         
-        setParticipatingUsers( participantResp.map( p => users.find( u => u._id === p.user) as IUser) );   
+        setParticipatingUsers( participantResp.map( p => userResponse.find( u => u._id === p.user) as IUser) );   
     })(); 
   }, [] );
 
@@ -83,14 +83,13 @@ export default function History() {
         <Typography variant="h6">{advent?.name}🎄</Typography>
         <Box sx={{ width: '100%', bgcolor: 'background.paper' }}>
             <Stack>
-                {Array.from({ length: 12 }, (_, index) =>
-                {
-                    return participants && participants[index] ? (
-                            <AdminParticipantItem key={index} participant={participants[index]} user={ users.find(u => u._id === participants[index].user) as IUser}/>
-                        ) : (
-                            <PendingItem key={index}/>
-                        );
-                    }
+                {Array.from({ length: 12 }, (_, index) => {
+                  return participants && participants[index] ? (
+                          <AdminParticipantItem key={index} participant={participants[index]} user={ users.find(u => u._id === participants[index].user) as IUser}/>
+                      ) : (
+                          <PendingItem key={index}/>
+                      );
+                  }
                 )}
             </Stack>
         </Box>

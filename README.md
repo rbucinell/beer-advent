@@ -11,8 +11,8 @@ Replace `<database_username>`, `<database_password>`, `<cluster_name>`, and `<co
 
 Run 
 ```
-pnpm install
-pnpm run dev
+npm install
+npm run dev
 ```
 
 ### Technologies

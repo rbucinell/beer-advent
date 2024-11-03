@@ -37,11 +37,12 @@ export default function Home() {
       let eventResp = await Get<IEvent>(`api/event?year=${new Date().getFullYear()}`);
       setAdvent(eventResp);
       let participantResp = await Get<IParticipant[]>(`api/participant?event=${eventResp._id}`);
+      let participatingUsers: IUser[] = [];
       for( const participant of participantResp ) {
         let userResp = await Get<IUser>(`api/user/${participant.user}`);
-        users.push(userResp);
+        participatingUsers.push(userResp);
       }
-      setUsers(users);
+      setUsers(participatingUsers);
       console.log(participantResp);
       setParticipants(participantResp);
     })();
@@ -89,11 +90,11 @@ export default function Home() {
       <Stack spacing={0.5}>
         {Array.from({ length: 12 }, (_, index) =>
           participants && participants[index] ? (
-            <ParticipantItem 
+            <ParticipantItem key={participants[index]._id.toString()} 
               participant={participants[index]} 
               user={ users.find(u => u._id === participants[index].user) as IUser}/>
           ) : (
-            <PendingItem/>
+            <PendingItem key={index}/>
           )
         )}
       </Stack>
