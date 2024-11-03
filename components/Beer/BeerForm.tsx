@@ -1,7 +1,9 @@
 "use client";
 
+import { IEvent } from "@/app/models/event";
 import { IParticipant } from "@/app/models/participant";
 import { ParticipantName } from "@/app/models/participant_util";
+import { IUser } from "@/app/models/user";
 import { Get } from "@/app/util/RequestHelper";
 import { Autocomplete, Button, Grid, TextField, TextFieldVariants, Typography } from "@mui/material";
 import { ChangeEvent, useEffect, useState } from "react";
@@ -32,6 +34,7 @@ const initBeer:BeerData = {
 
 export default function BeerForm() {
 
+  const [advent, setAdvent]             = useState<IEvent>();
   const [beer, setBeer]                 = useState<BeerData>(initBeer);
   const [participant, setParticipant]   = useState<IParticipant|null>();
   const [participants, setParticipants] = useState<IParticipant[]>([]);
@@ -39,7 +42,13 @@ export default function BeerForm() {
   const [success, setSuccess]           = useState(false);
   
   useEffect(() => {
-    (async () => setParticipants( await Get<IParticipant[]>('/api/participant')))();
+    (async () => {
+      let eventResp = await Get<IEvent>(`api/event?year=${new Date().getFullYear()}`);
+      setAdvent(eventResp);
+      let participantResp = await Get<IParticipant[]>(`api/participant?event=${eventResp._id}`);
+      setParticipants(participantResp);
+    })();
+
   }, []);
 
   const handleSubmit = async ( e: React.FormEvent<HTMLFormElement> ) => {
@@ -60,10 +69,7 @@ export default function BeerForm() {
   };
 
   const clearForm = (e:any ) => {
-    setBeer(initBeer);
-    setParticipant(null);
-    setError([]);
-    setSuccess(false);
+    window.location.reload();
   };
 
   function StandardTextField( target:keyof BeerData, label:string, type:string, req:boolean = true, variant:TextFieldVariants = "standard" ) {

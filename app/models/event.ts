@@ -1,14 +1,16 @@
-import mongoose, {Schema} from "mongoose";
+import mongoose, { Schema, Types } from "mongoose";
 
 export interface IEvent extends Document {
+    _id: Types.ObjectId;
     name: string;
     year: number;
 }
 
 const eventSchema = new Schema<IEvent>(
     {
+        _id: mongoose.Types.ObjectId,
         name: String,
-        year: Number,
+        year: Number
     },
     {
         collection: 'events'

@@ -4,6 +4,7 @@ import { NextRequest, NextResponse } from "next/server";
 import jaroWinkler from 'jaro-winkler';
 import {IParticipant} from '@/app/models/participant';
 import Beer, {IBeer} from '@/app/models/beer';
+import User from '@/app/models/user';
 
 export async function GET( req:NextRequest ) {
     console.log( req.nextUrl.searchParams );
@@ -20,6 +21,7 @@ export async function GET( req:NextRequest ) {
 export async function POST( req:NextRequest ) {
     try
     {
+        await connectDB();
         const json = await req.json();
         let beer:IBeer = json;
         let participant:IParticipant = json.participant;
@@ -29,36 +31,48 @@ export async function POST( req:NextRequest ) {
                 beerSimilarity:jaroWinkler(existingBeer.beer || '', beer.beer || ''),
                 brewerSimiliatriy: jaroWinkler(existingBeer.brewer || '', beer.brewer || ''),
                 beerAdvocateSimiliatriy: jaroWinkler(existingBeer.beeradvocate || '', beer.beeradvocate || ''),
-                ...existingBeer,
+                beer:existingBeer,
             }
         });
 
         comparisons.sort( (a,b) => b.beerSimilarity - a.beerSimilarity );
-        console.log( comparisons[0])
+        let closestComp:IBeer = comparisons[0].beer;
 
         if( Math.max(...comparisons.map( b => b.beerSimilarity)) >= .85)
         {
-            if( Math.max(...comparisons.map( b => b.brewerSimiliatriy)) >= .85 ) {
-                return NextResponse.json({error:true, msg: [`"${beer.beer}" by ${beer.brewer}. Too close to tell, text Ryan`]});
+            if( Math.max(...comparisons.map( b => b.brewerSimiliatriy)) >= .65 )
+            {
+                return NextResponse.json({
+                    error:true, 
+                    msg: [`"${beer.beer}" by ${beer.brewer}. Too close to "${ closestComp.beer}" by ${ closestComp.brewer}. Please tell, text Ryan if this is not correct.`]
+                });
             }
         }
 
-        let participantBeers = existingBeers.filter( b => b.person === participant.name);
-        console.log( participantBeers );
+        let user = await User.findById( participant.user );
+        let participantBeers = existingBeers.filter( b => b.user == user._id );
 
         if( participantBeers.length >= 2 ) {
             return NextResponse.json({msg: ["User already submitted two beers"] });
         }
-        
 
-        const today = new Date();
-        beer.year = today.getFullYear();
-        beer.day = participant.days[participantBeers.length];
+        let newBeer = await Beer.create({
+            ...json,
+            state: 'pending',
+            user: user._id,
+            year: new Date().getFullYear(),
+            day: participant.days[participantBeers.length],
+            person: participant.name
+        });
         
-        beer.person = participant.name;
-        //todo: fix day here
-        await connectDB();
-        await Beer.create({...json, state: 'pending'});
+        // const today = new Date();
+        // beer.year = today.getFullYear();
+        // beer.day = participant.days[participantBeers.length];
+        
+        // beer.person = participant.name;
+        // //todo: fix day here
+        
+        // await Beer.create({...json, state: 'pending'});
 
         //participant.beers.push( beer.beer )
         //await Participant.findByIdAndUpdate( participant._id, { beers: participant.beers });

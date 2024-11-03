@@ -4,11 +4,11 @@ import Participant from '@/app/models/participant';
 import { NextRequest, NextResponse } from "next/server";
 
 export async function GET( req:NextRequest ) {
-    try{
+    try{        
+        console.log( req.nextUrl.searchParams );
+        const event = req.nextUrl.searchParams.get('event');
         await connectDB();
-        const eventResponse = await Event.find({ year: (new Date()).getFullYear() });
-        //const participantResponse = await Participant.find({ event: eventResponse._id });
-        const participantResponse = await Participant.find();
+        const participantResponse = await Participant.find({ event });
         return NextResponse.json(participantResponse);
     }catch( error ) {
         console.log( error );

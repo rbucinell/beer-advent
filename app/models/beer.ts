@@ -1,4 +1,4 @@
-import mongoose, { Schema } from "mongoose";
+import mongoose, { Schema, Types } from "mongoose";
 
 export interface IBeer extends Document {
     _id: mongoose.Types.ObjectId;
@@ -10,6 +10,7 @@ export interface IBeer extends Document {
     day: number;
     abv: number;
     person: string;
+    user: Types.ObjectId;
     beeradvocate: string;
     untappd: string;
     state: string;
@@ -42,6 +43,10 @@ const beerSchema = new Schema<IBeer>(
         },
         person: {
             type: String
+        },
+        user: {
+            type: Schema.Types.ObjectId,
+            ref: 'User'
         },
         beeradvocate: {
             type: String

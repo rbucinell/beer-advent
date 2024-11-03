@@ -6,6 +6,11 @@ import { Avatar, Button, ButtonGroup, Paper, Skeleton, Stack, Typography} from '
 import { styled } from '@mui/material/styles';
 import { IUser } from "@/app/models/user";
 
+interface ParticipantItemProps {
+    participant: IParticipant;
+    user: IUser;
+}
+
 const Item = styled(Paper)(({ theme }) => ({
     backgroundColor: theme.palette.mode === 'dark' ? '#1A2027' : '#fff',
     ...theme.typography.body2,
@@ -14,18 +19,15 @@ const Item = styled(Paper)(({ theme }) => ({
     color: theme.palette.text.secondary,
   }));
 
-interface ParticipantItemProps {
+export default class AdminParticipantItem extends Component<ParticipantItemProps, {}> {
+
     participant: IParticipant;
     user: IUser;
-}
-
-export default class ParticipantItem extends Component<ParticipantItemProps, {}> {
     
-    constructor( participant:IParticipant, user:IUser) {
-        super({
-            participant: participant,
-            user: user
-        });
+    constructor( props:ParticipantItemProps ){
+        super(props);
+        this.participant = props.participant;
+        this.user = props.user;
     }
 
     render(): ReactNode {
@@ -44,7 +46,9 @@ export default class ParticipantItem extends Component<ParticipantItemProps, {}>
                     <Avatar src={this.props.user?.imageUrl} /> : 
                     <Skeleton variant="circular" width={40} height={40} animation={false} /> 
                 }
+                <Typography variant="h6">{this.props.participant.xmas?.toString()}</Typography>
                 <Typography variant="h6">{ParticipantName(this.props.participant)}</Typography>
+                
                 </Stack>
                 <Stack direction={'row'} spacing={2}>
                     <Avatar variant="rounded" sx={{ bgcolor: 'lightcoral' }}>{Math.min(...this.props.participant.days)}</Avatar>

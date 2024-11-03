@@ -3,7 +3,8 @@ import mongoose, {Schema, Types } from "mongoose";
 export interface IParticipant extends Document{
     _id: mongoose.Types.ObjectId;
     name: string;
-    xmas: string;
+    user: Types.ObjectId;
+    xmas: Types.ObjectId | null;
     days: number[];
     beers: string[];
     event: Types.ObjectId;
@@ -12,9 +13,16 @@ export interface IParticipant extends Document{
 export const participantSchema = new Schema<IParticipant>(
     {
         name:  String,
-        xmas:  String,
+        xmas: {
+            type: Schema.Types.ObjectId,
+            ref: 'Participant'
+        },
         days:  [Number],
         beers: [String],
+        user: {
+            type: Schema.Types.ObjectId,
+            ref: 'User'
+        },
         event: {
             type: Schema.Types.ObjectId,
             ref: 'Event'
