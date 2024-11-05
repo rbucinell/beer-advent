@@ -62,7 +62,7 @@ export async function POST( req:NextRequest ) {
         return new NextResponse( null, { status: 201 } );
     }catch( error ) {
         console.log( error );
-        return NextResponse.json({msg: ["Unable to create User. " + error] }, { status: 500 });
+        return NextResponse.json({msg: ["Unable to create User. " + error], error  }, { status: 500 });
     }
 }
 

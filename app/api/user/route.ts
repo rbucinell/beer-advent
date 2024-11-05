@@ -8,7 +8,7 @@ export async function GET( req:NextRequest ) {
         return NextResponse.json( await User.find() );
     }catch( error ) {
         console.log( error );
-        return NextResponse.json({msg: ["Unable to retrieve Users. " + error] }, { status: 500 });
+        return NextResponse.json({msg: ["Unable to retrieve Users. " + error], error  }, { status: 500 });
     }
 }
 
@@ -29,6 +29,6 @@ export async function POST( req:NextRequest ) {
         return new NextResponse( user, { status: 201 } );
     }catch( error ) {
         console.log( error );
-        return NextResponse.json({msg: ["Unable to create User. " + error] }, { status: 500 });
+        return NextResponse.json({msg: ["Unable to create User. " + error], error  }, { status: 500 });
     }
 }

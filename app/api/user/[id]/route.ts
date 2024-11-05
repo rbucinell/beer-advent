@@ -13,7 +13,7 @@ export async function GET( req:NextRequest ) {
         return NextResponse.json( user );
     }catch( error ) {
         console.log( error );
-        return NextResponse.json({msg: ["Unable to retrieve User. " + error] }, { status: 500 });
+        return NextResponse.json({msg: ["Unable to retrieve User. " + error], error  }, { status: 500 });
     }
 }
 
@@ -29,7 +29,7 @@ export async function DELETE( req:NextRequest ) {
         return new NextResponse( null, { status: 204 } );
     }catch( error ) {
         console.log( error );
-        return NextResponse.json({msg: ["Unable to delete User. " + error] }, { status: 500 });
+        return NextResponse.json({msg: ["Unable to delete User. " + error], error  }, { status: 500 });
     }
 }
 
@@ -50,6 +50,6 @@ export async function PUT( req:NextRequest ) {
         
     }catch( error ) {
         console.log( error );
-        return NextResponse.json({msg: ["Unable to user User. " + error] }, { status: 500 });
+        return NextResponse.json({msg: ["Unable to user User. " + error], error  }, { status: 500 });
     }
 }

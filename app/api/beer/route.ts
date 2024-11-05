@@ -14,7 +14,7 @@ export async function GET( req:NextRequest ) {
         return NextResponse.json(res)
     }catch( error ) {
         console.log( error );
-        return NextResponse.json({msg: ["Unable to send message"] });
+        return NextResponse.json({msg: ["Unable to send message"], error  }, { status: 500 });
     }
 }
 
@@ -53,7 +53,7 @@ export async function POST( req:NextRequest ) {
         let participantBeers = existingBeers.filter( b => b.user == user._id );
 
         if( participantBeers.length >= 2 ) {
-            return NextResponse.json({msg: ["User already submitted two beers"] });
+            return NextResponse.json({msg: ["User already submitted two beers"] , status: 400});
         }
 
         let newBeer = await Beer.create({
@@ -92,7 +92,7 @@ export async function POST( req:NextRequest ) {
         }
         else{
             console.log( error );
-            return NextResponse.json({msg: ["Unable to send message"] });
+            return NextResponse.json({msg: ["Unable to send message"], error  }, { status: 500 });
         }
     }
 }

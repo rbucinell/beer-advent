@@ -11,6 +11,6 @@ export async function GET( req:NextRequest ) {
         return NextResponse.json(event);
     }catch( error ) {
         console.log( error );
-        return NextResponse.json({msg: ["Unable to retrieve event config"] });
+        return NextResponse.json({msg: ["Unable to retrieve event from Id"], error }, { status: 500 });
     }
 }
