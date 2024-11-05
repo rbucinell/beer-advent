@@ -12,6 +12,6 @@ export async function GET( req:NextRequest ) {
         return NextResponse.json(participantResponse);
     }catch( error ) {
         console.log( error );
-        return NextResponse.json({msg: ["Unable to retrieve Participants"] });
+        return NextResponse.json({msg: ["Unable to retrieve Participants"], error  }, { status: 500 });
     }
 }
