@@ -17,17 +17,19 @@ const Item = styled(Paper)(({ theme }) => ({
     padding: theme.spacing(1),
     textAlign: "center",
     color: theme.palette.text.secondary,
-  }));
+}));
 
 const Btn = styled(Paper)(({ theme }) => ({
-    backgroundColor: theme.palette.mode === "dark" ? "#1A2027" : "#0000FF",
+    backgroundColor: theme.palette.mode === "dark" ? "#1A2027" : theme.palette.background.paper,
     ...theme.typography.body2,
     padding: theme.spacing(1),
     textAlign: "center",
-    color: theme.palette.text.secondary,
-  }));
+    color: theme.palette.text.secondary,    
+}));
 
 export default function History() {
+
+
 
     const [advent, setAdvent] = useState<IEvent|null>(null);
     const [participants, setParticipants] = useState<IParticipant[]>([]);
@@ -53,21 +55,32 @@ export default function History() {
     })(); 
   }, [] );
 
-  async function handleRegisterClick( e: React.MouseEvent<HTMLButtonElement> ) {
+  async function handleRegisterClick( e: React.MouseEvent ) {
     e.preventDefault();
-
     if( !user ) return;
     if( !advent ) return;
-    console.log(user);
     const res = await Post(`/api/event/${advent._id}/participant`, { user: user._id });
+  }
 
-    console.log("handleClick");
+  async function handleRollNumbersClick( e: React.MouseEvent ) {
+    e.preventDefault();
+    if( !advent ) return;
+    let participantResp = await Post(`/api/event/${advent._id}/roll`, {
+      days: true
+    });
+  }
+
+  async function handleRollSecretClick( e: React.MouseEvent ) {
+    e.preventDefault();
+    if( !advent ) return;
+    let participantResp = await Post(`/api/event/${advent._id}/roll`, {
+      xmas: true
+    });
   }
 
   return (
     <>
         <Box sx={{ width: '100%', overflow:'clip', bgcolor: 'background.paper', mb:2}}>
-            
             <Stack direction="row" spacing={2}>
                 <Typography>Register Who</Typography>
                 <Autocomplete sx={{ flexGrow: 1}} id="brewerName"  options={users.filter(u => !participants.find(p => p.user === u._id))} 
@@ -79,13 +92,24 @@ export default function History() {
                 <Button variant="outlined" onClick={handleRegisterClick}>Register</Button>
             </Stack>
         </Box>
+
+        <Stack sx={{mb: 2}} direction={'row'} spacing={1}>
+          <Btn sx={{bgcolor: "backgroundColor"}} className="text-xs" onClick={handleRollNumbersClick}>🎲 Roll Numbers</Btn>
+          <Btn sx={{bgcolor: "backgroundColor"}} className="text-xs" onClick={handleRollSecretClick}>🎅 Roll Secret Santa</Btn>  
+        </Stack>
+
         <Typography variant="h6">{user && `${user.firstName} ${user.lastName} (${user.email})`}</Typography>
         <Typography variant="h6">{advent?.name}🎄</Typography>
         <Box sx={{ width: '100%', bgcolor: 'background.paper' }}>
             <Stack>
                 {Array.from({ length: 12 }, (_, index) => {
                   return participants && participants[index] ? (
-                          <AdminParticipantItem key={index} participant={participants[index]} user={ users.find(u => u._id === participants[index].user) as IUser}/>
+                          <AdminParticipantItem 
+                            key={index} 
+                            participant={participants[index]} 
+                            user={ users.find(u => u._id === participants[index].user) as IUser}
+                            xmas={ participants.find(p => p._id === participants[index].xmas) as IParticipant}
+                          />
                       ) : (
                           <PendingItem key={index}/>
                       );

@@ -8,5 +8,6 @@ export function ParticipantName(p:IParticipant | null ): string {
 
 
 export function Capitalize( name:string): string {
+    if( !name ) return '';
     return name.substring(0,1).toUpperCase()+ name.substring(1);
 }

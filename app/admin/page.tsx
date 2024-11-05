@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { Box,List } from '@mui/material';
+import { Box,List, Typography } from '@mui/material';
 import { IBeer } from "@/app/models/beer";
 import BeerListItem from "@/components/Beer/BeerListItem";
 import TextField from '@mui/material/TextField';
@@ -36,6 +36,7 @@ export default function History() {
 
   return (
     <>
+      <Typography variant="h5">Admin</Typography>
       <Box sx={{ width: '100%', height:'90vh', overflow:'clip', bgcolor: 'background.paper' }}>
         <TextField 
           value={q} 
