@@ -35,6 +35,7 @@ export default function Home() {
   useEffect(() => {
     (async () => {
       let eventResp = await Get<IEvent>(`api/event?year=${new Date().getFullYear()}`);
+      console.log(eventResp);
       setAdvent(eventResp);
       let participantResp = await Get<IParticipant[]>(`api/participant?event=${eventResp._id}`);
       let participatingUsers: IUser[] = [];

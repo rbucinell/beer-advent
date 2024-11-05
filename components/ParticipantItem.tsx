@@ -21,11 +21,10 @@ interface ParticipantItemProps {
 
 export default class ParticipantItem extends Component<ParticipantItemProps, {}> {
     
-    constructor( participant:IParticipant, user:IUser) {
-        super({
-            participant: participant,
-            user: user
-        });
+    constructor( props:ParticipantItemProps ) {
+        super(props);
+        //this.participant = props.participant;
+        //  this.user = props.user;
     }
 
     render(): ReactNode {
