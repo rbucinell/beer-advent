@@ -7,10 +7,9 @@ import Beer, {IBeer} from '@/app/models/beer';
 import User from '@/app/models/user';
 
 export async function GET( req:NextRequest ) {
-    console.log( req.nextUrl.searchParams );
     try{
         await connectDB();
-        const res = await Beer.find({});
+        const res = await Beer.find( Object.fromEntries(req.nextUrl.searchParams) );
         return NextResponse.json(res)
     }catch( error ) {
         console.log( error );
