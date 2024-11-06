@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { Button, ButtonGroup, Stack, Typography } from "@mui/material";
+import { Alert, Stack, Typography } from "@mui/material";
 
 import ParticipantItem from "@/components/ParticipantItem";
 import { Get } from "./util/RequestHelper";
@@ -9,7 +9,7 @@ import { Get } from "./util/RequestHelper";
 import { IEvent } from "@/app/models/event";
 import { IParticipant } from "@/app/models/participant";
 import { IUser } from "@/app/models/user";
-import { DateRange, SortByAlpha } from "@mui/icons-material";
+import {  Directions } from "@mui/icons-material";
 import PendingItem from "@/components/PendingItem";
 
 type IData = {
@@ -39,26 +39,17 @@ export default function Home() {
     })();
   }, []);
 
-  function sortParticipantsAlpha(event: any) {
-    console.log("sortParticipantsAlpha");
-  }
-
-  function sortParticipantsDate(event: any) {
-    console.log("sortParticipantsDate");
-  }
-
   return (
     <div className="p-2 max-w-3xl mx-auto">
-      <Stack direction={"row"} spacing={2} justifyContent={"space-between"} flexDirection={"row-reverse"}>
-        <ButtonGroup sx={ { display: "none" }} size="small" variant="contained">
-        <Button id="sortByAlpha" onClick={sortParticipantsAlpha}>
-          <SortByAlpha />
-        </Button>
-        <Button id="sortByDate" onClick={sortParticipantsDate}>
-          <DateRange />
-        </Button>
-        </ButtonGroup>
+      <Stack marginBottom={1} direction={"row"} spacing={1} justifyContent={"space-between"} alignItems={"baseline"} flexDirection={"row-reverse"} flexWrap={"wrap"}>
+        { data?.event?.exchange?.date && new Date() <= new Date( data.event.exchange.date ) &&
+          
+          <a href={`https://maps.google.com/?q=${data.event.exchange.location.name}`} target="_blank" rel="noreferrer">
+            <Alert icon={<Directions fontSize="inherit" />} severity="info">{AbrvDate(data.event.exchange.date)} @ {data.event.exchange.location.name}</Alert>
+          </a>
+        }
         <Typography variant="h6">{data?.event?.name}🎄</Typography>
+
       </Stack>
       <Stack spacing={0.5}>
         {Array.from({ length: 12 }, (_, index) =>
@@ -73,4 +64,14 @@ export default function Home() {
       </Stack>
     </div>
   );
+}
+
+/**
+ * Given a date string, return a short version of the date
+ * @param {string} d date string
+ * @returns {string} short version of the date
+ */
+function AbrvDate( d: Date|string ) {
+  const date = new Date(d);
+  return `${date.getMonth() + 1}/${date.getDate()} - ${date.getHours().toString().padStart(2, '0')}:${date.getMinutes().toString().padStart(2, '0')}`;
 }
