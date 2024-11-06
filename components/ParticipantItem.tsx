@@ -4,7 +4,8 @@ import { ParticipantName } from "@/app/models/participant_util";
 import { Component, ReactNode } from "react";
 import { Avatar, Button, ButtonGroup, Paper, Skeleton, Stack, Typography} from '@mui/material';
 import { styled } from '@mui/material/styles';
-import { IUser } from "@/app/models/user";
+import User, { IUser } from "@/app/models/user";
+import UserAvatar from "@/components/UserAvatar";
 
 const Item = styled(Paper)(({ theme }) => ({
     backgroundColor: theme.palette.mode === 'dark' ? '#1A2027' : '#fff',
@@ -39,9 +40,7 @@ export default class ParticipantItem extends Component<ParticipantItemProps, {}>
             >
                  <Stack direction={'row'} spacing={2}>
                 {
-                    this.props.user?.imageUrl ? 
-                    <Avatar src={this.props.user?.imageUrl} /> : 
-                    <Skeleton variant="circular" width={40} height={40} animation={false} /> 
+                    <UserAvatar user={this.props.user} />
                 }
                 <Typography variant="h6">{ParticipantName(this.props.participant)}</Typography>
                 </Stack>

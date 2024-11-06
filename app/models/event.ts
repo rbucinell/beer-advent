@@ -4,13 +4,28 @@ export interface IEvent extends Document {
     _id: Types.ObjectId;
     name: string;
     year: number;
+
+    exchange: {
+        date: Date,
+        location: {
+            name: string;
+            address: string;
+        }
+    } | null;
 }
 
 const eventSchema = new Schema<IEvent>(
     {
         _id: mongoose.Types.ObjectId,
         name: String,
-        year: Number
+        year: Number,
+        exchange: {
+            date: Date,
+            location: {
+                name: String,
+                address: String
+            }
+        }
     },
     {
         collection: 'events'

@@ -46,7 +46,7 @@ export default function History() {
         { beers ? (
           <List sx={{ mb: 2}} style={{maxHeight: '100%', overflow: 'auto'}}>
             {search(beers).map( beer => 
-                <BeerListItem  key={`${beer.year}${beer.day}${beer.beer}`} {...beer}/>
+                <BeerListItem  key={`${beer.year}${beer.day}${beer.beer}`} beer={beer} admin={true}/>
             )}
           </List>
         ) : (<p>Loading...</p> )}

@@ -3,7 +3,7 @@
 import { Component } from "react";
 import Image from "next/image";
 import {IBeer} from "@/app/models/beer";
-import { Divider, IconButton, ListItem, ListItemIcon,ListItemText, Stack } from '@mui/material';
+import { Box, Container, Divider, IconButton, ListItem, ListItemIcon,ListItemText, Stack } from '@mui/material';
 // import { Capitalize, ParticipantName } from "@/app/models/participant_util";
 import CalendarWithBadge from "../CalendarWithBadge";
 
@@ -21,29 +21,47 @@ class BeerButton extends Component<IBeerButton> {
   }
 }
 
-export default class BeerListItem extends Component<IBeer>{
-    constructor( props:IBeer ){
+interface IBeerListItemProps{
+  beer:IBeer
+  admin?:boolean
+}
+
+export default class BeerListItem extends Component<IBeerListItemProps>{
+  
+  beer:IBeer;
+  admin:boolean;
+
+  constructor( props:IBeerListItemProps ){
         super(props);
+        this.beer = props.beer;
+        this.admin = props.admin || false;
     }
 
     beerWithABV() {
-      return `${this.props.beer} ${this.props.abv ? `[${this.props.abv}% ABV]` : ''}`;
+      return `${this.beer.beer} ${this.beer.abv ? `[${this.beer.abv}% ABV]` : ''}`;
+    }
+
+    blurred(){
+      return !(this.admin || this.beer.state !== 'pending');
     }
 
     render() {
       return (<>
-        <ListItem sx={{ background: `${ this.props.state ==='pending'? 'lightgreen' : ''}`}}>
+        <ListItem sx={{ background: `${ this.beer.state ==='pending'? 'lightgreen' : ''}`}}>
           <ListItemIcon>
-            <CalendarWithBadge num={this.props.year}/>
+            <CalendarWithBadge num={this.beer.year}/>
           </ListItemIcon>
-          <ListItemText primary={this.beerWithABV()} secondary={this.props.brewer}/>
-          {/* <span>{Capitalize(this.props.person)}</span> */}
-          <Stack direction={"row"}>          
-            {this.props.beeradvocate ? <BeerButton url={this.props.beeradvocate} source="beeradvocate" /> : null}
-            {this.props.untappd ?      <BeerButton url={this.props.untappd}      source="untappd" /> : null}
-          </Stack>
+          <ListItemText primary={this.beerWithABV()} secondary={this.beer.brewer} 
+            sx={{ filter: this.blurred() ? 'blur(5px)': 'inherit', 
+                  color: this.blurred() ? 'transparent':'inherit',
+                  userSelect: this.blurred() ? 'none':'inherit'}}/>
+            {/* <span>{Capitalize(this.beer.person)}</span> */}
+            <Stack direction={"row"} display={ this.blurred() ? 'none':'flex' } >          
+              {this.beer.beeradvocate ? <BeerButton url={this.beer.beeradvocate} source="beeradvocate" /> : null}
+              {this.beer.untappd ?      <BeerButton url={this.beer.untappd}      source="untappd" /> : null}
+            </Stack>
         </ListItem>
-        <Divider key={`${this.props.year}${this.props.day}${this.props.beer}-divider`} variant="middle" component="li" color="black" />
+        <Divider key={`${this.beer.year}${this.beer.day}${this.beer.beer}-divider`} variant="middle" component="li" color="black" />
       </>);        
     }
 }
