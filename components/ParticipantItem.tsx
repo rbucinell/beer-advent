@@ -22,10 +22,19 @@ interface ParticipantItemProps {
 
 export default class ParticipantItem extends Component<ParticipantItemProps, {}> {
     
+    firstDay:number = 0;
+    lastDay: number = 0;
+
     constructor( props:ParticipantItemProps ) {
         super(props);
-        //this.participant = props.participant;
-        //  this.user = props.user;
+        this.firstDay = Math.min(...props.participant.days);
+        this.lastDay = Math.max(...props.participant.days);
+    }
+
+    isAdventDay( day:number ){
+        const today = new Date();
+        console.log('today', today.getMonth() + 1, today.getDate());
+        return today.getMonth() + 1 === 12 && today.getDate() === day;
     }
 
     render(): ReactNode {
@@ -45,8 +54,8 @@ export default class ParticipantItem extends Component<ParticipantItemProps, {}>
                 <Typography variant="h6">{ParticipantName(this.props.participant)}</Typography>
                 </Stack>
                 <Stack direction={'row'} spacing={2}>
-                    <Avatar variant="rounded" sx={{ bgcolor: 'lightcoral' }}>{Math.min(...this.props.participant.days)}</Avatar>
-                    <Avatar variant="rounded" sx={{ bgcolor: 'lightcoral' }}>{Math.max(...this.props.participant.days)}</Avatar>
+                    <Avatar variant="rounded" sx={{ bgcolor: 'lightcoral', border: this.isAdventDay(this.firstDay) ? '4px solid green' : 'none' }}>{this.firstDay}</Avatar>
+                    <Avatar variant="rounded" sx={{ bgcolor: 'lightcoral', border: this.isAdventDay(this.lastDay)  ? '4px solid green' : 'none' }}>{this.lastDay}</Avatar>
                 </Stack>
             </Item>
         );
