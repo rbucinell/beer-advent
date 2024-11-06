@@ -15,11 +15,12 @@ export default class UserAvatar extends Component<IUserAvatarProps, {}> {
     }
 
     render(): ReactNode {
-        return (!this.props.user?.imageUrl ? 
-            <Skeleton variant="circular" width={40} height={40} animation={false} />:
-            
+        return( 
             <Link href={`/user/${this.props.user._id}`} >
-                <Avatar src={this.props.user?.imageUrl} sx={this.props?.sx } />
-            </Link>)
+                {!this.props.user?.imageUrl ? 
+                    <Skeleton variant="circular" width={40} height={40} animation={false} sx={{":hover": { border: "2px solid lightcoral" }}} />:
+                    <Avatar src={this.props.user?.imageUrl} sx={{...this.props?.sx, ":hover": { border: "2px solid lightcoral" }}}/>
+                }
+            </Link>);
     }
 }
