@@ -5,7 +5,7 @@ import { Component, ReactNode } from "react";
 
 interface IUserAvatarProps {
     user: IUser
-    sx: any
+    sx?: any
 }
 
 export default class UserAvatar extends Component<IUserAvatarProps, {}> {
@@ -19,7 +19,7 @@ export default class UserAvatar extends Component<IUserAvatarProps, {}> {
             <Skeleton variant="circular" width={40} height={40} animation={false} />:
             
             <Link href={`/user/${this.props.user._id}`} >
-                <Avatar src={this.props.user?.imageUrl} sx={this.props.sx } />
+                <Avatar src={this.props.user?.imageUrl} sx={this.props?.sx } />
             </Link>)
     }
 }
