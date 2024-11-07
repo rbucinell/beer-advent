@@ -5,14 +5,11 @@
  * @returns {Promise<T>} A Promise of type T
  */
 export async function Get<T>( url:string ): Promise<T> {
-    console.debug(`GET: ${url}`)
     return new Promise<T>( async (resolve, reject) => {
         try {
             const response = await fetch( url, { method: 'GET' });
-            console.log(response);
             if( response.ok ) {
                 const result = await <T>response.json();
-                console.debug(result);
                 resolve(result);
             }
             else{
