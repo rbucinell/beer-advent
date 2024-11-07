@@ -20,7 +20,7 @@ const eventSchema = new Schema<IEvent>(
         name: String,
         year: Number,
         exchange: {
-            date: Date,
+            date: mongoose.Schema.Types.Date,
             location: {
                 name: String,
                 address: String

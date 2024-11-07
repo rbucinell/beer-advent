@@ -71,7 +71,7 @@ export default function Home() {
  * @param {string} d date string
  * @returns {string} short version of the date
  */
-function AbrvDate( d: Date|string ) {
+function AbrvDate( d: Date ) {
   const date = new Date(d);
   return `${date.getMonth() + 1}/${date.getDate()} - ${date.getHours().toString().padStart(2, '0')}:${date.getMinutes().toString().padStart(2, '0')}`;
 }

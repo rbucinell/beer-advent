@@ -6,7 +6,6 @@ export async function GET( req:NextRequest ) {
     try{
         await connectDB();
         const year = req.nextUrl.searchParams.get('year') || (new Date()).getFullYear();
-        console.log( `year: ${year}` );
         const res = await Event.findOne({ year });
         return NextResponse.json(res);
     }catch( error ) {
