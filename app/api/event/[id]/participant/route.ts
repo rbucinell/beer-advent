@@ -42,8 +42,8 @@ export async function POST( req:NextRequest ) {
             name: user.firstName + ' ' + user.lastName, 
             user: user,
             xmas: null,
-            days: [null, null],
-            beers: [null, null]
+            days: [],
+            beers: []
         } );
 
 

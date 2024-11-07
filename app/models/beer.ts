@@ -13,7 +13,7 @@ export interface IBeer extends Document {
     user: Types.ObjectId;
     beeradvocate: string;
     untappd: string;
-    state: string;
+    state: "pending" | "complete";
 }
 
 const beerSchema = new Schema<IBeer>(
