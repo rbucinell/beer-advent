@@ -49,12 +49,12 @@ export default class ParticipantItem extends Component<ParticipantItemProps, {}>
                     this.dayBeers.map( daybeer => {
                         if( daybeer.beer ){
                             return (
-                            <Badge overlap="circular" anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }} badgeContent={<SportsBarIcon fontSize="small" sx={{ color: '#333333' }} />}>
+                            <Badge key={daybeer.day} overlap="circular" anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }} badgeContent={<SportsBarIcon fontSize="small" sx={{ color: '#333333' }} />}>
                                 <Avatar variant="rounded" sx={{ bgcolor: 'lightcoral', border: this.isAdventDay(daybeer.day)  ? '4px solid green' : 'none' }}>{daybeer.day}</Avatar>
                             </Badge>);
                         }
                         else{
-                            return(<Avatar variant="rounded" sx={{ bgcolor: 'lightcoral', border: this.isAdventDay(daybeer.day) ? '4px solid green' : 'none' }}>{daybeer.day}</Avatar>);
+                            return(<Avatar key={daybeer.day} variant="rounded" sx={{ bgcolor: 'lightcoral', border: this.isAdventDay(daybeer.day) ? '4px solid green' : 'none' }}>{daybeer.day}</Avatar>);
                         }
                     })
                 }
