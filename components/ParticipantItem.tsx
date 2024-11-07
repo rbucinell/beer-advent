@@ -2,18 +2,12 @@
 import { IParticipant } from "@/app/models/participant";
 import { ParticipantName } from "@/app/models/participant_util";
 import { Component, ReactNode } from "react";
-import { Avatar, Button, ButtonGroup, Paper, Skeleton, Stack, Typography} from '@mui/material';
-import { styled } from '@mui/material/styles';
+import { Avatar, Badge, Stack, Typography} from '@mui/material';
+import SportsBarIcon from '@mui/icons-material/SportsBar';
 import User, { IUser } from "@/app/models/user";
 import UserAvatar from "@/components/UserAvatar";
-
-const Item = styled(Paper)(({ theme }) => ({
-    backgroundColor: theme.palette.mode === 'dark' ? '#1A2027' : '#fff',
-    ...theme.typography.body2,
-    padding: theme.spacing(1),
-    textAlign: 'center',
-    color: theme.palette.text.secondary,
-  }));
+import { Types } from "mongoose";
+import ListItem from "@/components/ListItem";
 
 interface ParticipantItemProps {
     participant: IParticipant;
@@ -21,43 +15,51 @@ interface ParticipantItemProps {
 }
 
 export default class ParticipantItem extends Component<ParticipantItemProps, {}> {
-    
-    firstDay:number = 0;
-    lastDay: number = 0;
+
+    dayBeers:{ day:number, beer:Types.ObjectId|null}[];
 
     constructor( props:ParticipantItemProps ) {
         super(props);
-        this.firstDay = Math.min(...props.participant.days);
-        this.lastDay = Math.max(...props.participant.days);
+        const beers = props.participant.beers.filter( _ => _ != null );
+        this.dayBeers = [...props.participant.days].map( day => { return { day, beer: null } } );
+        for( let i=0; i<beers.length; i++ ){
+            this.dayBeers[i].beer = beers[i];
+        }
+        this.dayBeers.sort( (a,b) => a.day - b.day );
     }
 
     isAdventDay( day:number ){
         const today = new Date();
-        console.log('today', today.getMonth() + 1, today.getDate());
         return today.getMonth() + 1 === 12 && today.getDate() === day;
     }
 
     render(): ReactNode {
         return(
-            <Item key={this.props.participant._id.toString()} 
-                sx={{ 
-                    display: "flex", 
-                    flexDirection:'row', 
-                    alignItems: 'center',
-                    justifyContent: 'space-between',
-                }}
-            >
+            <ListItem>
                  <Stack direction={'row'} spacing={2}>
                 {
                     <UserAvatar user={this.props.user} />
                 }
                 <Typography variant="h6">{ParticipantName(this.props.participant)}</Typography>
                 </Stack>
+                
                 <Stack direction={'row'} spacing={2}>
-                    <Avatar variant="rounded" sx={{ bgcolor: 'lightcoral', border: this.isAdventDay(this.firstDay) ? '4px solid green' : 'none' }}>{this.firstDay}</Avatar>
-                    <Avatar variant="rounded" sx={{ bgcolor: 'lightcoral', border: this.isAdventDay(this.lastDay)  ? '4px solid green' : 'none' }}>{this.lastDay}</Avatar>
-                </Stack>
-            </Item>
+
+                {
+                    this.dayBeers.map( daybeer => {
+                        if( daybeer.beer ){
+                            return (
+                            <Badge overlap="circular" anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }} badgeContent={<SportsBarIcon fontSize="small" sx={{ color: '#333333' }} />}>
+                                <Avatar variant="rounded" sx={{ bgcolor: 'lightcoral', border: this.isAdventDay(daybeer.day)  ? '4px solid green' : 'none' }}>{daybeer.day}</Avatar>
+                            </Badge>);
+                        }
+                        else{
+                            return(<Avatar variant="rounded" sx={{ bgcolor: 'lightcoral', border: this.isAdventDay(daybeer.day) ? '4px solid green' : 'none' }}>{daybeer.day}</Avatar>);
+                        }
+                    })
+                }
+                </Stack> 
+            </ListItem>
         );
     }
 }

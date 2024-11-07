@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { Alert, Stack, Typography } from "@mui/material";
-
+import SportsBarIcon from '@mui/icons-material/SportsBar';
 import ParticipantItem from "@/components/ParticipantItem";
 import { Get } from "./util/RequestHelper";
 
@@ -62,6 +62,7 @@ export default function Home() {
           )
         )}
       </Stack>
+      <Typography variant="caption"><SportsBarIcon fontSize="small" sx={{ color: '#333333' }} /> = Beer Submitted</Typography>
     </div>
   );
 }
