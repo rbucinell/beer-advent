@@ -42,8 +42,7 @@ export async function POST( req:NextRequest ) {
                 beer:existingBeer,
             }
         });
-        comparisons.sort( (a,b) => b.beerSimilarity - a.beerSimilarity );
-        
+        comparisons.sort( (a,b) => b.beerSimilarity - a.beerSimilarity );        
         const closestComp:IBeer = comparisons[0].beer;
         if( Math.max(...comparisons.map( b => b.beerSimilarity)) >= .85)
         {
@@ -56,12 +55,10 @@ export async function POST( req:NextRequest ) {
             }
         }
 
-
         //Create Beer
         beer.person = participant.name;
         beer.user = user._id;
         beer.day = participant.days[participant.beers.length];
-
         const created = await Beer.create( beer );
 
         //Update Participant
@@ -73,34 +70,6 @@ export async function POST( req:NextRequest ) {
             updatingParticipant.beers = participantBeers;
             await updatingParticipant.save();
         }
-
-
-        
-        
-
-
-
-
-        // let newBeer = await Beer.create({
-        //     ...json,
-        //     state: 'pending',
-        //     user: user._id,
-        //     year: new Date().getFullYear(),
-        //     day: participant.days[participantBeers.length],
-        //     person: participant.name
-        // });
-        
-        // const today = new Date();
-        // beer.year = today.getFullYear();
-        // beer.day = participant.days[participantBeers.length];
-        
-        // beer.person = participant.name;
-        // //todo: fix day here
-        
-        // await Beer.create({...json, state: 'pending'});
-
-        //participant.beers.push( beer.beer )
-        //await Participant.findByIdAndUpdate( participant._id, { beers: participant.beers });
         
         return NextResponse.json({ msg: ["Beer submitted successfully"], success: true }, { status: 201} );
     }
