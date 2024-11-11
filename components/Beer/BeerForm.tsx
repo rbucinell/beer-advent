@@ -6,6 +6,7 @@ import { ParticipantName } from "@/app/models/participant_util";
 import { IUser } from "@/app/models/user";
 import { Get } from "@/app/util/RequestHelper";
 import { Autocomplete, Button, Grid, TextField, TextFieldVariants, Typography } from "@mui/material";
+import SearchIcon from '@mui/icons-material/Search';
 import { ChangeEvent, useEffect, useState } from "react";
 
 interface BeerData {
@@ -38,7 +39,7 @@ export default function BeerForm() {
   const [beer, setBeer]                 = useState<BeerData>(initBeer);
   const [participant, setParticipant]   = useState<IParticipant|null>();
   const [participants, setParticipants] = useState<IParticipant[]>([]);
-  const [error, setError]               = useState([]);
+  const [error, setError]               = useState<string[]|null>([]);
   const [success, setSuccess]           = useState(false);
   
   useEffect(() => {
@@ -50,6 +51,23 @@ export default function BeerForm() {
     })();
 
   }, []);
+
+  const checkBeer = async () => {
+    const res = await fetch(`/api/beer/check?beer=${beer.beer}&brewer=${beer.brewer}`);
+    const similarityValidation = await res.json();
+    console.log( similarityValidation );
+    if( similarityValidation.isTooSimilar ){
+      const closest = similarityValidation.beer;
+      setError([
+        `"${beer.beer}" by ${beer.brewer}. Too close to "${closest?.beer}" by ${closest?.brewer}. Please tell, text Ryan if this is not correct.`
+      ])
+      setSuccess(false);
+    }
+    else{
+      setError(["No conflicting beers found"]);
+      setSuccess(true);
+    }
+  }
 
   const handleSubmit = async ( e: React.FormEvent<HTMLFormElement> ) => {
     e.preventDefault();
@@ -82,7 +100,10 @@ export default function BeerForm() {
       fullWidth
       variant={variant}
       value={ beer[target] }
-      onChange={(e: ChangeEvent<HTMLInputElement>) => setBeer({ ...beer, [e.target.name]: e.target.value })}
+      onChange={(e: ChangeEvent<HTMLInputElement>) => {
+        setBeer({ ...beer, [e.target.name]: e.target.value });
+        setError(null);
+      }}
     />)
   };
   
@@ -107,7 +128,10 @@ export default function BeerForm() {
           <Grid item xs={12}> {StandardTextField( 'beeradvocate', "Beer Advocate URL", "text", false)}</Grid>
           <Grid item xs={12}> {StandardTextField( 'untappd', "Untappd URL", "text", false)}</Grid>
           <Grid item xs={12}>
-            <Button className="bg-blue-600 mx-1" variant="contained" type="submit">Submit</Button>
+            <Button className="bg-blue-600 mx-1" variant="contained" type="submit" color="primary" disabled={!beer.beer || !beer.brewer || !participant} >Submit</Button>
+            <Button className="bg-orange-600 mx-1" variant="contained" type="button" color="warning" disabled={!beer.beer} onClick={checkBeer}>
+              < SearchIcon />Check
+            </Button>
             <Button variant="outlined" type="button" onClick={clearForm}>Clear</Button>
           </Grid>       
         </Grid>

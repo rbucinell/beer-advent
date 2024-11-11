@@ -1,10 +1,10 @@
 import mongoose, { Types } from 'mongoose';
 import connectDB from '@/app/lib/mongodb';
 import { NextRequest, NextResponse } from "next/server";
-import jaroWinkler from 'jaro-winkler';
 import Participant, {IParticipant} from '@/app/models/participant';
 import Beer, {IBeer} from '@/app/models/beer';
 import User from '@/app/models/user';
+import { beerTooSimilar } from '@/app/util/BeerProximity';
 
 export async function GET( req:NextRequest ) {
     try{
@@ -32,27 +32,12 @@ export async function POST( req:NextRequest ) {
             return NextResponse.json({msg: ["User already submitted two beers"] , status: 400});
         }
 
-        //Beer is too similar to an existing beer
-        const existingBeers:IBeer[] = await Beer.find();
-        const comparisons = existingBeers.map( (existingBeer:IBeer) => {
-            return { 
-                beerSimilarity:jaroWinkler(existingBeer.beer || '', beer.beer || ''),
-                brewerSimiliatriy: jaroWinkler(existingBeer.brewer || '', beer.brewer || ''),
-                beerAdvocateSimiliatriy: jaroWinkler(existingBeer.beeradvocate || '', beer.beeradvocate || ''),
-                beer:existingBeer,
-            }
-        });
-        comparisons.sort( (a,b) => b.beerSimilarity - a.beerSimilarity );        
-        const closestComp:IBeer = comparisons[0].beer;
-        if( Math.max(...comparisons.map( b => b.beerSimilarity)) >= .85)
-        {
-            if( Math.max(...comparisons.map( b => b.brewerSimiliatriy)) >= .65 )
-            {
-                return NextResponse.json({
-                    error:true, 
-                    msg: [`"${beer.beer}" by ${beer.brewer}. Too close to "${ closestComp.beer}" by ${ closestComp.brewer}. Please tell, text Ryan if this is not correct.`]
-                });
-            }
+        const beerSimilarity = await beerTooSimilar(beer.beer, beer.brewer);
+        if( beerSimilarity.isTooSimilar ) {
+            return NextResponse.json({
+                error:true, 
+                msg: [`"${beer.beer}" by ${beer.brewer}. Too close to "${ beerSimilarity.beer?.beer}" by ${ beerSimilarity.beer?.brewer}. Please tell, text Ryan if this is not correct.`]
+            });
         }
 
         //Create Beer
