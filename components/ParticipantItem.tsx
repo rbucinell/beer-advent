@@ -55,7 +55,7 @@ export default class ParticipantItem extends Component<ParticipantItemProps, {}>
                             </Badge>);
                         }
                         else{
-                            return(<DayIcon day={daybeer.day} sx={{border: this.isAdventDay(daybeer.day)? '4px solid green' : 'none' }} />);
+                            return(<DayIcon key={daybeer.day} day={daybeer.day} sx={{border: this.isAdventDay(daybeer.day)? '4px solid green' : 'none' }} />);
                         }
                     })
                 }
