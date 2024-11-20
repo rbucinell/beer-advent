@@ -5,6 +5,7 @@ import { Component, ReactNode } from "react";
 import { Avatar, AvatarGroup, Button, Stack, Typography} from '@mui/material';
 import { IUser } from "@/app/models/user";
 import ListItem from "@/components/ListItem";
+import DayIcon from "@/components/DayIcon";
 
 interface ParticipantItemProps {
     participant: IParticipant;
@@ -41,8 +42,8 @@ export default class AdminParticipantItem extends Component<ParticipantItemProps
                 </Stack>
                 <Stack direction={'row'} spacing={1}>                    
                     <AvatarGroup>
-                        <Avatar variant="circular" sx={{ fontSize: 20 , width: 36, height: 36, bgcolor: 'lightcoral' }}>{Math.min(...this.props.participant.days)}</Avatar>
-                        <Avatar variant="circular" sx={{ fontSize: 20 , width: 36, height: 36, bgcolor: 'lightcoral' }}>{Math.max(...this.props.participant.days)}</Avatar>
+                        <DayIcon day={Math.min(...this.props.participant.days)} variant="circular" />
+                        <DayIcon day={Math.max(...this.props.participant.days)} variant="circular" />
                     </AvatarGroup>
                     <Button type="button" variant="outlined" onClick={this.handleSummaryClick.bind(this)}>Summary</Button>
                 </Stack>

@@ -1,13 +1,11 @@
 import connectDB from '@/app/lib/mongodb';
-import User from '@/app/models/user';   
-import mongoose from 'mongoose';
+import User from '@/app/models/user';
 import { NextRequest, NextResponse } from "next/server";
-import { use } from 'react';
 
-export async function GET( req:NextRequest ) {
+export async function GET( req:NextRequest, route: { params: { id: string} } ) {
     try {
         await connectDB();
-        const id = req.nextUrl.pathname.split('/').pop();
+        const {id} = route.params;
         const user = await User.findById( id );
         if( !user ) return NextResponse.json( { msg: ["User not found"] }, { status: 404 } );
         return NextResponse.json( user );
@@ -17,10 +15,10 @@ export async function GET( req:NextRequest ) {
     }
 }
 
-export async function DELETE( req:NextRequest ) {
+export async function DELETE( req:NextRequest, route: { params: { id: string} } ) {
     try {
         await connectDB();
-        const id = req.nextUrl.pathname.split('/').pop();
+        const {id} = route.params;
         const user = await User.findById( id );
         if( !user ) return NextResponse.json( { msg: ["User not found"] }, { status: 404 } );
         if( user.deleted ) return NextResponse.json( { msg: ["User already deleted"] }, { status: 400 } );
@@ -33,10 +31,10 @@ export async function DELETE( req:NextRequest ) {
     }
 }
 
-export async function PUT( req:NextRequest ) {
+export async function PUT( req:NextRequest, route: { params: { id: string} } ) {
     try {
         await connectDB();
-        const id = req.nextUrl.pathname.split('/').pop();
+        const {id} = route.params;
         const user = await User.findById( id );
         if( !user ) return NextResponse.json( { msg: ["User not found"] }, { status: 404 } );
         const json = await req.json();

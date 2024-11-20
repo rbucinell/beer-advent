@@ -8,6 +8,7 @@ import User, { IUser } from "@/app/models/user";
 import UserAvatar from "@/components/UserAvatar";
 import { Types } from "mongoose";
 import ListItem from "@/components/ListItem";
+import DayIcon from "./DayIcon";
 
 interface ParticipantItemProps {
     participant: IParticipant;
@@ -50,11 +51,11 @@ export default class ParticipantItem extends Component<ParticipantItemProps, {}>
                         if( daybeer.beer ){
                             return (
                             <Badge key={daybeer.day} overlap="circular" anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }} badgeContent={<SportsBarIcon fontSize="small" sx={{ color: '#333333' }} />}>
-                                <Avatar variant="rounded" sx={{ bgcolor: 'lightcoral', border: this.isAdventDay(daybeer.day)  ? '4px solid green' : 'none' }}>{daybeer.day}</Avatar>
+                                <DayIcon day={daybeer.day} sx={{border: this.isAdventDay(daybeer.day)? '4px solid green' : 'none'}} />
                             </Badge>);
                         }
                         else{
-                            return(<Avatar key={daybeer.day} variant="rounded" sx={{ bgcolor: 'lightcoral', border: this.isAdventDay(daybeer.day) ? '4px solid green' : 'none' }}>{daybeer.day}</Avatar>);
+                            return(<DayIcon day={daybeer.day} sx={{border: this.isAdventDay(daybeer.day)? '4px solid green' : 'none' }} />);
                         }
                     })
                 }

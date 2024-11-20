@@ -11,6 +11,7 @@ const Item = styled(Paper)(({ theme }) => ({
   }));
 
   type Props = {
+    sx?: any
     children: ReactNode
   }
 
@@ -31,6 +32,7 @@ const Item = styled(Paper)(({ theme }) => ({
                     flexDirection:'row', 
                     alignItems: 'center',
                     justifyContent: 'space-between',
+                    ...this.props.sx
                 }}
             >
                 {this.props.children}

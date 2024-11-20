@@ -9,7 +9,7 @@ import { Get } from "./util/RequestHelper";
 import { IEvent } from "@/app/models/event";
 import { IParticipant } from "@/app/models/participant";
 import { IUser } from "@/app/models/user";
-import {  Directions } from "@mui/icons-material";
+import { Directions } from "@mui/icons-material";
 import PendingItem from "@/components/PendingItem";
 
 type IData = {
