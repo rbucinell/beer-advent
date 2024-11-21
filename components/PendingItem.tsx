@@ -1,15 +1,7 @@
 import React from "react";
-import { Avatar, Paper, Stack, Typography} from '@mui/material';
-import { styled } from '@mui/material/styles';
+import { Stack, Typography } from '@mui/material';
 import DayIcon from "./DayIcon";
-
-const Item = styled(Paper)(({ theme }) => ({
-    backgroundColor: theme.palette.mode === 'dark' ? '#1A2027' : '#fff',
-    ...theme.typography.body2,
-    padding: theme.spacing(1),
-    textAlign: 'center',
-    color: theme.palette.text.secondary,
-  }));
+import Item from "@/components/Item";
 
 export default class PendingItem extends React.Component {
     

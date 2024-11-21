@@ -2,7 +2,7 @@
 import { IParticipant } from "@/app/models/participant";
 import { ParticipantName } from "@/app/models/participant_util";
 import { Component, ReactNode } from "react";
-import { Avatar, AvatarGroup, Button, IconButton, Stack, Typography} from '@mui/material';
+import { Button, IconButton, Stack, Typography} from '@mui/material';
 import { SwapVert, Textsms, Delete } from "@mui/icons-material";
 import { IUser } from "@/app/models/user";
 import ListItem from "@/components/ListItem";
@@ -33,10 +33,7 @@ export default class AdminBeerManagementItem extends Component<ParticipantItemPr
 
     setBeerState( beerIds:Types.ObjectId[] ){
         this.getBeers( beerIds )
-            .then( beers => {
-                console.log( beers.map( b => b.beer).join(',') );
-                this.setState( this.beers = beers );
-        });
+            .then( beers => this.setState( this.beers = beers ));
     }
 
     componentDidMount(): void {
@@ -48,7 +45,6 @@ export default class AdminBeerManagementItem extends Component<ParticipantItemPr
     }
 
     componentDidUpdate(prevProps: Readonly<ParticipantItemProps>, prevState: Readonly<{}>, snapshot?: any): void {
-        console.log( 'componentDidUpdate', prevProps, prevState, snapshot);
         if( prevProps.participant !== this.props.participant ){
             this.setBeerState(this.props.participant.beers);
         }
@@ -81,9 +77,10 @@ export default class AdminBeerManagementItem extends Component<ParticipantItemPr
         this.setBeerState( this.participant.beers );
     }
 
-    removeBeer = ( e:React.MouseEvent, beer:IBeer) => {
-        console.log( this, e, this.participant._id, beer._id );
+    removeBeer = async ( e:React.MouseEvent, beer:IBeer) => {
         e.preventDefault();
+        const response = await fetch(`/api/participant/${this.participant._id}/beers/${beer._id}`, { method: 'DELETE' });
+        //todo: update participant state
     }
 
     render(): ReactNode {
@@ -101,7 +98,7 @@ export default class AdminBeerManagementItem extends Component<ParticipantItemPr
                                     <IconButton type="button" size="small" sx={{ outline: '1px solid'}} onClick={(e) => this.removeBeer(e,this.beers[0])}>
                                         <Delete fontSize="small" />
                                     </IconButton>
-                                    <Typography>{this.beers[0].beer}</Typography>
+                                    <Typography>{this.beers[0].beer}{this.beers[0].brewer}</Typography>
                                 </Stack>
                             )}
                             <DayIcon day={Math.min(...this.props.participant.days)} />
@@ -113,7 +110,7 @@ export default class AdminBeerManagementItem extends Component<ParticipantItemPr
                                     <IconButton type="button"  size="small" sx={{ outline: '1px solid'}} onClick={(e) => this.removeBeer(e, this.beers[1])}>
                                         <Delete fontSize="small" />
                                     </IconButton>
-                                    <Typography>{this.beers[1].beer}</Typography>
+                                    <Typography>{this.beers[1].beer}{this.beers[1].brewer}</Typography>
                                 </Stack>
                             )}
                              <DayIcon day={Math.max(...this.props.participant.days)} />

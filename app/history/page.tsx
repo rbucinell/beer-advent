@@ -16,7 +16,7 @@ export default function History() {
   useEffect(() => {
     (async () => { 
       let beers:IBeer[] = await Get<IBeer[]>('api/beer');
-      beers = beers.filter<IBeer>( (b): b is IBeer => b.state !== "pending" );
+      //beers = beers.filter<IBeer>(( (b): b is IBeer => b.state !== "pending" ));
       setBeers( beers ); 
     })(); 
   }, [] );

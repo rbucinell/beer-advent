@@ -12,6 +12,8 @@ export interface IEvent extends Document {
             address: string;
         }
     } | null;
+
+    rules: string[]|null;
 }
 
 const eventSchema = new Schema<IEvent>(
@@ -25,7 +27,8 @@ const eventSchema = new Schema<IEvent>(
                 name: String,
                 address: String
             }
-        }
+        },
+        rules: [String]
     },
     {
         collection: 'events'

@@ -1,8 +1,9 @@
 "use client";
+
 import { IParticipant } from "@/app/models/participant";
 import { ParticipantName } from "@/app/models/participant_util";
 import { Component, ReactNode } from "react";
-import { Avatar, Badge, Stack, Typography} from '@mui/material';
+import { Badge, Stack, Typography} from '@mui/material';
 import SportsBarIcon from '@mui/icons-material/SportsBar';
 import User, { IUser } from "@/app/models/user";
 import UserAvatar from "@/components/UserAvatar";
