@@ -98,8 +98,8 @@ export default class AdminBeerManagementItem extends Component<ParticipantItemPr
                                     <IconButton type="button" size="small" sx={{ outline: '1px solid'}} onClick={(e) => this.removeBeer(e,this.beers[0])}>
                                         <Delete fontSize="small" />
                                     </IconButton>
-                                    <Typography>{this.beers[0].beer}{this.beers[0].brewer}</Typography>
-                                </Stack>
+                                    <Typography>{this.beers[0].beer}. {this.beers[0].brewer}</Typography>
+                                </Stack>    
                             )}
                             <DayIcon day={Math.min(...this.props.participant.days)} />
                         </Stack>
@@ -110,7 +110,7 @@ export default class AdminBeerManagementItem extends Component<ParticipantItemPr
                                     <IconButton type="button"  size="small" sx={{ outline: '1px solid'}} onClick={(e) => this.removeBeer(e, this.beers[1])}>
                                         <Delete fontSize="small" />
                                     </IconButton>
-                                    <Typography>{this.beers[1].beer}{this.beers[1].brewer}</Typography>
+                                    <Typography>{this.beers[1].beer}. {this.beers[1].brewer}</Typography>
                                 </Stack>
                             )}
                              <DayIcon day={Math.max(...this.props.participant.days)} />
