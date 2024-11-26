@@ -4,26 +4,37 @@ import Participant from '@/app/models/participant';
 import User from '@/app/models/user';
 import { NextRequest, NextResponse } from "next/server";
 
-export async function POST( req:NextRequest ) {
+export async function GET( req:NextRequest, route: { params: { eventId: string }} ) {
     try {
+        const { eventId } = route.params;
+        console.log( "[GET] Event get participants: event id: " + eventId );
+        await connectDB();
+        const event = await Event.findById( eventId );
+        const participantResponse = await Participant.find({ event });
+        return NextResponse.json(participantResponse);
+    }catch( error ) {
+        console.log( error );
+        return NextResponse.json({msg: ["Unable to retrieve Participants"], error  }, { status: 500 });
+    }
+}
 
-        console.log( "event register participant" );
+export async function POST( req:NextRequest, route: { params: { eventId: string }} ) {
+    try {
+        const { eventId } = route.params;
+        console.log( `[POST] Event ${eventId} register participant` );
         await connectDB();
         const json = await req.json();
-        if( !json.user ) return NextResponse.json( { msg: ["user id is required"] }, { status: 400 } );
 
-        const regex = /\/api\/event\/([^\/]+)\/participant/;
-        const match = req.nextUrl.pathname.match(regex);
-        if( !match ) return NextResponse.json( { msg: ["event id is required"] }, { status: 400 } );
-        const event = await Event.findById( match[1] );
+        const event = await Event.findById( eventId );
         if( !event ) return NextResponse.json( { msg: ["Event not found"] }, { status: 404 } );
+
+        if( !json.user ) return NextResponse.json( { msg: ["user id is required"] }, { status: 400 } );
 
         const user = await User.findById( json.user )
         if( !user ) return NextResponse.json( { msg: ["User not found"] }, { status: 404 } );
 
         const participants = await Participant.find({ event: event });
-
-
+        
         const existing = participants.find( _ => _.user?._id.toString() === user._id.toString() );
         if( existing ) return NextResponse.json( { msg: ["User already added as a participant"] }, { status: 400 } );
 

@@ -1,6 +1,5 @@
 import connectDB from '@/app/lib/mongodb';
 import Event from '@/app/models/event';
-import Participant from '@/app/models/participant';
 import { NextRequest, NextResponse } from "next/server";
 
 export async function GET( req:NextRequest ) {
