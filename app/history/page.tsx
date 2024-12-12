@@ -1,25 +1,18 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { Box,List } from '@mui/material';
+import { Box,List, ListItem } from '@mui/material';
 import { IBeer } from "@/app/models/beer";
 import BeerListItem from "@/components/Beer/BeerListItem";
 import TextField from '@mui/material/TextField';
 import { Get } from "../util/RequestHelper";
+import { useBeers } from "@hooks/hooks";
 
 export default function History() {
 
-  const [beers, setBeers] = useState<IBeer[]>([]);
+  const { beers, beersError, beersLoading } = useBeers();
   const [q, setQ] = useState("");
   const [searchParamters] = useState(["beer", "brewer"]);
-
-  useEffect(() => {
-    (async () => { 
-      let beers:IBeer[] = await Get<IBeer[]>('api/beer');
-      //beers = beers.filter<IBeer>(( (b): b is IBeer => b.state !== "pending" ));
-      setBeers( beers ); 
-    })(); 
-  }, [] );
 
   function search(items:any): IBeer[] {
       return items.filter((item:any) => {
@@ -47,6 +40,7 @@ export default function History() {
             {search(beers).map( beer => 
                 <BeerListItem key={`${beer.year}${beer.day}${beer.beer}`} beer={beer}/>
             )}
+            <ListItem sx={{ height: '60px' }}></ListItem>
           </List>
         ) : (<p>Loading...</p> )}
     </Box>
