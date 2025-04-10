@@ -2,14 +2,15 @@ import connectDB from '@/app/lib/mongodb';
 import Event from '@/app/models/event';
 import Participant from '@/app/models/participant';
 import User from '@/app/models/user';
+import { Types } from 'mongoose';
 import { NextRequest, NextResponse } from "next/server";
 
-export async function GET( req:NextRequest, route: { params: { eventId: string }} ) {
+export async function GET( req:NextRequest, route: { params: { year: string }} ) {
     try {
-        const { eventId } = route.params;
-        console.log( "[GET] Event get participants: event id: " + eventId );
+        const { year } = route.params;
+        console.log( "[GET] Event get participants for year", year );
         await connectDB();
-        const event = await Event.findById( eventId );
+        const event = await Event.findOne({year});
         const participantResponse = await Participant.find({ event });
         return NextResponse.json(participantResponse);
     }catch( error ) {
@@ -18,19 +19,19 @@ export async function GET( req:NextRequest, route: { params: { eventId: string }
     }
 }
 
-export async function POST( req:NextRequest, route: { params: { eventId: string }} ) {
+export async function POST( req:NextRequest, route: { params: { year: string }} ) {
     try {
-        const { eventId } = route.params;
-        console.log( `[POST] Event ${eventId} register participant` );
+        const { year } = route.params;
+        console.log( `[POST] Event ${year} register participant` );
         await connectDB();
         const json = await req.json();
 
-        const event = await Event.findById( eventId );
+        const event = await Event.findOne( {year} );
         if( !event ) return NextResponse.json( { msg: ["Event not found"] }, { status: 404 } );
 
         if( !json.user ) return NextResponse.json( { msg: ["user id is required"] }, { status: 400 } );
 
-        const user = await User.findById( json.user )
+        const user = await User.findById( new Types.ObjectId(json.user) );
         if( !user ) return NextResponse.json( { msg: ["User not found"] }, { status: 404 } );
 
         const participants = await Participant.find({ event: event });

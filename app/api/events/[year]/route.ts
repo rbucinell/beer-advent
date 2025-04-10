@@ -8,10 +8,11 @@ import { NextRequest, NextResponse } from "next/server";
  * @param req 
  * @returns 
  */
-export async function GET( req:NextRequest ) {
+export async function GET( req:NextRequest, route: {params: { year: string }} ) {
     try{
+        const { year } = route.params;
+        console.log( "[GET] Event for year", year );
         await connectDB();
-        const year = req.nextUrl.pathname.split('/').pop();
         const event = await Event.findOne<Event>({ year });
         if( !event ){
             return NextResponse.json( { msg: `Event for ${year} not found` }, { status: 404 } );
@@ -24,10 +25,11 @@ export async function GET( req:NextRequest ) {
 }
 
 // # To update particular event.
-export async function PUT( req:NextRequest ) {
+export async function PUT( req:NextRequest, route: {params: { year: string }} ) {
     try{
+        const { year } = route.params;
+        console.log( "[PUT] Update Event year", year );
         await connectDB();
-        const year = req.nextUrl.pathname.split('/').pop();
         const query = {year};
         const requestBody = await req.json();
         console.log( 'query:', query, 'requestBody:', requestBody)
@@ -43,10 +45,10 @@ export async function PUT( req:NextRequest ) {
 }
 
 // # To delete particular user
-export async function DELETE( req:NextRequest ) {
+export async function DELETE( req:NextRequest, route: {params: { year: string }} ) {
     try{
         await connectDB();
-        const year = req.nextUrl.pathname.split('/').pop();
+        const { year } = route.params;
         const query = {year};
         const updateResponse = await Event.findOneAndDelete(query);
         return NextResponse.json({deleted: updateResponse}, { status: 200 });

@@ -5,12 +5,12 @@ import { NextRequest, NextResponse } from "next/server";
 
 const shuffle = (a:number,b:number) => 0.5 - Math.random();
 
-export async function POST( req:NextRequest, route: { params: { eventId: string }} ) {
+export async function POST( req:NextRequest, route: { params: { year: string }} ) {
     
     try {
 
         await connectDB();
-        const { eventId } = route.params;
+        const { year } = route.params;
         const json = await req.json();
         //Ensure Inputs
         if( !json.days && !json.xmas ){
@@ -18,7 +18,7 @@ export async function POST( req:NextRequest, route: { params: { eventId: string 
         }
 
         //Get Event
-        const event = await Event.findById( eventId );
+        const event = await Event.findOne( {year} );
         if( !event ) return NextResponse.json( { msg: ["Event not found"] }, { status: 404 } );
 
         //Get Participants       
