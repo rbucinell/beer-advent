@@ -42,6 +42,7 @@ export default function History() {
             .map((event: IEvent) => {
               return (
                 <Button
+                  key={event._id.toString()}
                   variant="outlined"
                   className="border bg-slate-100 border-slate-950 rounded"
                   href={`/event/${event.year}`}

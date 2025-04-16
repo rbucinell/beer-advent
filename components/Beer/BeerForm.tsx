@@ -51,7 +51,7 @@ export default function BeerForm( props: { year: string|number; } ) {
       setParticipants(participantResp);
     })();
 
-  }, []);
+  }, [props.year]);
 
   const checkBeer = async () => {
     const res = await fetch(`/api/beer/check?beer=${beer.beer}&brewer=${beer.brewer}`);
