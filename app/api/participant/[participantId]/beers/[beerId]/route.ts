@@ -3,11 +3,11 @@ import Beer from '@/app/models/beer';
 import Participant, { IParticipant } from '@/app/models/participant';
 import { NextRequest, NextResponse } from "next/server";
 
-export async function GET(req:NextRequest, route: { params: { participantId: string, beerId: string } }) {
+export async function GET(req:NextRequest, route: { params: Promise<{ participantId: string, beerId: string }> }) {
     try {
-        console.log( "Participant beer" );
+        const { participantId, beerId } = await route.params;
+        console.log( "[GET] Participant ", participantId, "Beer", beerId );
         await connectDB();
-        const { participantId, beerId } = route.params;
 
         const participant = await Participant.findById( participantId ) as IParticipant;
         if( !participant ) return NextResponse.json( { msg: ["Participant not found"] }, { status: 404 } );
@@ -23,11 +23,11 @@ export async function GET(req:NextRequest, route: { params: { participantId: str
     }
 }
 
-export async function DELETE(req:NextRequest, route: { params: { participantId: string, beerId: string } }) {
+export async function DELETE(req:NextRequest,  route: { params: Promise<{ participantId: string, beerId: string }> }) {
     try {
         console.log( "Participant beer" );
         await connectDB();
-        const { participantId, beerId } = route.params;
+        const { participantId, beerId } = await route.params;
 
         const participant = await Participant.findById( participantId ) as IParticipant;
         if( !participant ) return NextResponse.json( { msg: ["Participant not found"] }, { status: 404 } );

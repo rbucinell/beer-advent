@@ -3,14 +3,10 @@ import Event from '@/app/models/event';
 import { Error } from 'mongoose';
 import { NextRequest, NextResponse } from "next/server";
 
-/**
- * Get a particular event
- * @param req 
- * @returns 
- */
-export async function GET( req:NextRequest, route: {params: { year: string }} ) {
+//Get a particular event
+export async function GET( req:NextRequest, route: { params: Promise<{ year: string }>} ) {
     try{
-        const { year } = route.params;
+        const { year } = await route.params;
         console.log( "[GET] Event for year", year );
         await connectDB();
         const event = await Event.findOne<Event>({ year });
@@ -25,9 +21,9 @@ export async function GET( req:NextRequest, route: {params: { year: string }} ) 
 }
 
 // # To update particular event.
-export async function PUT( req:NextRequest, route: {params: { year: string }} ) {
+export async function PUT( req:NextRequest, route: { params: Promise<{ year: string }>} ) {
     try{
-        const { year } = route.params;
+        const { year } = await route.params;
         console.log( "[PUT] Update Event year", year );
         await connectDB();
         const query = {year};
@@ -45,10 +41,11 @@ export async function PUT( req:NextRequest, route: {params: { year: string }} ) 
 }
 
 // # To delete particular user
-export async function DELETE( req:NextRequest, route: {params: { year: string }} ) {
+export async function DELETE( req:NextRequest, route: { params: Promise<{ year: string }>} ) {
     try{
+        const { year } = await route.params;
+        console.log( "[DELETE] Event year", year );
         await connectDB();
-        const { year } = route.params;
         const query = {year};
         const updateResponse = await Event.findOneAndDelete(query);
         return NextResponse.json({deleted: updateResponse}, { status: 200 });

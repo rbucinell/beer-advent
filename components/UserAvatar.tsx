@@ -12,7 +12,6 @@ export default class UserAvatar extends Component<IUserAvatarProps, {}> {
 
     constructor(props: IUserAvatarProps) {
         super(props);
-        console.log( this.props.user, !this.props.user?.imageUrl);
     }
 
     render(): ReactNode {

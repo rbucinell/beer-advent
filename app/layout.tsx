@@ -1,4 +1,4 @@
-import type { Metadata } from 'next';
+import type { Metadata, Viewport } from 'next';
 import { Inter } from 'next/font/google';
 import '@fontsource/roboto/300.css';
 import '@fontsource/roboto/400.css';
@@ -14,9 +14,14 @@ export const metadata: Metadata = {
   title: 'Beer Advent',
   description: 'Cheers for beers',
   icons: 'favicon.ico',
-  viewport: 'initial-scale=1, width=device-width'
 }
 
+export const viewport: Viewport = {
+  width: 'device-width',
+  initialScale: 1,
+  maximumScale: 1,
+  userScalable: false
+};
 export default function RootLayout({ children, }: { children: React.ReactNode }) {
   return (
     <html className="h-full" lang="en">      

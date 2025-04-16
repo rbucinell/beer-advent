@@ -5,9 +5,9 @@ import User from '@/app/models/user';
 import { Types } from 'mongoose';
 import { NextRequest, NextResponse } from "next/server";
 
-export async function GET( req:NextRequest, route: { params: { year: string }} ) {
+export async function GET( req:NextRequest, route: { params: Promise<{ year: string }>} ) {
     try {
-        const { year } = route.params;
+        const { year } = await route.params;
         console.log( "[GET] Event get participants for year", year );
         await connectDB();
         const event = await Event.findOne({year});
@@ -19,9 +19,9 @@ export async function GET( req:NextRequest, route: { params: { year: string }} )
     }
 }
 
-export async function POST( req:NextRequest, route: { params: { year: string }} ) {
+export async function POST( req:NextRequest, route: { params: Promise<{ year: string }>} ) {
     try {
-        const { year } = route.params;
+        const { year } = await route.params;
         console.log( `[POST] Event ${year} register participant` );
         await connectDB();
         const json = await req.json();
@@ -78,18 +78,16 @@ export async function POST( req:NextRequest, route: { params: { year: string }} 
     }
 }
 
-export async function DELETE( req:NextRequest ) {
+export async function DELETE( req:NextRequest, route: { params: Promise<{ year: string }>} ) {
     try {
-        await connectDB();
+        const { year } = await route.params;
         const json = await req.json();
         if( !json.user ) return NextResponse.json( { msg: ["user id is required"] }, { status: 400 } );
-
-        const regex = /\/api\/event\/([^\/]+)\/participant/;
-        const match = req.nextUrl.pathname.match(regex);
-        if( !match ) return NextResponse.json( { msg: ["event id is required"] }, { status: 400 } );
-        const event = await Event.findById( match[1] );
+        
+        const event = await Event.findOne( {year} );
         if( !event ) return NextResponse.json( { msg: ["Event not found"] }, { status: 404 } );
-
+        
+        await connectDB();
         const user = await User.findById( json.user )
         if( !user ) return NextResponse.json( { msg: ["User not found"] }, { status: 404 } );
 

@@ -4,10 +4,10 @@ import Participant, { IParticipant } from '@/app/models/participant';
 import { NextRequest, NextResponse } from "next/server";
 import { Types } from 'mongoose';
 
-export async function GET(req:NextRequest, route: { params: { participantId: string } }) {
+export async function GET(req:NextRequest, route: { params: Promise<{ participantId: string }> }) {
     try {
         await connectDB();
-        const { participantId } = route.params;
+        const { participantId } = await route.params;
 
         const participant = await Participant.findById( participantId ) as IParticipant;
         if( !participant ) return NextResponse.json( { msg: ["Participant not found"] }, { status: 404 } );

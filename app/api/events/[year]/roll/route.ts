@@ -5,12 +5,12 @@ import { NextRequest, NextResponse } from "next/server";
 
 const shuffle = (a:number,b:number) => 0.5 - Math.random();
 
-export async function POST( req:NextRequest, route: { params: { year: string }} ) {
+export async function POST( req:NextRequest, route: { params: Promise<{ year: string }>} ) {
     
     try {
 
         await connectDB();
-        const { year } = route.params;
+        const { year } = await route.params;
         const json = await req.json();
         //Ensure Inputs
         if( !json.days && !json.xmas ){

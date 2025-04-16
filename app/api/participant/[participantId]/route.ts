@@ -2,12 +2,12 @@ import connectDB from '@/app/lib/mongodb';
 import Participant from '@/app/models/participant';
 import { NextRequest, NextResponse } from "next/server";
 
-export async function GET( req:NextRequest ) {
+export async function GET( req:NextRequest, route: { params: Promise<{ participantId: string }> }) {
     try{
+        const { participantId } = await route.params;
         await connectDB();
-        const id = req.nextUrl.pathname.split('/').pop();
-        if( !id ) return NextResponse.json( {}, { status: 200 } );
-        const event = await Participant.findOne({ _id:id })
+        if( !participantId ) return NextResponse.json( {}, { status: 200 } );
+        const event = await Participant.findOne({ _id:participantId })
         return NextResponse.json(event);
     }catch( error ) {
         console.log( error );
