@@ -19,13 +19,16 @@ export const metadata: Metadata = {
 
 export default function RootLayout({ children, }: { children: React.ReactNode }) {
   return (
-    <html lang="en">      
-        <body className={`${inter.className} bg-green-200 repeating-beer-bg`}>
-          <CssBaseline /> 
-          <Nav />      
-          <Container sx={{ p:2, minHeight: '70vh'}}>          
+    <html className="h-full" lang="en">      
+        <body className={`${inter.className} flex flex-col h-full items-stretch bg-green-200 repeating-beer-bg`}>
+          {/* <CssBaseline />  */}
+          <Nav />
+          <div className='p-2 h-full w-full flex flex-grow'>
             {children}
-          </Container>
+          </div>
+          {/* <Container sx={{ p:2, display: 'flex', alignItems: 'stretch', height:'100%', minHeight: '70vh'}}>          
+            {children}
+          </Container> */}
         </body>
     </html>
   )

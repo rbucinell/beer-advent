@@ -5,23 +5,28 @@ import { IParticipant } from "@models/participant";
 import { IUser } from "@models/user";
 import { IBeer } from "../models/beer";
 
-export function useEvent( options: { year?: number|string, id?: string } = {} ) {
-    const { year, id } = options;
-    console.log(year, id);
-    let path = null;
-    if( id ){
-        path = `/api/event/${id}`
-    }else if( year ) {
-        path = `/api/event?year=${year}`
-    }
+
+export function useEvents() {
+    const { data, error, isLoading } = useSWR<IEvent[], Error>('/api/events', fetcher);
+    return { events:data, eventsError:error, eventsLoading:isLoading };
+}
+
+export function useEvent( options: { year?: number|string } = {} ) {
+    const { year } = options;
+    let path = `/api/events/${year}`;
     const { data, error, isLoading } = useSWR<IEvent, Error>(path, fetcher);
     return { event: data, eventError:error, eventLoading:isLoading }; 
 }
 
 export function useEventParticipants( event:IEvent|undefined ) {
-    const shouldFetch = event?._id !== undefined ? `/api/event/${event._id}/participants` : null;
+    const shouldFetch = event?._id !== undefined ? `/api/events/${event.year}/participants` : null;
     const { data, error, isLoading } = useSWR<IParticipant[], Error>(shouldFetch, fetcher);
     return { participants: data, participantsError: error, participantsLoading: isLoading };
+}
+
+export function useUsers() {
+    const { data, error, isLoading } = useSWR<IUser[], Error>(`/api/user`, fetcher);
+    return { users: data, usersError: error, usersLoading: isLoading };
 }
 
 export function useUser( userId: string|undefined ) {

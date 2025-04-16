@@ -24,7 +24,7 @@ export default function History() {
   useEffect(() => {
     (async () => {
 
-      const event = await Get<IEvent>(`api/event?year=${new Date().getFullYear()}`);
+      const event = await Get<IEvent>(`api/events/${new Date().getFullYear()}`);
       if( !event._id ) return;
       const participants = await Get<IParticipant[]>(`api/participant?event=${event._id}`);
       let users:IUser[] = [];

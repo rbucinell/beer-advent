@@ -4,7 +4,7 @@ import Link from "next/link";
 import { Component, ReactNode } from "react";
 
 interface IUserAvatarProps {
-    user: IUser
+    user: IUser|undefined,
     sx?: any
 }
 
@@ -12,11 +12,12 @@ export default class UserAvatar extends Component<IUserAvatarProps, {}> {
 
     constructor(props: IUserAvatarProps) {
         super(props);
+        console.log( this.props.user, !this.props.user?.imageUrl);
     }
 
     render(): ReactNode {
         return( 
-            <Link href={`/user/${this.props.user._id}`} >
+            <Link href={`/user/${this.props.user?._id}`} >
                 {!this.props.user?.imageUrl ? 
                     <Skeleton variant="circular" width={40} height={40} animation={false} sx={{":hover": { border: "2px solid lightcoral" }}} />:
                     <Avatar src={this.props.user?.imageUrl} sx={{...this.props?.sx, ":hover": { border: "2px solid lightcoral" }}}/>

@@ -17,7 +17,7 @@ export default function Home() {
   const handleClose = () => setOpen(false);
 
   return (
-    <div className="p-2 max-w-3xl mx-auto">
+    <div className="w-full p-2 max-w-3xl mx-auto">
 
       <Stack marginBottom={1} direction={"row"} spacing={1} justifyContent={"space-between"} alignItems={"baseline"} flexDirection={"row-reverse"} flexWrap={"wrap"}>
          { event && event.rules && event.rules.length > 0 &&

@@ -60,7 +60,7 @@ export default function UserPage() {
     }
 
     return (
-        <Container maxWidth="sm" style={{ marginTop: '2rem' }} >
+        <Container style={{ marginTop: '2rem', width: '100%' }} >
             <div style={{ display: 'flex', alignItems: 'center', marginBottom: '1rem' }}>
                 <UserAvatar user={user} sx={{ width: 100, height: 100, marginRight: '1rem' }} />
                 <div>
