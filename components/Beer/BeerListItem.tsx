@@ -6,6 +6,8 @@ import {IBeer} from "@/app/models/beer";
 import { Box, Container, Divider, IconButton, ListItem, ListItemIcon,ListItemText, Stack } from '@mui/material';
 // import { Capitalize, ParticipantName } from "@/app/models/participant_util";
 import CalendarWithBadge from "../CalendarWithBadge";
+import Link from "next/link";
+import dayjs from "dayjs";
 
 interface IBeerButton{
   url:string,
@@ -35,6 +37,7 @@ export default class BeerListItem extends Component<IBeerListItemProps>{
         super(props);
         this.beer = props.beer;
         this.admin = props.admin || false;
+        this.isBeerDateSameOrAfterNow();
     }
 
     beerWithABV() {
@@ -42,17 +45,24 @@ export default class BeerListItem extends Component<IBeerListItemProps>{
     }
 
     blurred(){
-      return !(this.admin || this.beer.state !== 'pending');
+      return !(this.admin || !this.isBeerDateSameOrAfterNow() );
+    }
+
+    isBeerDateSameOrAfterNow() {      
+      const beerDay = dayjs(`${this.beer.year}-12-${this.beer.day}`);
+      return beerDay.isAfter(dayjs(),'day') || beerDay.isSame(dayjs(),'day');
     }
 
     render() {
       return (<>
-        <ListItem sx={{ background: `${ this.beer.state ==='pending'? 'lightgreen' : ''}`}}>
+        <ListItem sx={{ p:0, background: `${ this.isBeerDateSameOrAfterNow() ? 'lightgreen' : ''}`}}>
           <ListItemIcon>
-            <CalendarWithBadge num={this.beer.year}/>
+            <IconButton size="large" aria-label="calendar" href={`/event/${this.beer.year}`} >
+              <CalendarWithBadge num={this.beer.year}/>
+            </IconButton>
           </ListItemIcon>
           <ListItemText primary={this.beerWithABV()} secondary={this.beer.brewer} 
-            sx={{ filter: this.blurred() ? 'blur(5px)': 'inherit', 
+            sx={{ filter: this.blurred() ? 'blur(3px)': 'inherit', 
                   color: this.blurred() ? 'transparent':'inherit',
                   userSelect: this.blurred() ? 'none':'inherit'}}/>
             {/* <span>{Capitalize(this.beer.person)}</span> */}

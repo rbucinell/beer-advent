@@ -19,9 +19,18 @@
       }
     ],
     "paths": {
-      "@/*": ["./*"]
+      "@/*": ["./*"],
+      "@app/*": ["./app/*"],
+      "@api/*": ["./app/api/*"],
+      "@components/*": ["./app/components/*"],
+      "@lib/*": ["./app/lib/*"],
+      "@pages/*": ["./app/pages/*"],
+      "@hooks/*": ["./app/hooks/*"],
+      "@models/*": ["./app/models/*"],
+      "@styles/*": ["./app/styles/*"],
+      "@util/*": ["./app/util/*"],
     }
   },
-  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts", "app/api/participants/[participantId].js"],
+  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts", "app/api/participants/[participantId].js", "app/lib/swr.js"],
   "exclude": ["node_modules"]
 }

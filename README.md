@@ -1,6 +1,5 @@
 # Beer Advent Project
 
-
 ### Setup
 
 Create a `.env.local` file
@@ -11,8 +10,8 @@ Replace `<database_username>`, `<database_password>`, `<cluster_name>`, and `<co
 
 Run 
 ```
-npm install
-npm run dev
+pnpm install
+pnpm run dev
 ```
 
 ### Technologies

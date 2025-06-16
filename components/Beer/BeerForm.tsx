@@ -33,9 +33,9 @@ const initBeer:BeerData = {
   state: 'pending'
 };
 
-export default function BeerForm() {
+export default function BeerForm( props: { year: string|number; } ) {
 
-  const [event, setEvent]             = useState<IEvent>();
+  const [event, setEvent]               = useState<IEvent>();
   const [beer, setBeer]                 = useState<BeerData>(initBeer);
   const [participant, setParticipant]   = useState<IParticipant|null>();
   const [participants, setParticipants] = useState<IParticipant[]>([]);
@@ -44,13 +44,14 @@ export default function BeerForm() {
   
   useEffect(() => {
     (async () => {
-      let eventResp = await Get<IEvent>(`api/event?year=${new Date().getFullYear()}`);
+      let eventResp = await Get<IEvent>(`api/events/${props.year}`);
+      console.log( 'event:', eventResp)
       setEvent(eventResp);
-      let participantResp = await Get<IParticipant[]>(`api/participant?event=${eventResp._id}`);
+      let participantResp = await Get<IParticipant[]>(`api/events/${eventResp.year}/participants`);
       setParticipants(participantResp);
     })();
 
-  }, []);
+  }, [props.year]);
 
   const checkBeer = async () => {
     const res = await fetch(`/api/beer/check?beer=${beer.beer}&brewer=${beer.brewer}`);

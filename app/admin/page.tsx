@@ -24,7 +24,7 @@ export default function History() {
   useEffect(() => {
     (async () => {
 
-      const event = await Get<IEvent>(`api/event?year=${new Date().getFullYear()}`);
+      const event = await Get<IEvent>(`api/events/${new Date().getFullYear()}`);
       if( !event._id ) return;
       const participants = await Get<IParticipant[]>(`api/participant?event=${event._id}`);
       let users:IUser[] = [];
@@ -39,7 +39,7 @@ export default function History() {
   }, []);
   
   return (
-    <div className="p-2 max-w-3xl mx-auto">
+    <div className="p-2 w-1/2 mx-auto">
       <Stack marginBottom={1} direction={"row"} spacing={1} justifyContent={"space-between"} alignItems={"baseline"} flexDirection={"row-reverse"} flexWrap={"wrap"}>
         <Typography variant="h6">Admin</Typography>
         <Typography variant="h6">{data?.event?.name}🎄</Typography>

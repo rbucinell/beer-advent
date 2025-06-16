@@ -30,7 +30,7 @@ export default function History() {
   useEffect(() => {
     (async () => {
         //Set the event
-        let advent = await Get<IEvent>(`/api/event?year=${new Date().getFullYear()}`);
+        let advent = await Get<IEvent>(`/api/events/${new Date().getFullYear()}`);
         setAdvent(advent);
 
         //Get all Participants for event
@@ -49,13 +49,13 @@ export default function History() {
     e.preventDefault();
     if( !user ) return;
     if( !advent ) return;
-    const res = await Post(`/api/event/${advent._id}/participant`, { user: user._id });
+    const res = await Post(`/api/events/${advent.year}/participant`, { user: user._id });
   }
 
   async function handleRollNumbersClick( e: React.MouseEvent ) {
     e.preventDefault();
     if( !advent ) return;
-    await Post(`/api/event/${advent._id}/roll`, {
+    await Post(`/api/events/${advent.year}/roll`, {
       days: true
     });
   }
@@ -63,7 +63,7 @@ export default function History() {
   async function handleRollSecretClick( e: React.MouseEvent ) {
     e.preventDefault();
     if( !advent ) return;
-    await Post(`/api/event/${advent._id}/roll`, {
+    await Post(`/api/events/${advent.year}/roll`, {
       xmas: true
     });
   }
