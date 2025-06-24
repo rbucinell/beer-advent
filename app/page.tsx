@@ -7,12 +7,11 @@ import SportsBarIcon from '@mui/icons-material/SportsBar';
 import { Directions } from "@mui/icons-material";
 import ParticipantItem from "@/components/ParticipantItem";
 import PendingItem from "@/components/PendingItem";
+export const dynamic = 'force-dynamic'
 
 export default function Home() {
 
-  const params = new URLSearchParams(window.location.search);
-  const eventYear = params.get('year') ?? new Date().getFullYear();
-
+  const eventYear = 2024; //new Date().getFullYear();
   const { event, eventError, eventLoading } = useEvent({ year: eventYear });
   const { participants, participantsError, participantsLoading } = useEventParticipants(event);
   const [open, setOpen] = useState(false);
@@ -21,6 +20,7 @@ export default function Home() {
 
 
   return (
+
     <div className="w-full p-2 max-w-3xl mx-auto">
 
       <Stack marginBottom={1} direction={"row"} spacing={1} justifyContent={"space-between"} alignItems={"baseline"} flexDirection={"row-reverse"} flexWrap={"wrap"}>
@@ -57,7 +57,7 @@ export default function Home() {
           width: { xs: '90vw' }
         }}>
           <Typography id="modal-modal-title" variant="h6" component="h2">Rules</Typography>
-          <List >
+          <List>
             {event.rules && event.rules.map((rule, index) => <ListItemText key={index}>- {rule}</ListItemText>)}
           </List>
         </Box>

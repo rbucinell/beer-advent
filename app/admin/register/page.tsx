@@ -7,7 +7,7 @@ import { Get, Post } from "@/app/util/RequestHelper";
 import { IEvent } from "@/app/models/event";
 import AdminParticipantItem from "@/app/admin/compontents/AdminParticipantItem";
 import { IParticipant } from "@/app/models/participant";
-import { IUser } from "@/app/models/user";
+import { IUsers } from "@/app/models/user";
 import { styled } from "@mui/material/styles";
 import PendingItem from "@/components/PendingItem";
 
@@ -25,9 +25,9 @@ export default function History() {
 
   const [advent, setAdvent] = useState<IEvent | null>(null);
   const [participants, setParticipants] = useState<IParticipant[]>([]);
-  const [users, setUsers] = useState<IUser[]>([]);
-  const [participatingUsers, setParticipatingUsers] = useState<IUser[]>([]);
-  const [user, setUser] = useState<IUser | null>(null);
+  const [users, setUsers] = useState<IUsers[]>([]);
+  const [participatingUsers, setParticipatingUsers] = useState<IUsers[]>([]);
+  const [user, setUser] = useState<IUsers | null>(null);
 
   useEffect(() => {
     (async () => {
@@ -44,10 +44,10 @@ export default function History() {
       setParticipants(participantResp);
 
       //Get all Users
-      let userResponse = await Get<IUser[]>('/api/user');
+      let userResponse = await Get<IUsers[]>('/api/user');
       setUsers(userResponse);
 
-      setParticipatingUsers(participantResp.map(p => userResponse.find(u => u._id === p.user) as IUser));
+      setParticipatingUsers(participantResp.map(p => userResponse.find(u => u._id === p.user) as IUsers));
     })();
   }, []);
 
@@ -81,7 +81,7 @@ export default function History() {
           <Typography>Register Who</Typography>
           <Autocomplete sx={{ flexGrow: 1 }} id="brewerName" options={users.filter(u => !participants.find(p => p.user === u._id))}
             onChange={(e, newVal) => { setUser(newVal); }}
-            getOptionLabel={(o: IUser) => `${o?.firstName} ${o?.lastName}`}
+            getOptionLabel={(o: IUsers) => `${o?.firstName} ${o?.lastName}`}
             renderOption={(props, option) => (<li {...props} key={props.id} >{option?.firstName} {option.lastName}</li>)}
             renderInput={(params) => <TextField key={params.id} required {...params} label="Name" />}
           />
@@ -103,7 +103,7 @@ export default function History() {
               <AdminParticipantItem
                 key={index}
                 participant={participants[index]}
-                user={users.find(u => u._id === participants[index].user) as IUser}
+                user={users.find(u => u._id === participants[index].user) as IUsers}
                 xmas={participants.find(p => p._id === participants[index].xmas) as IParticipant}
               />
             ) : (
