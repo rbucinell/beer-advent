@@ -2,7 +2,7 @@
 import React, { useEffect, useState } from 'react';
 import { useParams } from 'next/navigation';
 import { Container, Avatar, Typography, List, ListItem, ListItemText, Divider, CircularProgress, Box } from '@mui/material';
-import { IUsers } from '@/app/models/user';
+import { IOldUsers } from '@/app/models/oldusers';
 import { Get } from '@/app/util/RequestHelper';
 import { IBeer } from '@/app/models/beer';
 import BeerListItem from '@/components/Beer/BeerListItem';
@@ -10,7 +10,7 @@ import UserAvatar from '@/components/UserAvatar';
 
 export default function UserPage() {
   const { userId } = useParams();
-  const [user, setUser] = useState({} as IUsers);
+  const [user, setUser] = useState({} as IOldUsers);
   const [beers, setBeers] = useState([] as IBeer[]);
   const [loading, setLoading] = useState(true);
 
@@ -19,7 +19,7 @@ export default function UserPage() {
     const fetchUserData = async () => {
       try {
         console.log(userId);
-        const userData = await Get<IUsers>(`/api/user/${userId}`);
+        const userData = await Get<IOldUsers>(`/api/user/${userId}`);
         setUser(userData);
         if (userData) {
           const beerData = await Get<IBeer[]>(`/api/beer?user=${userId}`);

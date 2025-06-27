@@ -3,7 +3,7 @@
 import { IEvent } from "@/app/models/event";
 import { IParticipant } from "@/app/models/participant";
 import { ParticipantName } from "@/app/models/participant_util";
-import { IUsers } from "@/app/models/user";
+import { IOldUsers } from "@/app/models/oldusers";
 import { Get } from "@/app/util/RequestHelper";
 import { Autocomplete, Button, GridLegacy, TextField, TextFieldVariants, Typography } from "@mui/material";
 import SearchIcon from '@mui/icons-material/Search';

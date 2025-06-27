@@ -5,7 +5,7 @@ import { ParticipantName } from "@/app/models/participant_util";
 import { Component, ReactNode } from "react";
 import { Badge, Stack, Typography } from '@mui/material';
 import SportsBarIcon from '@mui/icons-material/SportsBar';
-import Users, { IUsers } from "@/app/models/user";
+import OldUsers, { IOldUsers } from "@/app/models/oldusers";
 import UserAvatar from "@/components/UserAvatar";
 import { Types } from "mongoose";
 import ListItem from "@/components/ListItem";

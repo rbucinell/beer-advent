@@ -4,7 +4,7 @@ import { ParticipantName } from "@/app/models/participant_util";
 import { Component, ReactNode } from "react";
 import { Button, IconButton, Stack, Typography } from '@mui/material';
 import { SwapVert, Textsms, Delete } from "@mui/icons-material";
-import { IUsers } from "@/app/models/user";
+import { IOldUsers } from "@/app/models/oldusers";
 import ListItem from "@/components/ListItem";
 import { Types } from "mongoose";
 import { IBeer } from "@/app/models/beer";
@@ -12,14 +12,14 @@ import DayIcon from "@/components/DayIcon";
 
 interface ParticipantItemProps {
   participant: IParticipant;
-  user: IUsers;
+  user: IOldUsers;
   xmas: IParticipant | null;
 }
 
 export default class AdminBeerManagementItem extends Component<ParticipantItemProps, {}> {
 
   participant: IParticipant;
-  user: IUsers;
+  user: IOldUsers;
   xmas: IParticipant | null;
   beers: IBeer[];
 

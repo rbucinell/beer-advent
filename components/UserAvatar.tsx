@@ -1,10 +1,10 @@
-import { IUsers } from "@/app/models/user";
+import { IOldUsers } from "@/app/models/oldusers";
 import { Avatar, Skeleton } from "@mui/material";
 import Link from "next/link";
 import { Component, ReactNode } from "react";
 
 interface IUserAvatarProps {
-  user: IUsers | undefined,
+  user: IOldUsers | undefined,
   sx?: any
 }
 

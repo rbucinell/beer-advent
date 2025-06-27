@@ -7,6 +7,7 @@ import '@fontsource/roboto/700.css';
 import { Container, CssBaseline } from '@mui/material';
 import './globals.css'
 import Nav from '@/components/Nav';
+import { Toaster, toast } from 'sonner';
 
 const inter = Inter({ subsets: ['latin'] })
 
@@ -34,6 +35,7 @@ export default function RootLayout({ children, }: { children: React.ReactNode })
         {/* <Container sx={{ p:2, display: 'flex', alignItems: 'stretch', height:'100%', minHeight: '70vh'}}>
             {children}
           </Container> */}
+        <Toaster />
       </body>
     </html>
   )

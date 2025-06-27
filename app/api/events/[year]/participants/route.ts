@@ -1,7 +1,7 @@
 import connectDB from '@/lib/mongodb';
 import Event from '@/app/models/event';
 import Participant from '@/app/models/participant';
-import User from '@/app/models/user';
+import OldUsers from '@/app/models/oldusers';
 import { Types } from 'mongoose';
 import { NextRequest, NextResponse } from "next/server";
 
@@ -31,7 +31,7 @@ export async function POST(req: NextRequest, route: { params: Promise<{ year: st
 
     if (!json.user) return NextResponse.json({ msg: ["user id is required"] }, { status: 400 });
 
-    const user = await User.findById(new Types.ObjectId(json.user));
+    const user = await OldUsers.findById(new Types.ObjectId(json.user));
     if (!user) return NextResponse.json({ msg: ["User not found"] }, { status: 404 });
 
     const participants = await Participant.find({ event: event });
@@ -88,7 +88,7 @@ export async function DELETE(req: NextRequest, route: { params: Promise<{ year: 
     if (!event) return NextResponse.json({ msg: ["Event not found"] }, { status: 404 });
 
     await connectDB();
-    const user = await User.findById(json.user)
+    const user = await OldUsers.findById(json.user)
     if (!user) return NextResponse.json({ msg: ["User not found"] }, { status: 404 });
 
     //delete partipant by the attached User

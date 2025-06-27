@@ -2,7 +2,7 @@ import useSWR from "swr";
 import { fetcher } from "@/lib/swr";
 import { IEvent } from "@models/event";
 import { IParticipant } from "@models/participant";
-import { IUsers } from "@models/user";
+import { IOldUsers } from "@models/oldusers";
 import { IBeer } from "../models/beer";
 
 
@@ -25,13 +25,13 @@ export function useEventParticipants(event: IEvent | undefined) {
 }
 
 export function useUsers() {
-  const { data, error, isLoading } = useSWR<IUsers[], Error>(`/api/user`, fetcher);
+  const { data, error, isLoading } = useSWR<IOldUsers[], Error>(`/api/user`, fetcher);
   return { users: data, usersError: error, usersLoading: isLoading };
 }
 
 export function useUser(userId: string | undefined) {
   const shouldFetch = userId ? `/api/user/${userId}` : null;
-  const { data, error, isLoading } = useSWR<IUsers, Error>(shouldFetch, fetcher);
+  const { data, error, isLoading } = useSWR<IOldUsers, Error>(shouldFetch, fetcher);
   return { user: data, userError: error, userLoading: isLoading };
 }
 

@@ -7,10 +7,11 @@ import { Input } from "@/components/ui/input";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
-import { Button } from "@mui/material";
+import { Button, Divider, Stack } from "@mui/material";
 import { signInAuthFormSchema } from "@/lib/auth-schema";
 import { authClient } from "@/lib/auth-client";
 import { toast } from "sonner";
+import { Google, HorizontalRule } from "@mui/icons-material";
 
 export default function SignIn() {
 
@@ -22,6 +23,12 @@ export default function SignIn() {
     }
   });
 
+  async function googleSignup() {
+    await authClient.signIn.social({
+      provider: 'google',
+      callbackURL: '/dashboard',
+    })
+  }
 
   async function onSubmit(values: z.infer<typeof signInAuthFormSchema>) {
     const { email, password } = values;
@@ -38,7 +45,7 @@ export default function SignIn() {
         toast.error("Error", { description: ctx.error.message });
       }
     });
-    console.log(data, error);
+    //console.log(data, error);
   }
 
   return (
@@ -48,27 +55,31 @@ export default function SignIn() {
         <CardDescription>Welcome back! Please sign in to continue</CardDescription>
       </CardHeader>
       <CardContent>
-        <Form {...form}>
-          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
-            <FormField control={form.control} name="email" render={({ field }) => (
-              <FormItem>
-                <FormLabel>Email</FormLabel>
-                <FormControl><Input placeholder="" {...field} /></FormControl>
-                <FormMessage />
-              </FormItem>)}
-            />
+        <Stack direction={"column"} gap={2}>
+          <Button variant="outlined" startIcon={<Google />} onClick={googleSignup}> Google</Button>
+          <Divider>or</Divider>
+          <Form {...form}>
+            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
+              <FormField control={form.control} name="email" render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Email</FormLabel>
+                  <FormControl><Input placeholder="" {...field} /></FormControl>
+                  <FormMessage />
+                </FormItem>)}
+              />
 
-            <FormField control={form.control} name="password" render={({ field }) => (
-              <FormItem>
-                <FormLabel>Password</FormLabel>
-                <FormControl><Input type="password" {...field} /></FormControl>
-                <FormMessage />
-              </FormItem>)}
-            />
+              <FormField control={form.control} name="password" render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Password</FormLabel>
+                  <FormControl><Input type="password" {...field} /></FormControl>
+                  <FormMessage />
+                </FormItem>)}
+              />
 
-            <Button type="submit">Submit</Button>
-          </form>
-        </Form>
+              <Button variant="contained" type="submit">Submit</Button>
+            </form>
+          </Form>
+        </Stack>
       </CardContent>
       <CardFooter className="flex justify-center">
         <p className="text-sm text-muted-foreground">

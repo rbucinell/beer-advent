@@ -1,12 +1,12 @@
 import connectDB from '@/lib/mongodb';
-import User from '@/app/models/user';
+import OldUsers from '@/app/models/oldusers';
 import { NextRequest, NextResponse } from "next/server";
 
 export async function GET(req: NextRequest, route: { params: Promise<{ id: string }> }) {
   try {
     await connectDB();
     const { id } = await route.params;
-    const user = await User.findById(id);
+    const user = await OldUsers.findById(id);
     if (!user) return NextResponse.json({ msg: ["User not found"] }, { status: 404 });
     return NextResponse.json(user);
   } catch (error) {
@@ -19,10 +19,10 @@ export async function DELETE(req: NextRequest, route: { params: Promise<{ id: st
   try {
     await connectDB();
     const { id } = await route.params;
-    const user = await User.findById(id);
+    const user = await OldUsers.findById(id);
     if (!user) return NextResponse.json({ msg: ["User not found"] }, { status: 404 });
     if (user.deleted) return NextResponse.json({ msg: ["User already deleted"] }, { status: 400 });
-    const deleteResponse = await User.deleteOne(user);
+    const deleteResponse = await OldUsers.deleteOne(user);
     if (!deleteResponse.deletedCount) return NextResponse.json({ msg: ["Unable to delete User"] }, { status: 500 });
     return new NextResponse(null, { status: 204 });
   } catch (error) {
@@ -35,7 +35,7 @@ export async function PUT(req: NextRequest, route: { params: Promise<{ id: strin
   try {
     await connectDB();
     const { id } = await route.params;
-    const user = await User.findById(id);
+    const user = await OldUsers.findById(id);
     if (!user) return NextResponse.json({ msg: ["User not found"] }, { status: 404 });
     const json = await req.json();
 

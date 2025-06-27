@@ -1,6 +1,6 @@
 import mongoose, { Schema, Types } from "mongoose";
 
-export interface IUsers extends Document {
+export interface IOldUsers extends Document {
   _id: Types.ObjectId;
   firstName: string;
   lastName: string;
@@ -8,7 +8,7 @@ export interface IUsers extends Document {
   imageUrl: string;
 }
 
-export const userSchema = new Schema<IUsers>(
+export const oldUserSchema = new Schema<IOldUsers>(
   {
     firstName: {
       type: String,
@@ -26,11 +26,11 @@ export const userSchema = new Schema<IUsers>(
     imageUrl: String
   },
   {
-    collection: 'users',
+    collection: 'oldusers',
     toJSON: { virtuals: true },
     toObject: { virtuals: true }
   }
 );
 
-const Users = mongoose.models.User || mongoose.model<IUsers>('User', userSchema);
-export default Users;
+const OldUsers = mongoose.models.Users || mongoose.model<IOldUsers>('Users', oldUserSchema);
+export default OldUsers;

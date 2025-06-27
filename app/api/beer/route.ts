@@ -3,7 +3,7 @@ import connectDB from '@/lib/mongodb';
 import { NextRequest, NextResponse } from "next/server";
 import Participant, { IParticipant } from '@/app/models/participant';
 import Beer, { IBeer } from '@/app/models/beer';
-import Users from '@/app/models/user';
+import OldUsers from '@/app/models/oldusers';
 import { beerTooSimilar } from '@/app/util/BeerProximity';
 
 export async function GET(req: NextRequest) {
@@ -23,7 +23,7 @@ export async function POST(req: NextRequest) {
     const json = await req.json();
     const beer: IBeer = json;
     const participant: IParticipant = json.participant;
-    const user = await Users.findById(participant.user);
+    const user = await OldUsers.findById(participant.user);
 
     //Does Participant already have two beers?
     participant.beers = participant.beers.filter(_ => _ != null);

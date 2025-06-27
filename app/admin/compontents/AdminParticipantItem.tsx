@@ -3,20 +3,20 @@ import { IParticipant } from "@/app/models/participant";
 import { ParticipantName } from "@/app/models/participant_util";
 import { Component, ReactNode } from "react";
 import { Avatar, AvatarGroup, Button, Stack, Typography } from '@mui/material';
-import { IUsers } from "@/app/models/user";
+import { IOldUsers } from "@/app/models/oldusers";
 import ListItem from "@/components/ListItem";
 import DayIcon from "@/components/DayIcon";
 
 interface ParticipantItemProps {
   participant: IParticipant;
-  user: IUsers;
+  user: IOldUsers;
   xmas: IParticipant | null;
 }
 
 export default class AdminParticipantItem extends Component<ParticipantItemProps, {}> {
 
   participant: IParticipant;
-  user: IUsers;
+  user: IOldUsers;
   xmas: IParticipant | null;
 
   constructor(props: ParticipantItemProps) {
