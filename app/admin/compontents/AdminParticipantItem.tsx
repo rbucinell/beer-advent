@@ -3,20 +3,20 @@ import { IParticipant } from "@/app/models/participant";
 import { ParticipantName } from "@/app/models/participant_util";
 import { Component, ReactNode } from "react";
 import { Avatar, AvatarGroup, Button, Stack, Typography } from '@mui/material';
-import { IOldUsers } from "@/app/models/oldusers";
+import { IAuthUser } from "@/app/models/authuser";
 import ListItem from "@/components/ListItem";
 import DayIcon from "@/components/DayIcon";
 
 interface ParticipantItemProps {
   participant: IParticipant;
-  user: IOldUsers;
+  user: IAuthUser;
   xmas: IParticipant | null;
 }
 
 export default class AdminParticipantItem extends Component<ParticipantItemProps, {}> {
 
   participant: IParticipant;
-  user: IOldUsers;
+  user: IAuthUser;
   xmas: IParticipant | null;
 
   constructor(props: ParticipantItemProps) {
@@ -28,7 +28,7 @@ export default class AdminParticipantItem extends Component<ParticipantItemProps
 
   handleSummaryClick = (e: React.MouseEvent) => {
     e.preventDefault();
-    let message = `Hello ${this.user.firstName} your days are ${this.participant.days.join(" & ")}. Your secret santa is ${ParticipantName(this.xmas)}`;
+    let message = `Hello ${this.user.name.split(' ')[0]} your days are ${this.participant.days.join(" & ")}. Your secret santa is ${ParticipantName(this.xmas)}`;
     navigator.clipboard.writeText(message);
     console.log(message);
   }

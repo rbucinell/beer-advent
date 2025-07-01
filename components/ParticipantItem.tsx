@@ -2,15 +2,15 @@
 
 import { IParticipant } from "@/app/models/participant";
 import { ParticipantName } from "@/app/models/participant_util";
-import { Component, ReactNode } from "react";
 import { Badge, Stack, Typography } from '@mui/material';
 import SportsBarIcon from '@mui/icons-material/SportsBar';
-import OldUsers, { IOldUsers } from "@/app/models/oldusers";
+import { IAuthUser } from "@/app/models/authuser";
 import UserAvatar from "@/components/UserAvatar";
 import { Types } from "mongoose";
 import ListItem from "@/components/ListItem";
 import DayIcon from "./DayIcon";
 import { useUser } from "@/app/hooks/hooks";
+
 interface ParticipantItemProps {
   participant: IParticipant;
 }
@@ -35,21 +35,21 @@ export default function ParticipantItem(props: ParticipantItemProps) {
   return (
     <ListItem>
       <Stack direction={'row'} spacing={2}>
-        {<UserAvatar user={user} />}
+        {<UserAvatar user={user as IAuthUser} />}
         <Typography variant="h6">{ParticipantName(props.participant)}</Typography>
       </Stack>
 
       <Stack direction={'row'} spacing={2}>
         {
-          dayBeers.map(daybeer => {
-            if (daybeer.beer) {
+          dayBeers.map((dayBeer, index) => {
+            if (dayBeer.beer) {
               return (
-                <Badge key={daybeer.day} overlap="circular" anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }} badgeContent={<SportsBarIcon fontSize="small" sx={{ color: '#333333' }} />}>
-                  <DayIcon day={daybeer.day} sx={{ border: isAdventDay(daybeer.day) ? '4px solid green' : 'none' }} />
+                <Badge key={index} overlap="circular" anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }} badgeContent={<SportsBarIcon fontSize="small" sx={{ color: '#333333' }} />}>
+                  <DayIcon day={dayBeer.day} sx={{ border: isAdventDay(dayBeer.day) ? '4px solid green' : 'none' }} />a
                 </Badge>);
             }
             else {
-              return (<DayIcon key={daybeer.day} day={daybeer.day} sx={{ border: isAdventDay(daybeer.day) ? '4px solid green' : 'none' }} />);
+              return <DayIcon key={index} day={dayBeer.day} sx={{ border: isAdventDay(dayBeer.day) ? '4px solid green' : '2px solid lightcoral' }} />;
             }
           })
         }

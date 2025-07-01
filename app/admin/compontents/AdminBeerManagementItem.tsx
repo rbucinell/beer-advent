@@ -9,17 +9,18 @@ import ListItem from "@/components/ListItem";
 import { Types } from "mongoose";
 import { IBeer } from "@/app/models/beer";
 import DayIcon from "@/components/DayIcon";
+import { IAuthUser } from "@/app/models/authuser";
 
 interface ParticipantItemProps {
   participant: IParticipant;
-  user: IOldUsers;
+  user: IAuthUser;
   xmas: IParticipant | null;
 }
 
 export default class AdminBeerManagementItem extends Component<ParticipantItemProps, {}> {
 
   participant: IParticipant;
-  user: IOldUsers;
+  user: IAuthUser;
   xmas: IParticipant | null;
   beers: IBeer[];
 
@@ -60,7 +61,7 @@ export default class AdminBeerManagementItem extends Component<ParticipantItemPr
 
   handleSummaryClick = (e: React.MouseEvent) => {
     e.preventDefault();
-    let message = `Hello ${this.user.firstName} your days are ${this.participant.days.join(" & ")}. Your secret santa is ${ParticipantName(this.xmas)}`;
+    let message = `Hello ${this.user.name.split(' ')[0]} your days are ${this.participant.days.join(" & ")}. Your secret santa is ${ParticipantName(this.xmas)}`;
     navigator.clipboard.writeText(message);
     console.log(message);
   }

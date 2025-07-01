@@ -16,13 +16,14 @@ import { toast } from "sonner";
 import { useRouter } from "next/navigation";
 import { Post } from "@/app/util/RequestHelper";
 
+import { mutate } from "swr";
+
 export const dynamic = 'force-dynamic';
 
 export default function Home() {
-
   const eventYear = new Date().getFullYear();
   const { event, eventError, eventLoading } = useEvent({ year: eventYear });
-  const { participants, participantsError, participantsLoading } = useEventParticipants(event);
+  let { participants, participantsError, participantsLoading } = useEventParticipants(event);
   const { data: session, isPending, error, refetch } = authClient.useSession();
 
   async function joinEventHandler(e: React.MouseEvent) {
@@ -31,11 +32,14 @@ export default function Home() {
     if (!session) {
       useRouter().push("/sign-in");
     }
-    const res = await Post(`/api/events/${event.year}/join`, { user: session?.user });
 
-    console.log(res);
-
-    toast("join event");
+    try {
+      const res = await Post(`/api/events/${event.year}/join`, { user: session?.user });
+      toast.success(`Joined Event`);
+      mutate(`/api/events/${event.year}/participants`)
+    } catch (err: any) {
+      toast.error(`Error Joining event: ${err.msg}`);
+    }
   }
 
   return (

@@ -1,21 +1,11 @@
 "use client";
 
-import { useState, useEffect } from "react";
-import {
-  Box,
-  Button,
-  List,
-  ListItem,
-  ListItemButton,
-  ListItemText,
-  Typography,
-} from "@mui/material";
+import { useState } from "react";
+import { Button, List, ListItemText, Typography } from "@mui/material";
 import { IBeer } from "@/app/models/beer";
+import { IEvent } from "@/app/models/event";
 import BeerListItem from "@/components/Beer/BeerListItem";
-import TextField from "@mui/material/TextField";
-import { Get } from "../util/RequestHelper";
 import { useBeers, useEvents } from "@hooks/hooks";
-import { IEvent } from "../models/event";
 
 export default function History() {
   const { events, eventsError, eventsLoading } = useEvents();
@@ -37,20 +27,20 @@ export default function History() {
     <div className="w-full flex flex-col">
       <List dense={true} className="flex flex-row w-full justify-start gap-3">
         <Typography>Go to advent:</Typography>
-        {events && events.toSorted( (a,b) => b.year - a.year )
-            .filter((e) => e.year !== new Date().getFullYear())
-            .map((event: IEvent) => {
-              return (
-                <Button
-                  key={event._id.toString()}
-                  variant="outlined"
-                  className="border bg-slate-100 border-slate-950 rounded"
-                  href={`/event/${event.year}`}
-                >
-                  <ListItemText primary={event.year} />
-                </Button>
-              );
-            })}
+        {events && events.toSorted((a, b) => b.year - a.year)
+          .filter((e) => e.year !== new Date().getFullYear())
+          .map((event: IEvent) => {
+            return (
+              <Button
+                key={event._id.toString()}
+                variant="outlined"
+                className="border bg-slate-100 border-slate-950 rounded"
+                href={`/event/${event.year}`}
+              >
+                <ListItemText primary={event.year} />
+              </Button>
+            );
+          })}
       </List>
 
       <div className="w-full h-full overflow-clip bg-white rounded-lg border border-slate-900">

@@ -2,15 +2,15 @@
 import React, { useEffect, useState } from 'react';
 import { useParams } from 'next/navigation';
 import { Container, Avatar, Typography, List, ListItem, ListItemText, Divider, CircularProgress, Box } from '@mui/material';
-import { IOldUsers } from '@/app/models/oldusers';
+import { IAuthUser } from '@/app/models/authuser';
 import { Get } from '@/app/util/RequestHelper';
 import { IBeer } from '@/app/models/beer';
 import BeerListItem from '@/components/Beer/BeerListItem';
 import UserAvatar from '@/components/UserAvatar';
 
 export default function UserPage() {
-  const { userId } = useParams();
-  const [user, setUser] = useState({} as IOldUsers);
+  const { username } = useParams();
+  const [user, setUser] = useState({} as IAuthUser);
   const [beers, setBeers] = useState([] as IBeer[]);
   const [loading, setLoading] = useState(true);
 
@@ -18,11 +18,12 @@ export default function UserPage() {
     // Fetch user data from the API
     const fetchUserData = async () => {
       try {
-        console.log(userId);
-        const userData = await Get<IOldUsers>(`/api/user/${userId}`);
+        console.log(username);
+        const userData = await Get<IAuthUser>(`/api/user/${user._id.toString()}`);
+        console.log(userData);
         setUser(userData);
         if (userData) {
-          const beerData = await Get<IBeer[]>(`/api/beer?user=${userId}`);
+          const beerData = await Get<IBeer[]>(`/api/beer?user=${user._id}`);
           beerData.sort((a, b) => b.year - a.year);
           setBeers(beerData);
         }
@@ -33,10 +34,10 @@ export default function UserPage() {
       }
     };
 
-    if (userId) {
+    if (username) {
       fetchUserData();
     }
-  }, [userId]);
+  }, [username]);
 
   if (loading) {
     return (
@@ -64,7 +65,7 @@ export default function UserPage() {
       <div style={{ display: 'flex', alignItems: 'center', marginBottom: '1rem' }}>
         <UserAvatar user={user} sx={{ width: 100, height: 100, marginRight: '1rem' }} />
         <div>
-          <Typography variant="h4">{`${user.firstName} ${user.lastName}`}</Typography>
+          <Typography variant="h4">{user.name}</Typography>
           <Typography variant="body1" color="textSecondary">{user.email}</Typography>
         </div>
       </div>

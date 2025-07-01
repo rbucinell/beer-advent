@@ -4,6 +4,7 @@ import { IEvent } from "@models/event";
 import { IParticipant } from "@models/participant";
 import { IOldUsers } from "@models/oldusers";
 import { IBeer } from "../models/beer";
+import { IAuthUser } from "../models/authuser";
 
 
 export function useEvents() {
@@ -25,13 +26,13 @@ export function useEventParticipants(event: IEvent | undefined) {
 }
 
 export function useUsers() {
-  const { data, error, isLoading } = useSWR<IOldUsers[], Error>(`/api/user`, fetcher);
+  const { data, error, isLoading } = useSWR<IAuthUser[], Error>(`/api/user`, fetcher);
   return { users: data, usersError: error, usersLoading: isLoading };
 }
 
 export function useUser(userId: string | undefined) {
   const shouldFetch = userId ? `/api/user/${userId}` : null;
-  const { data, error, isLoading } = useSWR<IOldUsers, Error>(shouldFetch, fetcher);
+  const { data, error, isLoading } = useSWR<IAuthUser | IOldUsers, Error>(shouldFetch, fetcher);
   return { user: data, userError: error, userLoading: isLoading };
 }
 

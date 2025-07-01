@@ -32,5 +32,5 @@ export const oldUserSchema = new Schema<IOldUsers>(
   }
 );
 
-const OldUsers = mongoose.models.Users || mongoose.model<IOldUsers>('Users', oldUserSchema);
+const OldUsers = mongoose.models.OldUsers || mongoose.model<IOldUsers>('OldUsers', oldUserSchema);
 export default OldUsers;

@@ -44,8 +44,14 @@ export const authUserSchema = new Schema<IAuthUser>({
   displayUsername: {
     type: String,
     required: false
-  },
-});
+  }
+},
+  {
+    collection: 'user',
+    toJSON: { virtuals: true },
+    toObject: { virtuals: true }
+  }
+);
 
-const AuthUser = mongoose.models.AuthUser || mongoose.model<IAuthUser>('user', authUserSchema);
+const AuthUser = mongoose.models.AuthUser || mongoose.model<IAuthUser>('AuthUser', authUserSchema);
 export default AuthUser;

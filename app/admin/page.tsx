@@ -6,7 +6,7 @@ import { Stack, Typography } from "@mui/material";
 import { Get } from "@/app/util/RequestHelper";
 import { IEvent } from "@/app/models/event";
 import { IParticipant } from "@/app/models/participant";
-import { IOldUsers } from "@/app/models/oldusers";
+import { IAuthUser } from "@/app/models/authuser";
 
 import AdminBeerManagementItem from "./compontents/AdminBeerManagementItem";
 import PendingItem from "@/components/PendingItem";
@@ -14,7 +14,7 @@ import PendingItem from "@/components/PendingItem";
 type IData = {
   event: IEvent;
   participants: IParticipant[];
-  users: IOldUsers[];
+  users: IAuthUser[];
 }
 
 export default function History() {
@@ -30,10 +30,10 @@ export default function History() {
       const event = await Get<IEvent>(`api/events/${eventYear}`);
       if (!event._id) return;
       const participants = await Get<IParticipant[]>(`api/participant?event=${event._id}`);
-      let users: IOldUsers[] = [];
+      let users: IAuthUser[] = [];
 
       for (const participant of participants) {
-        const user = await Get<IOldUsers>(`api/user/${participant.user}`);
+        const user = await Get<IAuthUser>(`api/user/${participant.user}`);
         users.push(user);
       }
       setData({ event, participants, users });
@@ -54,7 +54,7 @@ export default function History() {
           <AdminBeerManagementItem
             key={index}
             participant={data?.participants[index]}
-            user={data?.users.find(u => u._id === data?.participants[index].user) as IOldUsers}
+            user={data?.users.find(u => u._id === data?.participants[index].user) as IAuthUser}
             xmas={data?.participants.find(p => p._id === data?.participants[index].xmas) as IParticipant}
           />
         )
