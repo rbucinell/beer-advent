@@ -26,14 +26,14 @@ export default function SignIn() {
   async function googleSignup() {
     await authClient.signIn.social({
       provider: 'google',
-      callbackURL: '/dashboard',
+      callbackURL: '/account',
     })
   }
 
   async function onSubmit(values: z.infer<typeof signInAuthFormSchema>) {
     const { email, password } = values;
     const { data, error } = await authClient.signIn.email({
-      email, password, callbackURL: '/dashboard'
+      email, password, callbackURL: '/account'
     }, {
       onRequest: () => {
         toast.info("Please wait...");

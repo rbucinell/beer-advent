@@ -29,7 +29,7 @@ export default function SignIn() {
   async function googleSignup() {
     await authClient.signIn.social({
       provider: 'google',
-      callbackURL: '/dashboard',
+      callbackURL: '/account',
     })
   }
 
@@ -37,7 +37,7 @@ export default function SignIn() {
     const { firstName, lastName, username, email, password } = values;
     authClient.signUp.email({
       name: `${firstName} ${lastName}`, email, username, password, image: "",
-      callbackURL: '/dashboard', //`user/${username}`
+      callbackURL: '/account', //`user/${username}`
     }, {
       onRequest: () => {
         toast.info("Please wait...");

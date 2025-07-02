@@ -34,7 +34,7 @@ export default async function NavBarUserOrLogin() {
           </Avatar>
         </DropdownMenuTrigger>
         <DropdownMenuContent>
-          <DropdownMenuItem>My Account</DropdownMenuItem>
+          <DropdownMenuItem onClick={async () => { "use server"; redirect('/account'); }} >My Account</DropdownMenuItem>
           <DropdownMenuItem>Settings</DropdownMenuItem>
           <DropdownMenuSeparator />
           <DropdownMenuItem asChild>
