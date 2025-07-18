@@ -55,7 +55,7 @@ export default async function Account() {
               </div>
               <div className="space-y-2">
                 <Label htmlFor="username">Username</Label>
-                <Input id="username" defaultValue={user.username} readOnly />
+                <Input id="username" defaultValue={user.username ?? ""} disabled className="text-base-content" />
               </div>
             </div>
             <div className="mt-6 flex justify-end">
