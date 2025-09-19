@@ -64,10 +64,9 @@ export default function History() {
         {beers ? (
           <ul className="max-h-full overflow-auto">
             {search(beers).map((beer) => (
-              <BeerListItem
-                key={`${beer.year}${beer.day}${beer.beer}`}
-                beer={beer}
-              />
+              <div className="rounded-sm border-b border-r border-red-100">
+                <BeerListItem key={`${beer.year}${beer.day}${beer.beer}`} beer={beer} />
+              </div>
             ))}
             <li className="h-16"></li>
           </ul>
