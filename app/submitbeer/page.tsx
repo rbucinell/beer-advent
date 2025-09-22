@@ -7,11 +7,9 @@ const year = new Date().getFullYear();
 
 export default function SubmitBeer() {
   return (
-    <>
-      <Box display="flex" justifyContent="start" sx={{p:2, bgcolor:'white', height: ''}} alignItems="center" height="100%" width="100%" flexDirection={'column'}>
-        <Typography fontFamily={roboto.className} variant='h5'>Submit your {year} advent beer here!</Typography>
-        <BeerForm year={year} />
-    </Box>
-    </>    
+    <div className={`flex flex-col justify-start w-full h-full p-2 font-${roboto.className}`}>
+      <p className="self-center">Submit your {year} advent beer here!</p>
+      <BeerForm year={year} />
+    </div>
   );
 }

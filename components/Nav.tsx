@@ -12,15 +12,20 @@ export default async function Nav() {
         <AppBar component="nav" position="static" >
           <Container>
             <Toolbar>
-              <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
+              
+              <h6 className="h-6 flex flex-grow uppercase font-bold"><Link href="/">Home</Link></h6>
+              <h6 className="h-6 flex flex-grow uppercase font-bold"><Link href="/history">History</Link></h6>
+              <h6 className="h-6 flex flex-grow uppercase font-bold disabled-link"><Link href="/submitbeer">Submit</Link></h6>
+{/* 
+              <Typography variant="h6" component="div" sx={{ flexGrow: 1, flexShrink: 1 }}>
                 <Link href="/">Home </Link>
               </Typography>
-              <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
+              <Typography variant="h6" component="div" sx={{ flexGrow: 1, flexShrink: 1 }}>
                 <Link href="/history">History </Link>
               </Typography>
-              <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
+              <Typography variant="h6" component="div" sx={{ flexGrow: 1, flexShrink: 1 }}>
                 <Link className='disabled-link' href="/submitbeer">Submit Beer</Link>
-              </Typography>
+              </Typography> */}
               <NavBarUserOrLogin />
             </Toolbar>
           </Container>

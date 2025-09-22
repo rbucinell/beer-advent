@@ -62,8 +62,7 @@ export default function Home() {
         {event && event.exchange && <Typography>Exchange: ({AbrvDate(event.exchange.date)} @ {event.exchange.location.name})</Typography>}
         {Array.from({ length: 12 }, (_, index) =>
           participants && participants[index] ? (
-            <Fragment><ParticipantItem key={participants[index]._id.toString()} participant={participants[index]} />
-            <span>{participants[index]._id}</span></Fragment>
+            <ParticipantItem key={participants[index]._id.toString()} participant={participants[index]} />
           ) :
             (<PendingItem key={index} />)
         )}

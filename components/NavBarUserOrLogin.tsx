@@ -17,12 +17,11 @@ export default async function NavBarUserOrLogin() {
   const session = await auth.api.getSession({
     headers: await headers()
   });
-  return <span>
+  return (
+  <span className="border border-red-500">
     {session ? <form action={async () => {
       "use server";
-      await auth.api.signOut({
-        headers: await headers()
-      });
+      await auth.api.signOut({ headers: await headers() });
       redirect("/");
     }}>
       <DropdownMenu>
@@ -62,8 +61,10 @@ export default async function NavBarUserOrLogin() {
           </DropdownMenuItem>
         </DropdownMenuContent>
       </DropdownMenu>
-    </form> : <Link href='/sign-in' className={buttonVariants({ variant: 'default' })}>Sign In</Link>
+    </form> : 
+      <h6 className={`h-6 flex flex-grow uppercase font-bold`}>
+        <Link href='/sign-in'>Sign In</Link>
+      </h6>
     }
-  </span >
-  // return ()
+  </span >)
 }

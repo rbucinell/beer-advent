@@ -5,9 +5,10 @@ import { IParticipant } from "@/app/models/participant";
 import { ParticipantName } from "@/app/models/participant_util";
 import { IOldUsers } from "@/app/models/oldusers";
 import { Get } from "@/app/util/RequestHelper";
-import { Autocomplete, Button, GridLegacy, TextField, TextFieldVariants, Typography } from "@mui/material";
+import { Autocomplete, Button, Grid, GridItem, Paper, styled, TextField, TextFieldVariants, Typography } from "@mui/material";
 import SearchIcon from '@mui/icons-material/Search';
 import { ChangeEvent, useEffect, useState } from "react";
+import { Check } from "@mui/icons-material";
 
 interface BeerData {
   brewer: string;
@@ -32,6 +33,18 @@ const initBeer: BeerData = {
   untappd: '',
   state: 'pending'
 };
+
+const GridItem = styled(Paper)(({ theme }) => ({
+  backgroundColor: '#fff',
+  ...theme.typography.body2,
+  padding: theme.spacing(1),
+  textAlign: 'center',
+  color: (theme.vars ?? theme).palette.text.secondary,
+  ...theme.applyStyles('dark', {
+    backgroundColor: '#1A2027',
+  }),
+}));
+
 
 export default function BeerForm(props: { year: string | number; }) {
 
@@ -111,10 +124,32 @@ export default function BeerForm(props: { year: string | number; }) {
   return (
     <>
       <form onSubmit={handleSubmit}>
-        <GridLegacy container spacing={3}>
-          <GridLegacy item xs={12}>{StandardTextField('beer', 'Beer Name', "text")}</GridLegacy>
-          <GridLegacy item xs={12}>{StandardTextField('brewer', 'Brewery Name', "text")}</GridLegacy>
-          <GridLegacy item xs={12}>
+        <div className="bg-white rounded-md p-2 flex flex-col justify-start w-full h-full">
+          <div className="my-2">{StandardTextField('beer', 'Beer Name', "text")}</div>
+          <div className="my-2">{StandardTextField('brewer', 'Brewery Name', "text")}</div>
+            <Typography className="text-gray-400 italic">Optional Fields</Typography>
+            <div className="flex flex-row">
+              {StandardTextField('type', "Beer Type", "text", false)}
+              {StandardTextField('abv', "ABV", "text", false)}
+            </div>
+            {StandardTextField('beeradvocate', "Beer Advocate URL", "text", false)}
+            {StandardTextField('untappd', "Untappd URL", "text", false)}
+            <div className="my-2 flex flex-row justify-center gap-2">
+            <Button variant="outlined" type="button" onClick={clearForm}>Clear</Button>
+            <Button className="bg-orange-600 mx-1" variant="contained" type="button" color="warning" disabled={!beer.beer} onClick={checkBeer}>
+              < SearchIcon />Check
+            </Button>
+              <Button className="bg-blue-600 mx-1" variant="contained" type="submit" color="primary" disabled={!beer.beer || !beer.brewer || !participant} >
+                <Check /> Submit
+              </Button>
+            </div>
+        </div>
+
+
+        {/* <Grid container spacing={3}>
+          <GridItem xs={12}>{StandardTextField('beer', 'Beer Name', "text")}</GridItem>
+          <GridItem xs={12}>{StandardTextField('brewer', 'Brewery Name', "text")}</GridItem>
+          <GridItem xs={12}>
             <Typography>Who is submitting this beer?</Typography>
             <Autocomplete id="brewerName" options={participants}
               onChange={(e, newVal) => { setParticipant(newVal); }}
@@ -122,20 +157,20 @@ export default function BeerForm(props: { year: string | number; }) {
               renderOption={(props, option) => (<li {...props} key={props.id} >{ParticipantName(option)}</li>)}
               renderInput={(params) => <TextField key={params.id} required {...params} label="Name" />}
             />
-          </GridLegacy>
-          <GridLegacy item xs={12}><Typography className="text-gray-400 italic">Optional Fields</Typography></GridLegacy>
-          <GridLegacy item sm={9} xs={8}> {StandardTextField('type', "Beer Type", "text", false)}</GridLegacy>
-          <GridLegacy item sm={2} xs={3}> {StandardTextField('abv', "ABV", "text", false)}</GridLegacy>
-          <GridLegacy item xs={12}> {StandardTextField('beeradvocate', "Beer Advocate URL", "text", false)}</GridLegacy>
-          <GridLegacy item xs={12}> {StandardTextField('untappd', "Untappd URL", "text", false)}</GridLegacy>
-          <GridLegacy item xs={12}>
+          </GridItem>
+          <GridItem xs={12}><Typography className="text-gray-400 italic">Optional Fields</Typography></GridItem>
+          <GridItem sm={9} xs={8}> {StandardTextField('type', "Beer Type", "text", false)}</GridItem>
+          <GridItem sm={2} xs={3}> {StandardTextField('abv', "ABV", "text", false)}</GridItem>
+          <GridItem xs={12}> {StandardTextField('beeradvocate', "Beer Advocate URL", "text", false)}</GridItem>
+          <GridItem xs={12}> {StandardTextField('untappd', "Untappd URL", "text", false)}</GridItem>
+          <GridItem xs={12}>
             <Button className="bg-blue-600 mx-1" variant="contained" type="submit" color="primary" disabled={!beer.beer || !beer.brewer || !participant} >Submit</Button>
             <Button className="bg-orange-600 mx-1" variant="contained" type="button" color="warning" disabled={!beer.beer} onClick={checkBeer}>
               < SearchIcon />Check
             </Button>
             <Button variant="outlined" type="button" onClick={clearForm}>Clear</Button>
-          </GridLegacy>
-        </GridLegacy>
+          </GridItem>
+        </Grid> */}
       </form>
       <div className="bg-slate-100 flex flex-col">
         {error && error.map((e, i) => (
