@@ -1,6 +1,6 @@
 "use client";
 
-import React from "react";
+import React, { Fragment } from "react";
 import { useEvent, useEventParticipants } from "@hooks/hooks";
 import { Button, Stack, Typography } from "@mui/material";
 import { PersonAdd, SportsBar } from "@mui/icons-material";
@@ -51,7 +51,7 @@ export default function Home() {
           <RulesButton event={event} />
           <DirectionsButton event={event} />
         </Stack>
-
+        {session?.user?.id}
         {event && session && !participants?.some((p: IParticipant) => p._id.toString() === session?.user?.id) && event.exchange && new Date() <= new Date(event.exchange.date) &&
           <Button startIcon={<PersonAdd />} type="button" variant="contained" color="success" onClick={joinEventHandler}>
             Join
@@ -62,7 +62,8 @@ export default function Home() {
         {event && event.exchange && <Typography>Exchange: ({AbrvDate(event.exchange.date)} @ {event.exchange.location.name})</Typography>}
         {Array.from({ length: 12 }, (_, index) =>
           participants && participants[index] ? (
-            <ParticipantItem key={participants[index]._id.toString()} participant={participants[index]} />
+            <Fragment><ParticipantItem key={participants[index]._id.toString()} participant={participants[index]} />
+            <span>{participants[index]._id}</span></Fragment>
           ) :
             (<PendingItem key={index} />)
         )}
