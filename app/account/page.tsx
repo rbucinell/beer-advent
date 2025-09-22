@@ -51,7 +51,7 @@ export default async function Account() {
               </div>
               <div className="space-y-2">
                 <Label htmlFor="email">Email</Label>
-                <Input id="email" type="email" defaultValue="john@example.com" />
+                <Input id="email" type="email" defaultValue={user.email} />
               </div>
               <div className="space-y-2">
                 <Label htmlFor="username">Username</Label>
