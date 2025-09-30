@@ -9,14 +9,8 @@ import ParticipantItem from "@/components/ParticipantItem";
 import PendingItem from "@/components/PendingItem";
 import DirectionsButton from "@/components/Index/DirectionsButton";
 import RulesButton from "@/components/Index/RulesButton";
+import JoinLeaveEventButton from "@/components/Index/JoinLeaveEventButton";
 import { authClient } from "@/lib/auth-client";
-
-import { IParticipant } from "@models/participant";
-import { toast } from "sonner";
-import { useRouter } from "next/navigation";
-import { Post } from "@/app/util/RequestHelper";
-
-import { mutate } from "swr";
 
 export const dynamic = 'force-dynamic';
 
@@ -25,22 +19,6 @@ export default function Home() {
   const { event, eventError, eventLoading } = useEvent({ year: eventYear });
   let { participants, participantsError, participantsLoading } = useEventParticipants(event);
   const { data: session, isPending, error, refetch } = authClient.useSession();
-
-  async function joinEventHandler(e: React.MouseEvent) {
-    e.preventDefault();
-    if (!event) return;
-    if (!session) {
-      useRouter().push("/sign-in");
-    }
-
-    try {
-      const res = await Post(`/api/events/${event.year}/join`, { user: session?.user });
-      toast.success(`Joined Event`);
-      mutate(`/api/events/${event.year}/participants`)
-    } catch (err: any) {
-      toast.error(`Error Joining event: ${err.msg}`);
-    }
-  }
 
   return (
     <div className="w-full p-2 max-w-3xl mx-auto">
@@ -51,12 +29,9 @@ export default function Home() {
           <RulesButton event={event} />
           <DirectionsButton event={event} />
         </Stack>
-        {session?.user?.id}
-        {event && session && !participants?.some((p: IParticipant) => p._id.toString() === session?.user?.id) && event.exchange && new Date() <= new Date(event.exchange.date) &&
-          <Button startIcon={<PersonAdd />} type="button" variant="contained" color="success" onClick={joinEventHandler}>
-            Join
-          </Button>
-        }
+        
+        <JoinLeaveEventButton event={event} />
+
       </Stack>
       <Stack spacing={0.5}>
         {event && event.exchange && <Typography>Exchange: ({AbrvDate(event.exchange.date)} @ {event.exchange.location.name})</Typography>}
