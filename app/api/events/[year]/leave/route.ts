@@ -6,6 +6,7 @@ import Participant, { IParticipant } from '@/app/models/participant';
 import AuthUser from '@/app/models/authuser';
 import OldUsers from '@/app/models/oldusers';
 import { User } from "better-auth";
+import Beer from "@/app/models/beer";
 
 export async function POST(req: NextRequest, route: { params: Promise<{ year: string }> }) {
   try {
@@ -25,6 +26,12 @@ export async function POST(req: NextRequest, route: { params: Promise<{ year: st
 
     if( !participatingUser ){
       return NextResponse.json({ msg: "User is already not participating" }, { status: 403 });
+    }
+
+    //Remove any beers that they were temporarily adding
+    for( let beerId  of participatingUser.beers ){
+      await Beer.findByIdAndDelete( beerId );
+      console.log( "Beer deleted " + beerId);
     }
 
     const removedParticipant = await Participant.deleteOne( participatingUser );
