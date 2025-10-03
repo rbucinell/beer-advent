@@ -4,6 +4,7 @@ import { NextRequest, NextResponse } from "next/server";
 import Participant, { IParticipant } from '@/app/models/participant';
 import Beer, { IBeer } from '@/app/models/beer';
 import OldUsers from '@/app/models/oldusers';
+import AuthUser from '@/app/models/authuser';
 import { beerTooSimilar } from '@/app/util/BeerProximity';
 
 export async function GET(req: NextRequest) {
@@ -23,7 +24,7 @@ export async function POST(req: NextRequest) {
     const json = await req.json();
     const beer: IBeer = json;
     const participant: IParticipant = json.participant;
-    const user = await OldUsers.findById(participant.user);
+    const user = await AuthUser.findById(participant.user);
 
     //Does Participant already have two beers?
     participant.beers = participant.beers.filter(_ => _ != null);
@@ -46,7 +47,7 @@ export async function POST(req: NextRequest) {
     const created = await Beer.create(beer);
 
     //Update Participant
-    const updatingParticipant = await Participant.findById(json.participant._id);
+    const updatingParticipant = await Participant.findById(participant._id);
     if (updatingParticipant) {
 
       const participantBeers = updatingParticipant.beers.filter((_: Types.ObjectId | null) => _ != null);
