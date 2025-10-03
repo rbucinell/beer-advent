@@ -10,24 +10,25 @@ import { Types } from "mongoose";
 import { IBeer } from "@/app/models/beer";
 import DayIcon from "@/components/DayIcon";
 import { IAuthUser } from "@/app/models/authuser";
+import { toast } from "sonner";
 
 interface ParticipantItemProps {
   participant: IParticipant;
-  user: IAuthUser;
+  //user: IAuthUser;
   xmas: IParticipant | null;
 }
 
 export default class AdminBeerManagementItem extends Component<ParticipantItemProps, {}> {
 
   participant: IParticipant;
-  user: IAuthUser;
+  //user: IAuthUser;
   xmas: IParticipant | null;
   beers: IBeer[];
 
   constructor(props: ParticipantItemProps) {
     super(props);
     this.participant = props.participant;
-    this.user = props.user;
+    //this.user = props.user;
     this.xmas = props?.xmas;
     this.beers = [];
   }
@@ -61,9 +62,9 @@ export default class AdminBeerManagementItem extends Component<ParticipantItemPr
 
   handleSummaryClick = (e: React.MouseEvent) => {
     e.preventDefault();
-    let message = `Hello ${this.user.name.split(' ')[0]} your days are ${this.participant.days.join(" & ")}. Your secret santa is ${ParticipantName(this.xmas)}`;
+    let message = `Hello ${this.participant.name} your days are ${this.participant.days.join(" & ")}. Your secret santa is ${ParticipantName(this.xmas)}`;
     navigator.clipboard.writeText(message);
-    console.log(message);
+    toast.info(message);
   }
 
   swapBeers = async (e: React.MouseEvent) => {
@@ -86,42 +87,37 @@ export default class AdminBeerManagementItem extends Component<ParticipantItemPr
 
   render(): ReactNode {
     return (
-      <ListItem sx={{ alignItems: 'flex-start', flexWrap: 'wrap' }}>
-        <Stack direction={'column'} alignItems={'flex-start'}>
-          <Typography variant="h5" sx={{ textOverflow: 'ellipsis' }}>👤{ParticipantName(this.props.participant)}</Typography>
-          <Typography variant="caption" sx={{ textOverflow: 'ellipsis' }}>🎅{ParticipantName(this.props.xmas)}</Typography>
-        </Stack>
-        <Stack direction={'row'} flexWrap={'wrap'} alignItems={'flex-end'}>
-          <Stack direction={{ xs: 'row', sm: 'column' }} spacing={1} alignItems={'flex-end'}>
-            <Stack direction={'row'} spacing={1}>
-              {this.beers[0] && (
-                <Stack direction={'row'} spacing={1} alignItems={'flex-start'}>
-                  <IconButton type="button" size="small" sx={{ outline: '1px solid' }} onClick={(e) => this.removeBeer(e, this.beers[0])}>
-                    <Delete fontSize="small" />
-                  </IconButton>
-                  <Typography>{this.beers[0].beer}. {this.beers[0].brewer}</Typography>
-                </Stack>
-              )}
-              <DayIcon day={Math.min(...this.props.participant.days)} />
-            </Stack>
+      <ListItem sx={{ alignItems: 'flex-start', display: 'flex', flexWrap: 'wrap' }}>
 
-            <Stack direction={'row'} spacing={1} >
-              {this.beers[1] && (
-                <Stack direction={'row'} spacing={1} alignItems={'flex-start'}>
-                  <IconButton type="button" size="small" sx={{ outline: '1px solid' }} onClick={(e) => this.removeBeer(e, this.beers[1])}>
-                    <Delete fontSize="small" />
-                  </IconButton>
-                  <Typography>{this.beers[1].beer}. {this.beers[1].brewer}</Typography>
-                </Stack>
-              )}
-              <DayIcon day={Math.max(...this.props.participant.days)} />
-            </Stack>
-          </Stack>
-          <Stack direction={{ xs: 'row', sm: 'column' }} spacing={1} sx={{ ml: 2 }}>
+        <div className="w-full flex flex-row items-start justify-between">
+          <span className="text-xl">👤{ParticipantName(this.props.participant)}</span>
+          <span className="text-sm self-center">🎅{ParticipantName(this.props.xmas)}</span>
+        </div>
+
+        {
+          this.participant.days.map ( (day,i) => {
+            const beer = this.beers[i];
+            return <div key={i} className="w-full flex gap-1 mb-2">
+              <DayIcon day={day} />
+              <div className="flex flex-col grow items-start px-2">
+                {beer && <>
+                  <h3 className="font-bold">{beer.beer}</h3>
+                  <h3>{beer.brewer}</h3>
+                </>}
+              </div>
+              {beer &&
+              <IconButton type="button" size="medium" sx={{ outline: '1px solid', aspectRatio: 1 }} onClick={(e) => this.removeBeer(e, beer)}>
+                <Delete fontSize="small" />
+              </IconButton>}
+            </div>
+          })
+        }
+        
+        <div className="flex flex-row justify-center w-full gap-2">
             <Button type="button" variant="outlined" color="info" startIcon={<SwapVert />} disabled={this.beers.length < 2} onClick={this.swapBeers.bind(this)}>Swap Days</Button>
             <Button type="button" variant="outlined" color="secondary" startIcon={<Textsms />} onClick={this.handleSummaryClick.bind(this)}>Summary</Button>
-          </Stack>
-        </Stack>
+        </div>
+
       </ListItem>
     );
   }
