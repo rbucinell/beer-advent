@@ -18,7 +18,7 @@ export default async function NavBarUserOrLogin() {
     headers: await headers()
   });
   return (
-  <span className="border border-red-500">
+  <span className="">
     {session ? <form action={async () => {
       "use server";
       await auth.api.signOut({ headers: await headers() });
@@ -34,7 +34,6 @@ export default async function NavBarUserOrLogin() {
         </DropdownMenuTrigger>
         <DropdownMenuContent>
           <DropdownMenuItem onClick={async () => { "use server"; redirect('/account'); }} >My Account</DropdownMenuItem>
-          <DropdownMenuItem>Settings</DropdownMenuItem>
           <DropdownMenuSeparator />
           <DropdownMenuItem asChild>
             <AlertDialog >

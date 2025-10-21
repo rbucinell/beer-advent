@@ -6,6 +6,7 @@ export interface IOldUsers extends Document {
   lastName: string;
   email: string;
   imageUrl: string;
+  claimedBy: Types.ObjectId;
 }
 
 export const oldUserSchema = new Schema<IOldUsers>(
@@ -23,7 +24,12 @@ export const oldUserSchema = new Schema<IOldUsers>(
       required: [true, "Email is required"],
       unique: true
     },
-    imageUrl: String
+    imageUrl: String,
+    claimedBy:{
+      type: Schema.Types.ObjectId,
+      required: false,
+      ref: 'User'
+    }
   },
   {
     collection: 'oldusers',

@@ -19,6 +19,8 @@ export default function ParticipantItem(props: ParticipantItemProps) {
 
   const { user } = useUser(props.participant.user.toString());
 
+  console.log( props.participant );
+
   let dayBeers: { day: number, beer: Types.ObjectId | null }[];
   const beers = props.participant.beers.filter(_ => _ != null);
   dayBeers = [...props.participant.days].map(day => { return { day, beer: null } });
@@ -35,21 +37,23 @@ export default function ParticipantItem(props: ParticipantItemProps) {
   return (
     <ListItem>
       <Stack direction={'row'} spacing={2}>
-        {<UserAvatar user={user as IAuthUser} />}
-        <Typography variant="h6">{ParticipantName(props.participant)}</Typography>
+        <UserAvatar user={user as IAuthUser} />
+        <Typography variant="h6">{ ParticipantName(props.participant) }</Typography>
       </Stack>
 
       <Stack direction={'row'} spacing={2}>
-        {
-          dayBeers.map((dayBeer, index) => {
+        { dayBeers.map((dayBeer, index) => {
             if (dayBeer.beer) {
               return (
                 <Badge key={index} overlap="circular" anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }} badgeContent={<SportsBarIcon fontSize="small" sx={{ color: '#333333' }} />}>
-                  <DayIcon day={dayBeer.day} sx={{ border: isAdventDay(dayBeer.day) ? '4px solid green' : 'none' }} />a
-                </Badge>);
+                  <DayIcon day={dayBeer.day} sx={{ border: isAdventDay(dayBeer.day) ? '4px solid green' : '2px solid lightcoral' }} />
+                </Badge>
+              );
             }
             else {
-              return <DayIcon key={index} day={dayBeer.day} sx={{ border: isAdventDay(dayBeer.day) ? '4px solid green' : '2px solid lightcoral' }} />;
+              return (
+              <DayIcon key={index} day={dayBeer.day} sx={{ border: isAdventDay(dayBeer.day) ? '4px solid green' : '2px solid lightcoral' }} />
+              );
             }
           })
         }

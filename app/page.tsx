@@ -4,7 +4,7 @@ import React, { Fragment } from "react";
 import { useEvent, useEventParticipants } from "@hooks/hooks";
 import { Button, Stack, Typography } from "@mui/material";
 import { PersonAdd, SportsBar } from "@mui/icons-material";
-
+import { AbrvDate } from "./util/fns";
 import ParticipantItem from "@/components/ParticipantItem";
 import PendingItem from "@/components/PendingItem";
 import DirectionsButton from "@/components/Index/DirectionsButton";
@@ -45,14 +45,4 @@ export default function Home() {
       <Typography variant="caption"><SportsBar fontSize="small" sx={{ color: '#333333' }} /> = Beer Submitted</Typography>
     </div>
   );
-}
-
-/**
- * Given a date string, return a short version of the date
- * @param {string} d date string
- * @returns {string} short version of the date
- */
-function AbrvDate(d: Date) {
-  const date = new Date(d);
-  return `${date.getMonth() + 1}/${date.getDate()} - ${date.getHours().toString().padStart(2, '0')}:${date.getMinutes().toString().padStart(2, '0')}`;
 }

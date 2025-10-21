@@ -21,8 +21,9 @@ export default function JoinLeaveEventButton( props: JoinLeaveEventProps ){
 
     const isBeforeExchange = event && event.exchange && new Date() <= new Date(event.exchange.date);
     console.log( event, new Date(), isBeforeExchange);
+    const { participants, participantsError, participantsLoading } = useEventParticipants(event);    
     const { data: session, isPending, error, refetch } = authClient.useSession();
-    const { participants, participantsError, participantsLoading } = useEventParticipants(event);
+    
     const isParticipating = participants?.find( p => p.user?.toString() == session?.user?.id) != undefined;
     
     
@@ -60,7 +61,7 @@ export default function JoinLeaveEventButton( props: JoinLeaveEventProps ){
             <Fragment />
         }
         {eventExists && session == null && 
-            <Button startIcon={<PersonAdd />} type="button" variant="contained" color="success">
+            <Button type="button" variant="contained" color="success" disabled>
                 Sign In to Join!
             </Button>
         }

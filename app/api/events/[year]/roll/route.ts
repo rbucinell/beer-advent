@@ -1,7 +1,8 @@
 import connectDB from '@/lib/mongodb';
-import Event from '@/app/models/event';
-import Participant from '@/app/models/participant';
+import Event, { IEvent } from '@/app/models/event';
+import Participant, { IParticipant } from '@/app/models/participant';
 import { NextRequest, NextResponse } from "next/server";
+import Beer from '@/app/models/beer';
 
 const shuffle = (a: number, b: number) => 0.5 - Math.random();
 
@@ -12,17 +13,15 @@ export async function POST(req: NextRequest, route: { params: Promise<{ year: st
     await connectDB();
     const { year } = await route.params;
     const json = await req.json();
+    
     //Ensure Inputs
     if (!json.days && !json.xmas) {
       return NextResponse.json({ msg: ["days or xmas is required"] }, { status: 400 });
     }
 
-    //Get Event
-    const event = await Event.findOne({ year });
+    const { event, participants } = await GetEventAndParticipants( year );
     if (!event) return NextResponse.json({ msg: ["Event not found"] }, { status: 404 });
 
-    //Get Participants
-    const participants = await Participant.find({ event: event });
 
     if (json.days) {
 
@@ -34,22 +33,31 @@ export async function POST(req: NextRequest, route: { params: Promise<{ year: st
       for (let i = 0; i < participants.length; i++) {
         let participant = participants[i];
         participant.days = [lowerNumbers[i], upperNumbers[i]];
-        await participant.save();
+
+        if( participant.beers[0])
+          await Beer.findByIdAndUpdate( participant.beers[0]._id, { day: lowerNumbers[i]});
+        if( participant.beers[1])
+          await Beer.findByIdAndUpdate( participant.beers[1]._id, { day: upperNumbers[i]});
+
+        const response = await Participant.findByIdAndUpdate( participant._id, participant );
       }
     }
 
     if (json.xmas) {
       console.log("Rolling Xmas");
+
       let santas = participants.map(p => p._id);
+      
       let rot = Math.random() * participants.length + 1;
+      if( rot === participants.length ) rot++;   
+      
       for (let i = 0; i < rot; i++) {
-        santas.push(santas.shift());
+        const id = santas.shift();
+        if( id ) santas.push(id);
       }
 
       for (let participant of participants) {
-        participant.xmas = santas.shift();
-        console.log(participant.xmas);
-        await participant.save();
+        await Participant.findByIdAndUpdate( participant._id, { xmas: santas.shift()} );
       }
 
     }
@@ -59,3 +67,39 @@ export async function POST(req: NextRequest, route: { params: Promise<{ year: st
     return NextResponse.json({ msg: ["Unable to roll for Event"], error }, { status: 500 });
   }
 }
+
+export async function DELETE( req: NextRequest, route: { params: Promise< { year: string }> }) {
+  try {
+    await connectDB();
+    const { year } = await route.params;
+    const json = await req.json();
+
+    //Ensure Inputs
+    if (!json.days && !json.xmas) {
+      return NextResponse.json({ msg: ["days or xmas is required"] }, { status: 400 });
+    }
+
+    const { event, participants } = await GetEventAndParticipants( year );
+    if (!event) return NextResponse.json({ msg: ["Event not found"] }, { status: 404 });
+
+    if( json.days ){
+      await Participant.updateMany( { event:event._id }, { $set: { days:[null, null]} } );
+    }
+
+    if( json.xmas ){
+      await Participant.updateMany( { event:event._id }, { $set: { xmas: null } } );
+    }
+    return NextResponse.json({ status: 201 } );
+
+  } catch (error) {
+    console.log(error);
+    return NextResponse.json({ msg: ["Unable to roll for Event"], error }, { status: 500 });
+  }
+}
+
+async function GetEventAndParticipants( year:string|number ): Promise<{ event:IEvent|null, participants:IParticipant[] }> {
+    const event = await Event.findOne({ year });
+    const participants = event ? await Participant.find({ event: event }) : [];
+    return { event, participants };
+}
+

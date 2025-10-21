@@ -1,28 +1,15 @@
 "use client";
 
-import { useState, useEffect } from "react";
 import { Stack, Typography } from "@mui/material";
-
 import { useEvent, useEventParticipants } from "@hooks/hooks";
 import { authClient } from "@/lib/auth-client";
-
-import { Get, Post } from "@/app/util/RequestHelper";
-import { getParticipant } from "@/app/util/participation";
-
-import { IEvent } from "@/app/models/event";
+import { Get, Post, Delete } from "@/app/util/RequestHelper";
 import { IParticipant } from "@/app/models/participant";
-import { IAuthUser } from "@/app/models/authuser";
-
 import AdminBeerManagementItem from "./compontents/AdminBeerManagementItem";
 import PendingItem from "@/components/PendingItem";
 import { useParams } from "next/navigation";
 import { Button } from "@/components/ui/button";
-
-type IData = {
-  event: IEvent;
-  participants: IParticipant[];
-  users: IAuthUser[];
-}
+import { toast } from "sonner";
 
 export default function Admin() {
 
@@ -33,31 +20,15 @@ export default function Admin() {
   const { event, eventError, eventLoading } = useEvent({ year });
   const { participants, participantsError, participantsLoading } = useEventParticipants(event);  
   
-  //const [users, setUsers] = useState([] as IAuthUser[]);
-  const [data, setData] = useState({} as IData);
 
-  // useEffect(() => {
-  //   (async () => {
-
-  //     if( !participants ) return;
-  //     console.log( 'admin page participants', participants)
-
-  //     // const event = await Get<IEvent>(`api/events/${year}`);
-  //     // if (!event._id) return;
-  //     // const participants = await Get<IParticipant[]>(`api/participant?event=${event._id}`);
-  //     let users: IAuthUser[] = [];
-  //     for (const participant of participants) {
-  //       const user = await Get<IAuthUser>(`/api/user/${participant.user}`);
-  //       console.log( 'user found', user );
-  //       users.push(user);
-  //     }
-  //     console.log( 'users', users);
-  //     setUsers( users );
-  //     // setData({ event, participants, users });
-
-  //   })();
-  // }, [participants]);
-
+  async function handleClearDaysDaysClick(e: React.MouseEvent) {
+    e.preventDefault();
+    if( !event) return;
+    const response = await Delete( `/api/events/${event.year}/roll`, { days: true }) as any;
+    if( response.status === 201 ){
+      toast.info( "Successfully Purged Rolls");
+    }
+  }
 
   async function handleRollNumbersClick(e: React.MouseEvent) {
       e.preventDefault();
@@ -65,14 +36,25 @@ export default function Admin() {
       await Post(`/api/events/${event.year}/roll`, {
         days: true
       });
+      toast.info("Rolls generated");
     }
 
-      async function handleRollSecretClick(e: React.MouseEvent) {
+  async function handleRollSecretClick(e: React.MouseEvent) {
     e.preventDefault();
     if (!event) return;
     await Post(`/api/events/${event.year}/roll`, {
       xmas: true
     });
+    toast.info("Secret Santa selected");
+  }
+
+  async function handleClearSecretClick(e: React.MouseEvent) {
+    e.preventDefault();
+    if( !event ) return;
+    const response = await Delete( `/api/events/${event.year}/roll`, { xmas: true}) as any;
+    if( response.status === 201 ){
+      toast.info( "Successfully Purged Secret Santas");
+    }
   }
 
   return (
@@ -88,12 +70,13 @@ export default function Admin() {
               <Typography variant="h6">{event?.name}🎄</Typography>
             </div>
             <div className="flex flex-row gap-1">
-              <Button className="text-xs" onClick={handleRollNumbersClick}>🎲 Roll Numbers</Button>
-              <Button className="text-xs" onClick={handleRollSecretClick}>🎅 Roll Secret Santa</Button>
+              <Button className="text-xs" onClick={handleRollNumbersClick}>Roll 📅</Button>
+              <Button className="text-xs" onClick={handleClearDaysDaysClick}>Clear 📅</Button>
+              <Button className="text-xs" onClick={handleRollSecretClick}>Roll 🎅</Button>
+              <Button className="text-xs" onClick={handleClearSecretClick}>Clear 🎅</Button>
             </div>
           </div>
-          
-
+        
          <Stack spacing={0.5}>
 
           { participants?.map( (participant,index) =>{
@@ -113,14 +96,4 @@ export default function Admin() {
       }
     </div>
   );
-}
-
-/**
- * Given a date string, return a short version of the date
- * @param {string} d date string
- * @returns {string} short version of the date
- */
-function AbrvDate(d: Date) {
-  const date = new Date(d);
-  return `${date.getMonth() + 1}/${date.getDate()} - ${date.getHours().toString().padStart(2, '0')}:${date.getMinutes().toString().padStart(2, '0')}`;
 }

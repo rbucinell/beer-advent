@@ -19,6 +19,7 @@ export async function PUT(req: NextRequest) {
     await connectDB();
     const json = await req.json();
     const id = req.nextUrl.searchParams.get('id');
+    
     const participant = await Participant.findOne({ _id: id });
     if (!participant) return NextResponse.json({ msg: ["Participant not found"] }, { status: 404 });
 

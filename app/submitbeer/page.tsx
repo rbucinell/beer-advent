@@ -1,18 +1,23 @@
 "use client";
 
-import { ChangeEvent, useState } from "react";
+import { ChangeEvent, Fragment, useEffect, useState } from "react";
 import { useBeers, useEvent, useEventParticipants } from "@hooks/hooks";
 import { authClient } from "@/lib/auth-client";
 
-import { Get, Post } from "@/app/util/RequestHelper";
-import { getParticipant } from "@/app/util/participation";
+import { Get, Post, Put, Delete } from "@/app/util/RequestHelper";
+import { getEventParticipant } from "@/app/util/participation";
 
-import { Button, TextField, TextFieldVariants, Typography } from "@mui/material";
-import { Check, Delete, Remove, Search } from "@mui/icons-material";
+import { AvatarGroup, Button, IconButton, TextField, TextFieldVariants, Typography } from "@mui/material";
+import { Check, Delete as DeleteIcon, Remove, Search } from "@mui/icons-material";
 
 import { toast } from "sonner";
 import { BeerSimilarityValidation } from "../api/beer/check/BeerSimilarityValidation";
-import { Cross } from "lucide-react";
+import {Alert} from "../components/ui/alert";
+import Link from "next/link";
+import Participant, { IParticipant } from "../models/participant";
+import { mutate } from "swr";
+import DayIcon from "@/components/DayIcon";
+import { Shuffle } from "lucide-react";
 
 interface IBeerFormData {
   brewer: string;
@@ -44,16 +49,24 @@ export default function SubmitBeer() {
   const { data: session, isPending, error: sessionError, refetch } = authClient.useSession();
   const { event, eventError, eventLoading } = useEvent({ year: year });
   const { participants, participantsError, participantsLoading } = useEventParticipants( event );
+  const [ authParticipant, setAuthParticipant ] = useState<IParticipant|null>( null );
   const { beers, beersError, beersLoading} = useBeers();
   const [beer, setBeer] = useState<IBeerFormData>(initBeer);
   const [error, setError] = useState<string[] | null>([]);
   const [success, setSuccess] = useState(false);
 
+  useEffect(() => {
+  if (participants && session?.user?.id) {
+    const found = participants.find(p => p.user.toString() === session.user.id);
+    setAuthParticipant(found || null);
+  } else {
+    setAuthParticipant(null);
+  }
+}, [participants, session?.user?.id]);
+
   const checkBeer = async () => {
     console.log( beer );
-    const validation = await Get<BeerSimilarityValidation>(
-      `/api/beer/check?beer=${beer.beer}&brewer=${beer.brewer}`
-    );
+    const validation = await Get<BeerSimilarityValidation>(`/api/beer/check?beer=${beer.beer}&brewer=${beer.brewer}`);
 
     if (validation.isTooSimilar) {
       const closest = validation.beer;
@@ -70,7 +83,7 @@ export default function SubmitBeer() {
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    const participant = await getParticipant(event, session?.user.id);
+    const participant = await getEventParticipant(event, session?.user.id);
     if (!participant) {
       setSuccess(false);
       toast.error("Error associating current user to the current event");
@@ -83,7 +96,7 @@ export default function SubmitBeer() {
       event,
     });
 
-    const { msg, success } = await res.json();
+    const { msg, success } = res;
     setError(msg);
     toast.info( msg );
     setSuccess(success);
@@ -91,6 +104,38 @@ export default function SubmitBeer() {
       clearForm(null);
     }
   };
+
+  const deleteBeer = async (beerId: string) => {
+    
+    console.log( `Delete ${beerId}`)
+    if( !event ) {
+      toast.error( "Event not loaded");
+      return;
+    }
+
+    if( !authParticipant ){
+      toast.error( "Authenticated user not found in event");
+      return;
+    }
+    
+    const foundBeer = beers?.find( _ => _._id.toString() === beerId );
+    await Delete(`/api/participant/${authParticipant._id}/beers/${beerId}`);
+    await mutate(`/api/events/${event?.year}/participants`);
+    toast.success( `Deleted ${foundBeer?.beer} and removed it from ${ authParticipant.name}`)
+  }
+
+  const swapBeers = async (e: React.MouseEvent, participant:IParticipant) => {
+
+    let participantBeers = participant.beers.map( b => beers?.find( _ => _._id == b));
+    e.preventDefault();
+    await Promise.all([
+      fetch(`/api/beer/${participantBeers[0]?._id}`, { method: 'PUT', body: JSON.stringify({ day: participantBeers[1]?.day }) }),
+      fetch(`/api/beer/${participantBeers[1]?._id}`, { method: 'PUT', body: JSON.stringify({ day: participantBeers[0]?.day }) })
+    ]);
+    participant.beers = participant.beers.reverse();
+    await Put(`/api/participant?id=${participant._id}`, participant );
+    await mutate(`/api/events/${event?.year}/participants`);
+  }
 
   const clearForm = (e: any) => {
     window.location.reload();
@@ -123,17 +168,43 @@ export default function SubmitBeer() {
 
   return (
     <div className="flex flex-col w-full h-full">
+      {!session && <Alert level="warning" >Please <Link href={"/sign-in"}>Sign In</Link></Alert> }
       {session && event && (
 
         <div className="flex flex-col gap-2">
 
-        {participants && participants.find( p => p.user.toString() === session.user.id )?.beers.map( bId => {
-          let beer = beers?.find(b => b._id == bId );
-          return ( beer ? <div className="p-2 bg-amber-100 rounded w-full flex flex-row justify-between">
-            <span>You have already submitted: {beer.beer} - {beer.brewer}</span>
-            <Button className="border border-red-500" color="error" startIcon={<Delete/>}></Button>
-          </div> : <></>)
-        })}
+        { authParticipant && authParticipant?.beers?.filter( b => b).length > 0 &&
+          <Alert level="info">Submitted Beers:
+
+          { authParticipant.days.map ( (day,i) => {
+            let beer = beers?.find(b => b._id ==  authParticipant.beers[i] );
+            return <div key={i} className="w-full flex gap-1 mb-2">
+              <DayIcon day={day} />
+              <div className="flex flex-row gap-1 w-full items-start px-2">
+                {beer && <>
+                  <h3 className="font-bold">{beer.beer} <small className="font-light"> {beer.brewer}</small></h3>
+                </>}
+              </div>
+              {beer &&
+              <Button className="ml-auto" color="error" onClick={() =>deleteBeer(beer._id.toString())} startIcon={<DeleteIcon/>}></Button>}
+            </div>
+          })}
+          { authParticipant.beers && authParticipant.beers.length > 1 && 
+            <Button className="ml-auto" color="secondary" startIcon={<Shuffle/>} 
+              sx={{ outline: '1px solid' }}
+              onClick={(e) => swapBeers(e,authParticipant)}
+              > Swap Days</Button>
+          }
+{/* 
+            {authParticipant?.beers?.filter( b => b).map( (beerId, index) => {
+              let beer = beers?.find(b => b._id == beerId );
+              return beer ? <div className="flex justify-between"  key={index}>
+                <span className="justify-self-start"> {beer.beer} - {beer.brewer}</span>
+                <Button className="ml-auto" color="error" onClick={() =>deleteBeer(beer._id.toString())} startIcon={<DeleteIcon/>}></Button>
+              </div> : <Fragment key={index} />
+            })} */}
+
+        </Alert>}
 
         <form onSubmit={handleSubmit}>
           <div className="p-2 flex flex-col justify-start rounded-md bg-white">

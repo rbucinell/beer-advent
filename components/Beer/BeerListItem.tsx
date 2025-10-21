@@ -19,7 +19,8 @@ class BeerButton extends Component<IBeerButton> {
     const{ url, source} = this.props;
     const noUrl = url === undefined || url === '';
     return (
-      <IconButton size="large" className={`m-1 p-1 ${noUrl?'grayscale opacity-20':'opacity-100'}`} aria-label={source} disabled={noUrl} href={url} target="_blank">
+      
+      <IconButton size="large" className={`m-1 p-1 ${noUrl?'grayscale opacity-20':'opacity-100'}`} aria-label={source} disabled={noUrl} href={url ?? ""} target="_blank">
         <Image src={`/${source}-logo.png`} className="rounded" height={25} width={25} alt={`${source} logo`}/>    
       </IconButton>
     )
@@ -67,11 +68,11 @@ export default class BeerListItem extends Component<IBeerListItemProps>{
               <CalendarWithBadge num={this.beer.year}/>
             </IconButton>
           </ListItemIcon>}
-          <ListItemText 
+          <ListItemText
             primary={this.beer.beer} 
             secondary=
               {<Stack direction={'row'} gap={0.5}>
-                <Typography>{this.beer.brewer}</Typography>
+                <span>{this.beer.brewer}</span>
                 
                 {/* <div className="rounded-md flex items-center border border-slate-300 py-0.5 px-2.5 text-center text-sm transition-all shadow-sm text-slate-600">
                 {this.beer.abv ?? '--'}
@@ -86,12 +87,11 @@ export default class BeerListItem extends Component<IBeerListItemProps>{
                   color: this.blurred() ? 'transparent':'inherit',
                   userSelect: this.blurred() ? 'none':'inherit'}}/>
             {/* <span>{Capitalize(this.beer.person)}</span> */}
-            <div className="rounded-full flex items-center bg-red-300 py-0.5 pr-1 max-h-6 pl-2 border border-transparent text-sm text-white transition-all shadow-sm">
-                  {this.beer.abv ?? '--'}
-                  <div className="h-5 w-5 mr-2">
-                    <Percent className="h-full w-full rounded-full object-cover object-center"/>
-                  </div>
-                </div>
+            {this.beer.abv &&
+              <div className="rounded-full flex font-bold items-center bg-amber-100 py-0.5 pr-1 max-h-6 pl-2 border border-transparent text-amber-800 transition-all shadow-sm">
+                {this.beer.abv ?? '--'}{<Percent/>}
+              </div>
+            }
             <div className={`${this.blurred() ? 'none':'flex'} flex-col md:flex-row flex-shrink-0`}>
               <BeerButton url={this.beer.beeradvocate} source="beeradvocate" />
               <BeerButton url={this.beer.untappd}      source="untappd" />

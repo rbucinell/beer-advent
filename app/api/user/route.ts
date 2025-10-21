@@ -1,11 +1,17 @@
 import connectDB from '@/lib/mongodb';
 import OldUsers from '@/app/models/oldusers';
+import AuthUser from '@/app/models/authuser';
 import { NextRequest, NextResponse } from "next/server";
 
 export async function GET(req: NextRequest) {
   try {
     await connectDB();
-    return NextResponse.json(await OldUsers.find());
+
+    return NextResponse.json([
+      ...await AuthUser.find(), 
+      ...await OldUsers.find()
+    ]);
+    //return NextResponse.json(await OldUsers.find());
   } catch (error) {
     console.log(error);
     return NextResponse.json({ msg: ["Unable to retrieve Users. " + error], error }, { status: 500 });
