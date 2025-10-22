@@ -10,7 +10,13 @@ const db = client.db("beer-advent");
 
 export const auth = betterAuth({
   appName: "beer-advent",
-  trustedOrigins: ["http://localhost:3000", "https://localhost:3000", "beer-advent.vercel.app"],
+  baseURL: process.env.BETTER_AUTH_URL || "http://localhost:3000",
+  trustedOrigins: [
+    "http://localhost:3000", 
+    "https://localhost:3000", 
+    "https://beer-advent.vercel.app", 
+    "https://beer-advent-git-auth-and-update-rbucinells-projects.vercel.app/"
+  ],
   database: mongodbAdapter(db),
   account: {
     accountLinking: {
