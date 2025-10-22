@@ -1,48 +1,50 @@
 "use client";
 
-import { Box, List, ListItem, Stack, Typography } from '@mui/material';
+import { List, ListItem, Stack } from '@mui/material';
 import { useBeers, useEvent, useEventParticipants, useUsers } from "@hooks/hooks";
 import { usePathname } from 'next/navigation';
-import ParticipantItem from '@/components/ParticipantItem';
-import PendingItem from '@/components/PendingItem';
-import { use, useEffect, useState } from 'react';
-import { IBeer } from '@/app/models/beer';
-import { Get } from '@/app/util/RequestHelper';
 import DayIcon from '@/components/DayIcon';
-import user, { IUser } from '@/app/models/user';
 import UserAvatar from '@/components/UserAvatar';
 import BeerListItem from '@/components/Beer/BeerListItem';
+import { EventDayDisplay } from './components/EventDayDisplay';
 
 export default function EventPage() {
+  
+  const pathname = usePathname();
+  const year = parseInt(pathname.split('/').pop() as string);
 
-    const pathname = usePathname();
-    const year = pathname.split('/').pop();
-    const { event, eventError, eventLoading } = useEvent( {year} );
-    const { participants, participantsError, participantsLoading } = useEventParticipants( event );
-    const { beers, beersError, beersLoading } = useBeers();
-    const { users, usersError, usersLoading } = useUsers();
-    
-    return (
-      <div className="overflow-y-scroll h-[90vh] w-full flex flex-col bg-white border border-solid border-black rounded-md self-stretch">
-        { event && <h1 className='self-center text-4xl'>{event.name}</h1> }
+  const { event, eventError, eventLoading } = useEvent({ year });
+  const { participants, participantsError, participantsLoading } = useEventParticipants(event);
+  const { beers, beersError, beersLoading } = useBeers();
+  const { users, usersError, usersLoading } = useUsers();
 
-        <Stack direction={'column'}>
-          <List >
-          {Array.from({ length: 24 }, (_, index) => {       
-            const day = index + 1;
-            const participant = participants?.find( p => p.days.includes(day));
-            const user = users?.find( u => u._id === participant?.user);    
-            const beer = beers?.find( b => b.year.toString() === year && b.day === (index+1));
-            return <ListItem key={index} dense={true} >
-              <Stack direction={'row'} gap={0.5}>
-                <DayIcon day={index+1}  />
+  return (
+    <div className="overflow-y-auto h-[90vh] w-full flex flex-col bg-white border border-solid border-black rounded-md self-stretch">
+      {event && <h1 className='self-center text-4xl'>{event.name}</h1>}
+
+      <Stack direction={'column'} className='items-center' sx={{ width: '100%'}}>
+        <List className='w-full items-center'>
+
+          {users && participants && beers && Array.from(Array(24).keys()).map( i => {
+            
+            const day = i+1;
+            const participant = participants.find( p => p.days.includes(day));
+            const participantBeer = participant?.beers
+              .map( pBeerId => beers.find( _ => _._id === pBeerId ))
+              .find( _ => _?.day === day);
+            
+            const user = users.find( u => u._id === participant?.user);
+
+            return <ListItem key={i} className='w-full items-center'>
+              <div className='flex flex-row gap-1 items-center w-full'>
+                <DayIcon day={day} />
                 <UserAvatar user={user} />
-                {beer && <BeerListItem beer={beer} />}
-              </Stack>
-            </ListItem>  
+                {participantBeer && <BeerListItem beer={participantBeer} /> }
+              </div>
+            </ListItem>
           })}
-          </List>
-        </Stack>
-      </div>
-    );
+        </List>
+      </Stack>
+    </div>
+  );
 }

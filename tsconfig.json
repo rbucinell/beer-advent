@@ -1,7 +1,13 @@
+//prettier-ignore
 {
   "compilerOptions": {
+    "baseUrl": "./",
     "target": "es5",
-    "lib": ["dom", "dom.iterable", "esnext"],
+    "lib": [
+      "dom",
+      "dom.iterable",
+      "esnext"
+    ],
     "allowJs": true,
     "skipLibCheck": true,
     "strict": true,
@@ -19,18 +25,47 @@
       }
     ],
     "paths": {
-      "@/*": ["./*"],
-      "@app/*": ["./app/*"],
-      "@api/*": ["./app/api/*"],
-      "@components/*": ["./app/components/*"],
-      "@lib/*": ["./app/lib/*"],
-      "@pages/*": ["./app/pages/*"],
-      "@hooks/*": ["./app/hooks/*"],
-      "@models/*": ["./app/models/*"],
-      "@styles/*": ["./app/styles/*"],
-      "@util/*": ["./app/util/*"],
+      "@/*": [
+        "./*"
+      ],
+      "@app/*": [
+        "./app/*"
+      ],
+      "@api/*": [
+        "./app/api/*"
+      ],
+      "@components/*": [
+        "./app/components/*"
+      ],
+      "@lib/*": [
+        "lib/*"
+      ],
+      "@pages/*": [
+        "./app/pages/*"
+      ],
+      "@hooks/*": [
+        "./app/hooks/*"
+      ],
+      "@models/*": [
+        "./app/models/*"
+      ],
+      "@styles/*": [
+        "./app/styles/*"
+      ],
+      "@util/*": [
+        "./app/util/*"
+      ],
     }
   },
-  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts", "app/api/participants/[participantId].js", "app/lib/swr.js"],
-  "exclude": ["node_modules"]
+  "include": [
+    "next-env.d.ts",
+    "**/*.ts",
+    "**/*.tsx",
+    ".next/types/**/*.ts",
+    "app/api/participants/[participantId].js",
+    "lib/swr.js"
+  ],
+  "exclude": [
+    "node_modules"
+  ]
 }

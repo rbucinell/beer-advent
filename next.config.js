@@ -1,4 +1,8 @@
 /** @type {import('next').NextConfig} */
-const nextConfig = {}
+const nextConfig = {
+  images: {
+    remotePatterns: [new URL('https://lh3.googleusercontent.com/**')]
+  }
+}
 
 module.exports = nextConfig
