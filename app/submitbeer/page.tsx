@@ -54,6 +54,7 @@ export default function SubmitBeer() {
   const [beer, setBeer] = useState<IBeerFormData>(initBeer);
   const [error, setError] = useState<string[] | null>([]);
   const [success, setSuccess] = useState(false);
+  const [thinking, setThinking] = useState(false);
 
   useEffect(() => {
   if (participants && session?.user?.id) {
@@ -64,21 +65,34 @@ export default function SubmitBeer() {
   }
 }, [participants, session?.user?.id]);
 
+  const toPercent = ( num:number ) =>{
+    num *= 100;
+    return `${num.toFixed(2)}%`;
+  }
+
   const checkBeer = async () => {
+    setThinking(true);
+    setError(null);
     console.log( beer );
     const validation = await Get<BeerSimilarityValidation>(`/api/beer/check?beer=${beer.beer}&brewer=${beer.brewer}`);
 
     if (validation.isTooSimilar) {
       const closest = validation.beer;
       setError([
-        `"${beer.beer}" by ${beer.brewer}. Too close to existing [${closest?.beer} by ${closest?.brewer}]. Please tell, text Ryan if this is not correct.`,
+        `"${beer.beer}" by ${beer.brewer}. Too close to existing [${closest?.beer} by ${closest?.brewer}]`,
+        `JaroWinkler Results: Beer Similartiy is ${toPercent(validation.jaroWinkler.percentage.beer)} and Brewer similarity is ${toPercent(validation.jaroWinkler.percentage.brewer)})`,
+        `Gemini Results: ${toPercent(validation.gemini.percentage)} chance it is too close to [${validation.gemini.beer} by ${validation.gemini.brewer}]`
       ]);
+
+      //   `"${beer.beer}" by ${beer.brewer}. Too close to existing [${closest?.beer} by ${closest?.brewer}]. Please tell, text Ryan if this is not correct.`,
+      // ]);
       setSuccess(false);
       toast.warning("Beer not submitted, too close to existing");
     } else {
       toast.success("No conflicting beers found");
       setSuccess(true);
     }
+    setThinking(false);
   };
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
@@ -159,6 +173,9 @@ export default function SubmitBeer() {
         variant={variant}
         value={beer[target]}
         onChange={(e: ChangeEvent<HTMLInputElement>) => {
+          if( req ){
+            setSuccess(false);
+          }
           setBeer({ ...beer, [e.target.name]: e.target.value });
           setError(null);
         }}
@@ -207,7 +224,7 @@ export default function SubmitBeer() {
         </Alert>}
 
         <form onSubmit={handleSubmit}>
-          <div className="p-2 flex flex-col justify-start rounded-md bg-white">
+          <div className="p-2 flex flex-col justify-start rounded-md bg-white border border-black">
             <div className="my-2">
               {session?.user.name}, submit your beer for {event?.year}
             </div>
@@ -255,6 +272,11 @@ export default function SubmitBeer() {
 
         </div>
       )}
+      {thinking &&
+      <div className="bg-slate-100">
+        <p className="italic">Checking database</p>  
+      </div>
+      }
 
       <div className="bg-slate-100 flex flex-col">
         {error && error.map((e, i) => (

@@ -1,17 +1,16 @@
+"use client";
+
 import Link from 'next/link';
-import { headers } from "next/headers";
-import * as React from 'react';
 import AppBar from '@mui/material/AppBar';
 import { Box, Toolbar, Container, Typography } from '@mui/material';
 import NavBarUserOrLogin from './NavBarUserOrLogin';
-import { auth } from "@/lib/auth";
+import { Session } from '@/lib/auth-client';
 
-export default async function Nav() {
+interface NavProps {
+  session: Session | null;
+}
 
-  const session = await auth.api.getSession({
-        headers: await headers()
-      });
-
+export default function Nav({ session }: NavProps) {
   return (
     <nav>
       <Box sx={{ display: 'flex', alignItems: 'center', textAlign: 'center' }}>
@@ -24,7 +23,7 @@ export default async function Nav() {
               
               { session && <h6 className="h-6 flex flex-grow uppercase font-bold disabled-link"><Link href="/submitbeer">Submit</Link></h6>}
 
-              <NavBarUserOrLogin />
+              <NavBarUserOrLogin session={session} />
             </Toolbar>
           </Container>
         </AppBar>

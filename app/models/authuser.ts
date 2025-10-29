@@ -7,9 +7,10 @@ export interface IAuthUser extends Document {
   emailVerified: boolean;
   image: string;
   createdAt: MongooseDate;
-  updateAt: MongooseDate;
+  updatedAt: MongooseDate;
   username: string;
   displayUsername: string;
+  preferredDays: (number | null)[];
 }
 
 export const authUserSchema = new Schema<IAuthUser>({
@@ -33,9 +34,9 @@ export const authUserSchema = new Schema<IAuthUser>({
     type: Date,
     required: [true, "createdAt is required"],
   },
-  updateAt: {
+  updatedAt: {
     type: Date,
-    required: [true, "updateAt is required"],
+    required: [true, "updatedAt is required"],
   },
   username: {
     type: String,
@@ -43,6 +44,10 @@ export const authUserSchema = new Schema<IAuthUser>({
   },
   displayUsername: {
     type: String,
+    required: false
+  },
+  preferredDays: {
+    type: [Schema.Types.Mixed],
     required: false
   }
 },

@@ -1,14 +1,12 @@
 "use client";
 
 import { useState } from "react";
-import { Button, List, ListItemText, Typography } from "@mui/material";
 import { IBeer } from "@/app/models/beer";
 import { IEvent } from "@/app/models/event";
 import BeerListItem from "@/components/Beer/BeerListItem";
 import { useBeers, useEvents } from "@hooks/hooks";
 
 export default function History() {
-  const { events, eventsError, eventsLoading } = useEvents();
   const { beers, beersError, beersLoading } = useBeers();
   const [q, setQ] = useState("");
   const [searchParamters] = useState(["beer", "brewer"]);
@@ -25,7 +23,7 @@ export default function History() {
 
   return (
     <div className="w-full flex flex-col">
-      <List dense={true} className="flex flex-row w-full justify-start gap-3">
+      {/* <List dense={true} className="flex flex-row w-full justify-start gap-3">
         <Typography>Go to advent:</Typography>
         {events && events.toSorted((a, b) => b.year - a.year)
           .filter((e) => e.year !== new Date().getFullYear())
@@ -41,7 +39,7 @@ export default function History() {
               </Button>
             );
           })}
-      </List>
+      </List> */}
 
       <div className="w-full h-full overflow-clip bg-white rounded-lg border border-slate-900">
         <div className="flex flex-row items-center gap-1 border-b-2 border-solid bg-slate-200 border-black">
@@ -65,7 +63,7 @@ export default function History() {
           <ul className="max-h-full overflow-auto">
             {search(beers).map((beer) => (
               <div key={`${beer.year}${beer.day}${beer.beer}`} className="rounded-sm border-b border-r border-red-100">
-                <BeerListItem  beer={beer} />
+                <BeerListItem beer={beer} />
               </div>
             ))}
             <li className="h-16"></li>
@@ -75,23 +73,5 @@ export default function History() {
         )}
       </div>
     </div>
-
-    // <>
-    //   <Box sx={{ width: '100%', height:'90vh', overflow:'clip', bgcolor: 'background.paper' }}>
-    //     <TextField
-    //       value={q}
-    //       onChange={(  e:any) => setQ(e.target.value)}
-    //       sx={{mb: 1}} className="bg-slate-200 l border-b-2 border-solid border-black"
-    //       fullWidth id="outlined-basic" label="Search" variant="outlined" />
-    //     { beers ? (
-    //       <List sx={{ mb: 2}} style={{maxHeight: '100%', overflow: 'auto'}}>
-    //         {search(beers).map( beer =>
-    //             <BeerListItem key={`${beer.year}${beer.day}${beer.beer}`} beer={beer}/>
-    //         )}
-    //         <ListItem sx={{ height: '60px' }}></ListItem>
-    //       </List>
-    //     ) : (<p>Loading...</p> )}
-    // </Box>
-    // </>
   );
 }

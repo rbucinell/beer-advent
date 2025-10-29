@@ -3,10 +3,16 @@ import OldUsers from '@/app/models/oldusers';
 import { NextRequest, NextResponse } from "next/server";
 import AuthUser from '@/app/models/authuser';
 
-export async function GET(req: NextRequest, route: { params: Promise<{ id: string }> }) {
+export async function GET(
+  req: NextRequest, 
+  context: { params: Promise<{ id: string }> }
+  //route: { params: Promise<{ id: string }> }
+) {
   try {
+    console.log( 'hello world');
     await connectDB();
-    const { id } = await route.params;
+    const { id } = await context.params;
+    console.log('User ID:', id);
     let user = await AuthUser.findById(id);
     if (!user) user = await OldUsers.findById(id);
     if (!user) return NextResponse.json({ msg: ["User not found"] }, { status: 404 });
@@ -37,16 +43,25 @@ export async function PUT(req: NextRequest, route: { params: Promise<{ id: strin
   try {
     await connectDB();
     const { id } = await route.params;
-    const user = await OldUsers.findById(id);
+    let user = await OldUsers.findById(id);
+    if( !user ) user = await AuthUser.findById(id);
     if (!user) return NextResponse.json({ msg: ["User not found"] }, { status: 404 });
     const json = await req.json();
-
+console.log( "json", json );
     if (json.firstName) user.firstName = json.firstName;
     if (json.lastName) user.lastName = json.lastName;
     if (json.email) user.email = json.email;
     if (json.imageUrl) user.imageUrl = json.imageUrl;
+    if( json.preferredDays){
+      user.preferredDays = json.preferredDays.map((_: any) => {
+        return _ === undefined ? null : _
+      });
+    }
+    console.log( 'preffered', user)
+    user.updatedAt = new Date();
+    
     await user.save();
-    return new NextResponse(user, { status: 204 });
+    return new NextResponse(user, { status: 200 });
 
   } catch (error) {
     console.log(error);

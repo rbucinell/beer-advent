@@ -4,13 +4,20 @@
  * @param {string} url the URL to fecth
  * @returns {Promise<T>} A Promise of type T
  */
+
 export async function Get<T>(url: string): Promise<T> {
+  const response = await fetch(url, { method: 'GET' });
+  console.log('response', response);
   return new Promise<T>(async (resolve, reject) => {
+    console.log( 'GET url: ' + url)
     try {
       const response = await fetch(url, { method: 'GET' });
-      if (response.ok) {
-        const result = await <T>response.json();
-        resolve(result);
+       if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        if (response.ok) {
+          const result = await <T>response.json();
+          resolve(result);
       }
       else {
         console.error(`[${response.status}] Failed to fetch data from ${url}`);

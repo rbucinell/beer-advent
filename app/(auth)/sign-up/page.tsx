@@ -44,7 +44,7 @@ export default function SignIn() {
       },
       onSuccess: () => {
         form.reset();
-        toast.success("Logged in successfully");
+        toast.success("Registered successfully");
       },
       onError: (ctx) => {
         toast.error("Error", { description: ctx.error.message });

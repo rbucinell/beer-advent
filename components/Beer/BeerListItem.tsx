@@ -20,7 +20,7 @@ class BeerButton extends Component<IBeerButton> {
     const noUrl = url === undefined || url === '';
     return (
       
-      <IconButton size="large" className={`m-1 p-1 ${noUrl?'grayscale opacity-20':'opacity-100'}`} aria-label={source} disabled={noUrl} href={url ?? ""} target="_blank">
+      <IconButton size="large" className={`m-1 p-1 ${noUrl?'grayscale opacity-20':'opacity-100'}`} aria-label={source} disabled={noUrl} href={url ?? "#"} target="_blank">
         <Image src={`/${source}-logo.png`} className="rounded" height={25} width={25} alt={`${source} logo`}/>    
       </IconButton>
     )
@@ -71,9 +71,8 @@ export default class BeerListItem extends Component<IBeerListItemProps>{
           <ListItemText
             primary={this.beer.beer} 
             secondary=
-              {<Stack direction={'row'} gap={0.5}>
-                <span>{this.beer.brewer}</span>
-                
+              {<span className="flex flex-row gap-05">
+                <span>{this.beer.brewer ?? "*"}</span>
                 {/* <div className="rounded-md flex items-center border border-slate-300 py-0.5 px-2.5 text-center text-sm transition-all shadow-sm text-slate-600">
                 {this.beer.abv ?? '--'}
                 <Percent className="w-4 h-4 mr-1.5"/>
@@ -82,7 +81,8 @@ export default class BeerListItem extends Component<IBeerListItemProps>{
                   {this.beer.abv ?? '--'}
                   <Percent className="h-3"/>
                 </div> */}
-              </Stack>}
+              </span>}
+              
             sx={{ filter: this.blurred() ? 'blur(3px)': 'inherit', 
                   color: this.blurred() ? 'transparent':'inherit',
                   userSelect: this.blurred() ? 'none':'inherit'}}/>
