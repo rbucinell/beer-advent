@@ -36,19 +36,11 @@ export default function Home() {
       <Stack spacing={0.5}>
         {event && <Fragment>
           { event.exchange && <Typography>Exchange: ({AbrvDate(event.exchange.date)} @ {event.exchange.location.name})</Typography>}
-          { event && participants && participants.map( (participant,index) => 
+          { participants && participants.map( (participant) => 
             <ParticipantItem key={participant._id.toString()} event={event} participant={participant} />
           )}
         </Fragment>}
-        {(!participants || participants.length < 1) && <PendingItem />}
-{/* 
-
-        {Array.from({ length: 12 }, (_, index) =>
-          participants && participants[index] ? (
-            <ParticipantItem key={participants[index]._id.toString()} participant={participants[index]} />
-          ) :
-            (<PendingItem key={index} />)
-        )} */}
+        {participants && Array.from({ length: 12 - participants.length }, (_, index) => <PendingItem key={index} />)}
       </Stack>
       <Typography variant="caption"><SportsBar fontSize="small" sx={{ color: '#333333' }} /> = Beer Submitted</Typography>
     </div>
