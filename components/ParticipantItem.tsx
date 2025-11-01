@@ -10,8 +10,10 @@ import { Types } from "mongoose";
 import ListItem from "@/components/ListItem";
 import DayIcon from "./DayIcon";
 import { useUser } from "@/app/hooks/hooks";
+import { IEvent } from "@/app/models/event";
 
 interface ParticipantItemProps {
+  event: IEvent;
   participant: IParticipant;
 }
 
@@ -19,7 +21,7 @@ export default function ParticipantItem(props: ParticipantItemProps) {
 
   const { user } = useUser(props.participant.user.toString());
 
-  console.log( props.participant );
+  const event = props.event;
 
   let dayBeers: { day: number, beer: Types.ObjectId | null }[];
   const beers = props.participant.beers.filter(_ => _ != null);

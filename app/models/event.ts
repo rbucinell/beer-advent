@@ -14,6 +14,7 @@ export interface IEvent extends Document {
     } | null;
 
     rules: string[]|null;
+    days: number;
 }
 
 const eventSchema = new Schema<IEvent>(
@@ -28,7 +29,8 @@ const eventSchema = new Schema<IEvent>(
                 address: String
             }
         },
-        rules: [String]
+        rules: [String],
+        days: { type:Number, default: 24 }
     },
     {
         collection: 'events'

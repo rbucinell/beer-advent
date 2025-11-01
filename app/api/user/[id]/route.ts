@@ -2,6 +2,7 @@ import connectDB from '@/lib/mongodb';
 import OldUsers from '@/app/models/oldusers';
 import { NextRequest, NextResponse } from "next/server";
 import AuthUser from '@/app/models/authuser';
+import { revalidatePath } from 'next/cache';
 
 export async function GET(
   req: NextRequest, 
@@ -43,24 +44,23 @@ export async function PUT(req: NextRequest, route: { params: Promise<{ id: strin
   try {
     await connectDB();
     const { id } = await route.params;
-    let user = await OldUsers.findById(id);
-    if( !user ) user = await AuthUser.findById(id);
-    if (!user) return NextResponse.json({ msg: ["User not found"] }, { status: 404 });
+    let user = await AuthUser.findById(id);
+    if (!user) 
+      return NextResponse.json({ msg: ["User not found"] }, { status: 404 });
     const json = await req.json();
-console.log( "json", json );
-    if (json.firstName) user.firstName = json.firstName;
-    if (json.lastName) user.lastName = json.lastName;
+    if (json.firstName || json.lastName) user.name = json.firstName;
     if (json.email) user.email = json.email;
-    if (json.imageUrl) user.imageUrl = json.imageUrl;
+    if (json.imageUrl) user.image = json.imageUrl;
     if( json.preferredDays){
       user.preferredDays = json.preferredDays.map((_: any) => {
         return _ === undefined ? null : _
       });
     }
-    console.log( 'preffered', user)
+    console.log( 'preffered', user); //this object in memor is correct
     user.updatedAt = new Date();
-    
     await user.save();
+
+    revalidatePath('/account');
     return new NextResponse(user, { status: 200 });
 
   } catch (error) {

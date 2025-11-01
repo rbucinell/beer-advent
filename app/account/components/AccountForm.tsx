@@ -30,8 +30,11 @@ export function AccountForm({ user }: AccountFormProps) {
   async function onSubmit(data: z.infer<typeof FormSchema>) {
     const{ email, firstName, lastName, username, preferredDay1, preferredDay2 } = data;
     console.log( 'data', data );
+    console.log( 'user', user );
+    console.log( `id: ${(user as any).id}` );
     try {
-      const response = await fetch(`/api/user/${user._id}`, {
+
+      const response = await fetch(`/api/user/${(user as any).id}`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
