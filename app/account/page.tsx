@@ -1,7 +1,6 @@
 import { auth } from "@/lib/auth";
 import { redirect } from "next/navigation";
 import { Avatar, AvatarImage } from "@/components/ui/avatar";
-import AuthUser, { IAuthUser } from "../models/authuser";
 import { headers } from "next/headers";
 import { AccountForm } from "./components/AccountForm";
 
@@ -11,8 +10,6 @@ export default async function Account() {
   if (!session) {
     return redirect("/");
   }
-  
-  const serializedUser = JSON.parse(JSON.stringify(session.user));
 
   return (
     <main className="container mx-auto px-4 py-6 md:px-6 2xl:max-w-[1400px]">
@@ -32,7 +29,7 @@ export default async function Account() {
           </div>
         </div>
 
-        <AccountForm user={serializedUser} />
+        <AccountForm sessionUser={session.user} />
       </div>
     </main>
   );

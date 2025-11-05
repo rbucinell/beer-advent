@@ -7,7 +7,7 @@ import { authClient } from "@/lib/auth-client";
 import { Get, Post, Put, Delete } from "@/app/util/RequestHelper";
 import { getEventParticipant } from "@/app/util/participation";
 
-import { AvatarGroup, Button, IconButton, TextField, TextFieldVariants, Typography } from "@mui/material";
+import { AvatarGroup, Button, IconButton, LinearProgress, TextField, TextFieldVariants, Typography } from "@mui/material";
 import { Check, Delete as DeleteIcon, Remove, Search } from "@mui/icons-material";
 
 import { toast } from "sonner";
@@ -104,6 +104,8 @@ export default function SubmitBeer() {
       return;
     }
 
+    setThinking(true);
+
     const res = await Post<any, any>(`/api/beer`, {
       ...beer,
       participant,
@@ -111,12 +113,14 @@ export default function SubmitBeer() {
     });
 
     const { msg, success } = res;
+    setThinking(false);
     setError(msg);
     toast.info( msg );
     setSuccess(success);
     if (success) {
       clearForm(null);
     }
+
   };
 
   const deleteBeer = async (beerId: string) => {
@@ -273,8 +277,8 @@ export default function SubmitBeer() {
         </div>
       )}
       {thinking &&
-      <div className="bg-slate-100">
-        <p className="italic">Checking database</p>  
+      <div className="bg-slate-100 rounded-b-xl p-2">
+        <LinearProgress /> 
       </div>
       }
 

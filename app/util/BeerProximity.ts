@@ -1,7 +1,8 @@
 import Beer, { IBeer } from "@/app/models/beer";
 import jaroWinkler from 'jaro-winkler';
-import { BeerSimilarityValidation } from "../api/beer/check/BeerSimilarityValidation";
+import { BeerSimilarityValidation, GeminiSimilaryResults } from "../api/beer/check/BeerSimilarityValidation";
 import { askAI } from "@/lib/gemini";
+import { ca } from "zod/v4/locales";
 
 
 export async function beerTooSimilar( beerName: string, brewerName: string, options: { beerThreshold?: number, brewerThreshold?: number} = {} ): Promise<BeerSimilarityValidation> {
@@ -24,12 +25,6 @@ export async function beerTooSimilar( beerName: string, brewerName: string, opti
     const closestBeer:IBeer = closestComparison.beer;
     console.log( closestBeer );
 
-
-    const summary = existingBeers.map( (b:IBeer) => `${b.beer} by ${b.brewer}`).join(',');
-    const prompt = `Give the following comma seperated list of beers and the brewer: ${summary} . What is the likely hood that ${beerName} by ${brewerName} is in that list. Your only anser should only be: percentage,beer,brewer. Where  percentage of likelyhood that the beer is in the list as a digit: e.g. 20% => 0.2, beer and brewer are the most likely candidate that alread exists in the list, null for each if percentage is 0.0`;
-    const answer = await askAI( prompt );
-    const [ aiPercentage, aiBeer, aiBrewer ]= answer?.split(',') ?? [0.0,null,null];
-
     const results = {
         jaroWinkler: {
             percentage: {
@@ -37,11 +32,7 @@ export async function beerTooSimilar( beerName: string, brewerName: string, opti
                 brewer: closestComparison.brewerSimiliatriy
             }
         },
-        gemini:{
-            percentage: parseFloat(`${aiPercentage ?? "0.0"}`),
-            beer: aiBeer === "null" ? null: `${aiBeer}`,
-            brewer: aiBrewer === "null" ? null: `${aiBrewer}`
-        },
+        gemini: await beerTooSimilarAiCheck(existingBeers,beerName,brewerName,options),
         beer: closestBeer,
         isTooSimilar: false
     };
@@ -58,4 +49,32 @@ export async function beerTooSimilar( beerName: string, brewerName: string, opti
         results.isTooSimilar = true;
     }
     return results;
+}
+
+
+
+
+async function beerTooSimilarAiCheck( 
+    existingBeers:IBeer[], 
+    beerName: string, brewerName: string, 
+    options: { beerThreshold?: number, brewerThreshold?: number} = {} 
+): Promise<GeminiSimilaryResults> {
+    let percentage = 0.0;
+    let beer = null;
+    let brewer = null;
+    
+    try{
+        const summary = existingBeers.map( (b:IBeer) => `${b.beer} by ${b.brewer}`).join(',');
+        const prompt = `Give the following comma seperated list of beers and the brewer: ${summary} . What is the likely hood that ${beerName} by ${brewerName} is in that list. Your only anser should only be: percentage,beer,brewer. Where  percentage of likelyhood that the beer is in the list as a digit: e.g. 20% => 0.2, beer and brewer are the most likely candidate that alread exists in the list, null for each if percentage is 0.0`;
+        const answer = await askAI( prompt );
+        if( answer ){
+            const split = answer.split(',');
+            percentage = parseFloat(split[0]);
+            beer = split[1];
+            brewer = split[2];
+        }
+    }
+    catch( err ) {}
+
+    return { percentage, beer, brewer };
 }

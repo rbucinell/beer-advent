@@ -45,7 +45,6 @@ export default function SignIn() {
         toast.error("Error", { description: ctx.error.message });
       }
     });
-    //console.log(data, error);
   }
 
   return (

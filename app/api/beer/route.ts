@@ -1,11 +1,12 @@
+import appConfig from '@/app/app.config';
 import mongoose, { Types } from 'mongoose';
 import connectDB from '@/lib/mongodb';
 import { NextRequest, NextResponse } from "next/server";
 import Participant, { IParticipant } from '@/app/models/participant';
 import Beer, { IBeer } from '@/app/models/beer';
-import OldUsers from '@/app/models/oldusers';
 import AuthUser from '@/app/models/authuser';
 import { beerTooSimilar } from '@/app/util/BeerProximity';
+import Event, { IEvent } from '@/app/models/event';
 
 export async function GET(req: NextRequest) {
   try {
@@ -25,20 +26,23 @@ export async function POST(req: NextRequest) {
     const beer: IBeer = json;
     const participant: IParticipant = json.participant;
     const user = await AuthUser.findById(participant.user);
+    const event = await Event.findById(participant.event);
 
     //Does Participant already have two beers?
+    const beersToBuy = Math.floor((event.days ?? appConfig.MAX_EVENT_DAYS) / 12);
     participant.beers = participant.beers.filter(_ => _ != null);
-    if (participant.beers.length >= 2) {
-      return NextResponse.json({ msg: ["User already submitted two beers"], status: 400 });
+    if (participant.beers.length >= beersToBuy) {
+      const msg = beersToBuy > 1 ? `User already submitted ${participant.beers.length} beers` : `User already submitted a beer`
+      return NextResponse.json({ msg: [msg], status: 400 });
     }
 
-    const beerSimilarity = await beerTooSimilar(beer.beer, beer.brewer);
-    if (beerSimilarity.isTooSimilar) {
-      return NextResponse.json({
-        error: true,
-        msg: [`"${beer.beer}" by ${beer.brewer}. Too close to "${beerSimilarity.beer?.beer}" by ${beerSimilarity.beer?.brewer}. Please tell, text Ryan if this is not correct.`]
-      });
-    }
+    // const beerSimilarity = await beerTooSimilar(beer.beer, beer.brewer);
+    // if (beerSimilarity.isTooSimilar) {
+    //   return NextResponse.json({
+    //     error: true,
+    //     msg: [`"${beer.beer}" by ${beer.brewer}. Too close to "${beerSimilarity.beer?.beer}" by ${beerSimilarity.beer?.brewer}. Please tell, text Ryan if this is not correct.`]
+    //   });
+    // }
 
     //Create Beer
     beer.person = participant.name;

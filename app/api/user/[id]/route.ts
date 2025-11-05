@@ -10,7 +10,6 @@ export async function GET(
   //route: { params: Promise<{ id: string }> }
 ) {
   try {
-    console.log( 'hello world');
     await connectDB();
     const { id } = await context.params;
     console.log('User ID:', id);

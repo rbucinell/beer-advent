@@ -37,7 +37,7 @@ export default function Home() {
         {event && <Fragment>
           { event.exchange && <Typography>Exchange: ({AbrvDate(event.exchange.date)} @ {event.exchange.location.name})</Typography>}
           { participants && participants.map( (participant) => 
-            <ParticipantItem key={participant._id.toString()} event={event} participant={participant} />
+            <ParticipantItem key={participant._id.toString()} event={event} participant={participant} days={event.days / 12} />
           )}
         </Fragment>}
         {participants && Array.from({ length: 12 - participants.length }, (_, index) => <PendingItem key={index} />)}

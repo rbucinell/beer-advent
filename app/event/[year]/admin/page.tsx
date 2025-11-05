@@ -1,6 +1,6 @@
 "use client";
 
-import { Stack, Typography } from "@mui/material";
+import { Badge, Chip, Stack, Typography } from "@mui/material";
 import { useEvent, useEventParticipants } from "@hooks/hooks";
 import { authClient } from "@/lib/auth-client";
 import { Get, Post, Delete } from "@/app/util/RequestHelper";
@@ -64,10 +64,10 @@ export default function Admin() {
         <Stack direction={"column"}>
 
           {/* Page Header */}
-          <div className="flex flex-row justify-between flex-wrap mb-2">
-            <div className="flex flex-row">
-              <Typography variant="h6">Admin Page - </Typography>
-              <Typography variant="h6">{event?.name}🎄</Typography>
+          
+          <div className="flex flex-row justify-between flex-wrap mb-2 gap-2">
+            <div className="flex flex-row self-center">
+              <Typography variant="h6"><Chip label="ADMIN"/>🎄 {event?.name} 🎄</Typography>
             </div>
             <div className="flex flex-row gap-1">
               <Button className="text-xs" onClick={handleRollNumbersClick}>Roll 📅</Button>

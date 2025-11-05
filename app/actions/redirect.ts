@@ -7,3 +7,7 @@ import { redirect } from "next/navigation";
 export async function redirectToAccount() {
   redirect("/account");
 }
+
+export async function redirectTo( path:string ) {
+  redirect(path);
+}

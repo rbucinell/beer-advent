@@ -7,8 +7,9 @@ import DayIcon from '@/components/DayIcon';
 import UserAvatar from '@/components/UserAvatar';
 import BeerListItem from '@/components/Beer/BeerListItem';
 import { EventDayDisplay } from './components/EventDayDisplay';
+import appConfig from "@app/app.config";
 
-export default function EventPage() {
+export default function EventIdPage() {
   
   const pathname = usePathname();
   const year = parseInt(pathname.split('/').pop() as string);
@@ -20,14 +21,14 @@ export default function EventPage() {
 
   return (
     <div className="overflow-y-auto h-[90vh] w-full flex flex-col bg-white border border-solid border-black rounded-md self-stretch">
-      {event && <h1 className='self-center text-4xl'>{event.name}</h1>}
+      {event && <h1 className='self-center text-2xl'>{event.name}</h1>}
 
       <Stack direction={'column'} className='items-center' sx={{ width: '100%'}}>
         <List className='w-full items-center'>
 
-          {users && participants && beers && Array.from(Array(24).keys()).map( i => {
+          {event && users && participants && beers && Array.from(Array(event.days).keys()).map( i => {
             
-            const day = i+1;
+            const day = appConfig.MAX_EVENT_DAYS - event.days + i + 1;
             const participant = participants.find( p => p.days.includes(day));
             const participantBeer = participant?.beers
               .map( pBeerId => beers.find( _ => _._id === pBeerId ))
@@ -35,7 +36,7 @@ export default function EventPage() {
             
             const user = users.find( u => u._id === participant?.user);
 
-            return <ListItem key={i} className='w-full items-center'>
+            return <ListItem component={'div'} key={i} className='w-full items-center'>
               <div className='flex flex-row gap-1 items-center w-full'>
                 <DayIcon day={day} />
                 <UserAvatar user={user} />

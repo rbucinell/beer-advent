@@ -20,7 +20,7 @@ class BeerButton extends Component<IBeerButton> {
     const noUrl = url === undefined || url === '';
     return (
       
-      <IconButton size="large" className={`m-1 p-1 ${noUrl?'grayscale opacity-20':'opacity-100'}`} aria-label={source} disabled={noUrl} href={url ?? "#"} target="_blank">
+      <IconButton size="large" className={`m-1 p-1 ${noUrl?'grayscale opacity-20':'opacity-100'}`} aria-label={source} disabled={noUrl} href={(noUrl ? "#": url)} target="_blank">
         <Image src={`/${source}-logo.png`} className="rounded" height={25} width={25} alt={`${source} logo`}/>    
       </IconButton>
     )
@@ -56,7 +56,8 @@ export default class BeerListItem extends Component<IBeerListItemProps>{
     }
 
     isBeerDateSameOrAfterNow() {      
-      const beerDay = dayjs(`${this.beer.year}-12-${this.beer.day}`);
+
+      const beerDay = dayjs(`${this.beer.year}-12-${this.beer.day ?? 1}`);
       return beerDay.isAfter(dayjs(),'day') || beerDay.isSame(dayjs(),'day');
     }
 

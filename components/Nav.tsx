@@ -19,6 +19,7 @@ export default function Nav({ session }: NavProps) {
             <Toolbar>
               
               <h6 className="h-6 flex flex-grow uppercase font-bold"><Link href="/">Home</Link></h6>
+              <h6 className="h-6 flex flex-grow uppercase font-bold"><Link href="/event">Events</Link></h6>
               <h6 className="h-6 flex flex-grow uppercase font-bold"><Link href="/history">History</Link></h6>
               
               { session && <h6 className="h-6 flex flex-grow uppercase font-bold disabled-link"><Link href="/submitbeer">Submit</Link></h6>}

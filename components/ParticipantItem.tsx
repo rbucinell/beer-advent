@@ -9,23 +9,25 @@ import UserAvatar from "@/components/UserAvatar";
 import { Types } from "mongoose";
 import ListItem from "@/components/ListItem";
 import DayIcon from "./DayIcon";
-import { useUser } from "@/app/hooks/hooks";
+import { useUserById } from "@/app/hooks/hooks";
 import { IEvent } from "@/app/models/event";
 
 interface ParticipantItemProps {
   event: IEvent;
   participant: IParticipant;
+  days:number;
 }
 
 export default function ParticipantItem(props: ParticipantItemProps) {
 
-  const { user } = useUser(props.participant.user.toString());
+  const {event, participant, days} = props;
+  const { user } = useUserById(participant.user.toString());
 
-  const event = props.event;
+  console.log( days );
 
   let dayBeers: { day: number, beer: Types.ObjectId | null }[];
-  const beers = props.participant.beers.filter(_ => _ != null);
-  dayBeers = [...props.participant.days].map(day => { return { day, beer: null } });
+  const beers = participant.beers.filter(_ => _ != null);
+  dayBeers = [...participant.days].map(day => { return { day, beer: null } });
   for (let i = 0; i < beers.length; i++) {
     dayBeers[i].beer = beers[i];
   }
@@ -44,7 +46,7 @@ export default function ParticipantItem(props: ParticipantItemProps) {
       </Stack>
 
       <Stack direction={'row'} spacing={2}>
-        { dayBeers.map((dayBeer, index) => {
+        { dayBeers.slice(0,days).map((dayBeer, index) => {
             if (dayBeer.beer) {
               return (
                 <Badge key={index} overlap="circular" anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }} badgeContent={<SportsBarIcon fontSize="small" sx={{ color: '#333333' }} />}>

@@ -5,6 +5,7 @@ import { NextRequest, NextResponse } from "next/server";
 import Beer from '@/app/models/beer';
 import AuthUser, { IAuthUser } from '@/app/models/authuser';
 import { ObjectId, Types } from 'mongoose';
+import appConfig from '@/app/app.config';
 
 const shuffle = (a: any, b: any) => 0.5 - Math.random();
 
@@ -22,27 +23,27 @@ export async function POST(req: NextRequest, route: { params: Promise<{ year: st
     }
 
     const { event, participants } = await GetEventAndParticipants( year );
+    const daysCount = (event?.days ?? appConfig.MAX_EVENT_DAYS)/participants.length;
     if (!event) return NextResponse.json({ msg: ["Event not found"] }, { status: 404 });
 
     let participantUsers:Array<{participant:IParticipant,user:IAuthUser|null, stock:number}> = [];
     for( let participant of participants ){
-      participantUsers.push( { participant, user: await AuthUser.findById(participant.user), stock: 2} ); 
+      participantUsers.push( { participant, user: await AuthUser.findById(participant.user), stock: daysCount} ); 
     }
 
     if (json.days) {
 
       let claimedCount = 0;
-      let days:Array<{day:number,participantId:Types.ObjectId|undefined}> = Array.from(Array(24).keys()).map( _ => {
+      let days:Array<{day:number,participantId:Types.ObjectId|undefined}> = Array.from(Array(event?.days ?? appConfig.MAX_EVENT_DAYS).keys()).map( _ => {
         return { day: _, participantId: undefined };
       });
 
       //go through 1st and second choices, pre-assigning
-      for( let i = 0; i < 2; i++ ){
+      for( let i = 0; i < daysCount; i++ ){
         console.log( 'Choice ', i+1);
         for( let pu of participantUsers ){
           if( pu.user && pu.user.preferredDays && pu.user.preferredDays.length >= i+1){
             let preferredDay = pu.user.preferredDays[i];
-            console.log( pu.user.name, 'prefers', preferredDay );
             if( preferredDay && preferredDay !== 0 ){
               let wantsThisDay = days.find( _ => _.day === preferredDay);
               if( wantsThisDay ){

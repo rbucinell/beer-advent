@@ -1,4 +1,5 @@
 import mongoose, { Schema, Types } from "mongoose";
+import appConfig from "../app.config";
 
 export interface IEvent extends Document {
     _id: Types.ObjectId;
@@ -30,7 +31,7 @@ const eventSchema = new Schema<IEvent>(
             }
         },
         rules: [String],
-        days: { type:Number, default: 24 }
+        days: { type:Number, default: appConfig.MAX_EVENT_DAYS }
     },
     {
         collection: 'events'
