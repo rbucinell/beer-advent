@@ -1,7 +1,7 @@
 "use client";
 
 import React, { Fragment } from "react";
-import { useEvent, useEventParticipants } from "@hooks/hooks";
+import { useEvent, useEventParticipants } from "@/app/hooks/hooks";
 import { Button, Stack, Typography } from "@mui/material";
 import { PersonAdd, SportsBar } from "@mui/icons-material";
 import { AbrvDate } from "./util/fns";

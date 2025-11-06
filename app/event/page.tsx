@@ -1,7 +1,7 @@
 "use client";
 
 import { Button, IconButton, List, ListItem, ListItemButton, ListItemIcon, ListItemText, Stack, Typography } from '@mui/material';
-import { useEvents } from "@hooks/hooks";
+import { useEvents } from "@/app/hooks/hooks";
 import { usePathname } from 'next/navigation';
 import DayIcon from '@/components/DayIcon';
 import UserAvatar from '@/components/UserAvatar';

@@ -23,15 +23,9 @@ export default function UserPage() {
   const userId = user?._id.toString();
   const { beers, beersError, beersLoading } = useUserBeers(userId || '');
 
-  console.log('user:', user);
-  console.log('userId:', userId);
-  console.log('beers:', beers);
-  console.log('beersLoading:', beersLoading);
-  console.log('beersError:', beersError);
   // Group beers by year
   const beersByYear = useMemo(() => {
     if (!beers) return {};
-    console.log( 'beers', beers)
     return beers.reduce((acc, beer) => {
       const year = beer.year;
       if (!acc[year]) {

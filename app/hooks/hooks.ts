@@ -2,11 +2,11 @@
 
 import useSWR from "swr";
 import { fetcher } from "@/lib/swr";
-import { IEvent } from "@models/event";
+
 import { IParticipant } from "@models/participant";
-import { IOldUsers } from "@models/oldusers";
-import { IBeer } from "../models/beer";
-import { IAuthUser } from "../models/authuser";
+import { IAuthUser } from "@models/authuser";
+import { IEvent } from "@models/event";
+import { IBeer } from "@models/beer";
 
 export function useEvents() {
   const { data, error, isLoading } = useSWR<IEvent[], Error>('/api/events', fetcher);

@@ -28,9 +28,7 @@ export async function PUT(req: NextRequest, route: { params: Promise<{ year: str
     await connectDB();
     const query = { year };
     const requestBody = await req.json();
-    console.log('query:', query, 'requestBody:', requestBody)
     const updateResponse = await Event.findOneAndUpdate(query, requestBody, { includeResultMetadata: true });
-    console.log('Event [PUT], Event.findOneAndUpdate: ', updateResponse);
     return updateResponse.ok === 1
       ? new NextResponse(null, { status: 204 })
       : new NextResponse(updateResponse.value, { status: 400 });

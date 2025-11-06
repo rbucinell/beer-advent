@@ -1,7 +1,7 @@
 "use client";
 
 import { List, ListItem, Stack } from '@mui/material';
-import { useBeers, useEvent, useEventParticipants, useUsers } from "@hooks/hooks";
+import { useBeers, useEvent, useEventParticipants, useUsers } from "@/app/hooks/hooks";
 import { usePathname } from 'next/navigation';
 import DayIcon from '@/components/DayIcon';
 import UserAvatar from '@/components/UserAvatar';

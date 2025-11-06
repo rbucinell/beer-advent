@@ -2,28 +2,28 @@ import Beer, { IBeer } from "@/app/models/beer";
 import jaroWinkler from 'jaro-winkler';
 import { BeerSimilarityValidation, GeminiSimilaryResults } from "../api/beer/check/BeerSimilarityValidation";
 import { askAI } from "@/lib/gemini";
-import { ca } from "zod/v4/locales";
+import appConfig from "../app.config";
 
+type Thresholds = {
+    beer:number,
+    brewer:number
+}
 
-export async function beerTooSimilar( beerName: string, brewerName: string, options: { beerThreshold?: number, brewerThreshold?: number} = {} ): Promise<BeerSimilarityValidation> {
-    console.log( 'Checking',beerName,'by',brewerName );
+export async function beerTooSimilar( beerName: string, brewerName: string ): Promise<BeerSimilarityValidation> {
 
-    if( !options.beerThreshold ) options.beerThreshold = .85;
-    if( !options.brewerThreshold ) options.brewerThreshold = .65;
+    const thresholds:Thresholds = appConfig.similarityThresholds;
 
     const existingBeers:IBeer[] = await Beer.find();
     const comparisons = existingBeers.map( (existingBeer:IBeer) => {
         return { 
             beerSimilarity:jaroWinkler(existingBeer.beer || '', beerName || ''),
             brewerSimiliatriy: jaroWinkler(existingBeer.brewer || '', brewerName || ''),
-            // beerAdvocateSimiliatriy: jaroWinkler(existingBeer.beeradvocate || '', beer.beeradvocate || ''),
             beer:existingBeer
         }
     });
     comparisons.sort( (a,b) => b.beerSimilarity - a.beerSimilarity );   
     const closestComparison = comparisons[0];
     const closestBeer:IBeer = closestComparison.beer;
-    console.log( closestBeer );
 
     const results = {
         jaroWinkler: {
@@ -32,20 +32,20 @@ export async function beerTooSimilar( beerName: string, brewerName: string, opti
                 brewer: closestComparison.brewerSimiliatriy
             }
         },
-        gemini: await beerTooSimilarAiCheck(existingBeers,beerName,brewerName,options),
+        gemini: await beerTooSimilarAiCheck( existingBeers, beerName, brewerName ),
         beer: closestBeer,
         isTooSimilar: false
     };
-    //results.isTooSimilar = 
-    if( Math.max(...comparisons.map( b => b.beerSimilarity)) >= options.beerThreshold)
+    
+    if( Math.max(...comparisons.map( b => b.beerSimilarity)) >= thresholds.beer )
     {
         if( brewerName ){
-            if( Math.max(...comparisons.map( b => b.brewerSimiliatriy)) < options.brewerThreshold ) {
+            if( Math.max(...comparisons.map( b => b.brewerSimiliatriy)) < thresholds.brewer ) {
                 results.isTooSimilar = true;
             }
         }
     }
-    if( results.gemini.percentage >= options.beerThreshold ){
+    if( results.gemini.percentage >= thresholds.beer ){
         results.isTooSimilar = true;
     }
     return results;
@@ -54,12 +54,10 @@ export async function beerTooSimilar( beerName: string, brewerName: string, opti
 
 
 
-async function beerTooSimilarAiCheck( 
-    existingBeers:IBeer[], 
-    beerName: string, brewerName: string, 
-    options: { beerThreshold?: number, brewerThreshold?: number} = {} 
-): Promise<GeminiSimilaryResults> {
-    let percentage = 0.0;
+async function beerTooSimilarAiCheck ( 
+    existingBeers:IBeer[], beerName: string, brewerName: string ): Promise<GeminiSimilaryResults> {
+    
+        let percentage = 0.0;
     let beer = null;
     let brewer = null;
     

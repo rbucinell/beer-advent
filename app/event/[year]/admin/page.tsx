@@ -1,7 +1,7 @@
 "use client";
 
 import { Badge, Chip, Stack, Typography } from "@mui/material";
-import { useEvent, useEventParticipants } from "@hooks/hooks";
+import { useEvent, useEventParticipants } from "@/app/hooks/hooks";
 import { authClient } from "@/lib/auth-client";
 import { Get, Post, Delete } from "@/app/util/RequestHelper";
 import { IParticipant } from "@/app/models/participant";

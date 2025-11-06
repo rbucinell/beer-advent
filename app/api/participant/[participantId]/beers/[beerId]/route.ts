@@ -25,7 +25,7 @@ export async function GET(req: NextRequest, route: { params: Promise<{ participa
 
 export async function DELETE(req: NextRequest, route: { params: Promise<{ participantId: string, beerId: string }> }) {
   try {
-    console.log("Participant beer");
+    console.log("[DELETE] Participant beer");
     await connectDB();
     const { participantId, beerId } = await route.params;
 

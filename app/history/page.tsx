@@ -4,7 +4,7 @@ import { useState } from "react";
 import { IBeer } from "@/app/models/beer";
 import { IEvent } from "@/app/models/event";
 import BeerListItem from "@/components/Beer/BeerListItem";
-import { useBeers, useEvents } from "@hooks/hooks";
+import { useBeers, useEvents } from "@/app/hooks/hooks";
 
 export default function History() {
   const { beers, beersError, beersLoading } = useBeers();

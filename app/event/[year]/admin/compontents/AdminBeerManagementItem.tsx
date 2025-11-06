@@ -74,7 +74,6 @@ export default class AdminBeerManagementItem extends Component<ParticipantItemPr
       fetch(`/api/beer/${this.beers[1]._id}`, { method: 'PUT', body: JSON.stringify({ day: this.beers[0].day }) })
     ]);
 
-    console.log(this, e, this.participant.beers.join(','));
     this.participant.beers = this.participant.beers.reverse();
     this.setBeerState(this.participant.beers);
   }

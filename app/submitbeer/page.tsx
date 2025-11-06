@@ -1,20 +1,31 @@
 "use client";
 
-import { ChangeEvent, Fragment, useEffect, useState } from "react";
-import { useBeers, useEvent, useEventParticipants } from "@hooks/hooks";
+import { ChangeEvent, useEffect, useState } from "react";
+import { useBeers, useEvent, useEventParticipants } from "@/app/hooks/hooks";
 import { authClient } from "@/lib/auth-client";
 
 import { Get, Post, Put, Delete } from "@/app/util/RequestHelper";
 import { getEventParticipant } from "@/app/util/participation";
 
-import { AvatarGroup, Button, IconButton, LinearProgress, TextField, TextFieldVariants, Typography } from "@mui/material";
-import { Check, Delete as DeleteIcon, Remove, Search } from "@mui/icons-material";
+import {
+  Button,
+  LinearProgress,
+  TextField,
+  TextFieldVariants,
+  Typography,
+} from "@mui/material";
+import {
+  Check,
+  Delete as DeleteIcon,
+  Remove,
+  Search,
+} from "@mui/icons-material";
 
+import Link from "next/link";
 import { toast } from "sonner";
 import { BeerSimilarityValidation } from "../api/beer/check/BeerSimilarityValidation";
-import {Alert} from "../components/ui/alert";
-import Link from "next/link";
-import Participant, { IParticipant } from "../models/participant";
+import { Alert } from "../components/ui/alert";
+import { IParticipant } from "../models/participant";
 import { mutate } from "swr";
 import DayIcon from "@/components/DayIcon";
 import { Shuffle } from "lucide-react";
@@ -44,44 +55,56 @@ const initBeer: IBeerFormData = {
 };
 
 export default function SubmitBeer() {
-  
+
   const year = new Date().getFullYear();
   const { data: session, isPending, error: sessionError, refetch } = authClient.useSession();
   const { event, eventError, eventLoading } = useEvent({ year: year });
-  const { participants, participantsError, participantsLoading } = useEventParticipants( event );
-  const [ authParticipant, setAuthParticipant ] = useState<IParticipant|null>( null );
-  const { beers, beersError, beersLoading} = useBeers();
-  const [beer, setBeer] = useState<IBeerFormData>(initBeer);
-  const [error, setError] = useState<string[] | null>([]);
-  const [success, setSuccess] = useState(false);
-  const [thinking, setThinking] = useState(false);
+  const { participants, participantsError, participantsLoading } = useEventParticipants(event);
+  const { beers, beersError, beersLoading } = useBeers();
+
+  const [ authParticipant, setAuthParticipant ] = useState<IParticipant | null>( null );
+  const [ beer, setBeer ] = useState<IBeerFormData>(initBeer);
+  const [ error, setError ] = useState<string[] | null>([]);
+  const [ success, setSuccess ] = useState(false);
+  const [ thinking, setThinking ] = useState(false);
 
   useEffect(() => {
-  if (participants && session?.user?.id) {
-    const found = participants.find(p => p.user.toString() === session.user.id);
-    setAuthParticipant(found || null);
-  } else {
-    setAuthParticipant(null);
-  }
-}, [participants, session?.user?.id]);
+    if (participants && session?.user?.id) {
+      const found = participants.find(
+        (p) => p.user.toString() === session.user.id
+      );
+      setAuthParticipant(found || null);
+    } else {
+      setAuthParticipant(null);
+    }
+  }, [participants, session?.user?.id]);
 
-  const toPercent = ( num:number ) =>{
+  const toPercent = (num: number) => {
     num *= 100;
     return `${num.toFixed(2)}%`;
-  }
+  };
 
   const checkBeer = async () => {
     setThinking(true);
     setError(null);
-    console.log( beer );
-    const validation = await Get<BeerSimilarityValidation>(`/api/beer/check?beer=${beer.beer}&brewer=${beer.brewer}`);
+    const validation = await Get<BeerSimilarityValidation>(
+      `/api/beer/check?beer=${beer.beer}&brewer=${beer.brewer}`
+    );
 
     if (validation.isTooSimilar) {
       const closest = validation.beer;
       setError([
         `"${beer.beer}" by ${beer.brewer}. Too close to existing [${closest?.beer} by ${closest?.brewer}]`,
-        `JaroWinkler Results: Beer Similartiy is ${toPercent(validation.jaroWinkler.percentage.beer)} and Brewer similarity is ${toPercent(validation.jaroWinkler.percentage.brewer)})`,
-        `Gemini Results: ${toPercent(validation.gemini.percentage)} chance it is too close to [${validation.gemini.beer} by ${validation.gemini.brewer}]`
+        `JaroWinkler Results: Beer Similartiy is ${toPercent(
+          validation.jaroWinkler.percentage.beer
+        )} and Brewer similarity is ${toPercent(
+          validation.jaroWinkler.percentage.brewer
+        )})`,
+        `Gemini Results: ${toPercent(
+          validation.gemini.percentage
+        )} chance it is too close to [${validation.gemini.beer} by ${
+          validation.gemini.brewer
+        }]`,
       ]);
 
       //   `"${beer.beer}" by ${beer.brewer}. Too close to existing [${closest?.beer} by ${closest?.brewer}]. Please tell, text Ryan if this is not correct.`,
@@ -115,45 +138,51 @@ export default function SubmitBeer() {
     const { msg, success } = res;
     setThinking(false);
     setError(msg);
-    toast.info( msg );
+    toast.info(msg);
     setSuccess(success);
     if (success) {
       clearForm(null);
     }
-
   };
 
   const deleteBeer = async (beerId: string) => {
-    
-    console.log( `Delete ${beerId}`)
-    if( !event ) {
-      toast.error( "Event not loaded");
+    if (!event) {
+      toast.error("Event not loaded");
       return;
     }
 
-    if( !authParticipant ){
-      toast.error( "Authenticated user not found in event");
+    if (!authParticipant) {
+      toast.error("Authenticated user not found in event");
       return;
     }
-    
-    const foundBeer = beers?.find( _ => _._id.toString() === beerId );
+
+    const foundBeer = beers?.find((_) => _._id.toString() === beerId);
     await Delete(`/api/participant/${authParticipant._id}/beers/${beerId}`);
     await mutate(`/api/events/${event?.year}/participants`);
-    toast.success( `Deleted ${foundBeer?.beer} and removed it from ${ authParticipant.name}`)
-  }
+    toast.success(
+      `Deleted ${foundBeer?.beer} and removed it from ${authParticipant.name}`
+    );
+  };
 
-  const swapBeers = async (e: React.MouseEvent, participant:IParticipant) => {
-
-    let participantBeers = participant.beers.map( b => beers?.find( _ => _._id == b));
+  const swapBeers = async (e: React.MouseEvent, participant: IParticipant) => {
+    let participantBeers = participant.beers.map((b) =>
+      beers?.find((_) => _._id == b)
+    );
     e.preventDefault();
     await Promise.all([
-      fetch(`/api/beer/${participantBeers[0]?._id}`, { method: 'PUT', body: JSON.stringify({ day: participantBeers[1]?.day }) }),
-      fetch(`/api/beer/${participantBeers[1]?._id}`, { method: 'PUT', body: JSON.stringify({ day: participantBeers[0]?.day }) })
+      fetch(`/api/beer/${participantBeers[0]?._id}`, {
+        method: "PUT",
+        body: JSON.stringify({ day: participantBeers[1]?.day }),
+      }),
+      fetch(`/api/beer/${participantBeers[1]?._id}`, {
+        method: "PUT",
+        body: JSON.stringify({ day: participantBeers[0]?.day }),
+      }),
     ]);
     participant.beers = participant.beers.reverse();
-    await Put(`/api/participant?id=${participant._id}`, participant );
+    await Put(`/api/participant?id=${participant._id}`, participant);
     await mutate(`/api/events/${event?.year}/participants`);
-  }
+  };
 
   const clearForm = (e: any) => {
     window.location.reload();
@@ -177,7 +206,7 @@ export default function SubmitBeer() {
         variant={variant}
         value={beer[target]}
         onChange={(e: ChangeEvent<HTMLInputElement>) => {
-          if( req ){
+          if (req) {
             setSuccess(false);
           }
           setBeer({ ...beer, [e.target.name]: e.target.value });
@@ -189,105 +218,109 @@ export default function SubmitBeer() {
 
   return (
     <div className="flex flex-col w-full h-full">
-      {!session && <Alert level="warning" >Please <Link href={"/sign-in"}>Sign In</Link></Alert> }
-      {session && event && (
-
+      { !session && 
+        <Alert level="warning"> Please <Link href={"/sign-in"}>Sign In</Link></Alert> 
+      }
+      { session && event &&
         <div className="flex flex-col gap-2">
-
-        { authParticipant && authParticipant?.beers?.filter( b => b).length > 0 &&
-          <Alert level="info">Submitted Beers:
-
-          { authParticipant.days.map ( (day,i) => {
-            let beer = beers?.find(b => b._id ==  authParticipant.beers[i] );
-            return <div key={i} className="w-full flex gap-1 mb-2">
-              <DayIcon day={day} />
-              <div className="flex flex-row gap-1 w-full items-start px-2">
-                {beer && <>
-                  <h3 className="font-bold">{beer.beer} <small className="font-light"> {beer.brewer}</small></h3>
-                </>}
-              </div>
-              {beer &&
-              <Button className="ml-auto" color="error" onClick={() =>deleteBeer(beer._id.toString())} startIcon={<DeleteIcon/>}></Button>}
-            </div>
-          })}
-          { authParticipant.beers && authParticipant.beers.length > 1 && 
-            <Button className="ml-auto" color="secondary" startIcon={<Shuffle/>} 
-              sx={{ outline: '1px solid' }}
-              onClick={(e) => swapBeers(e,authParticipant)}
-              > Swap Days</Button>
-          }
-{/* 
-            {authParticipant?.beers?.filter( b => b).map( (beerId, index) => {
-              let beer = beers?.find(b => b._id == beerId );
-              return beer ? <div className="flex justify-between"  key={index}>
-                <span className="justify-self-start"> {beer.beer} - {beer.brewer}</span>
-                <Button className="ml-auto" color="error" onClick={() =>deleteBeer(beer._id.toString())} startIcon={<DeleteIcon/>}></Button>
-              </div> : <Fragment key={index} />
-            })} */}
-
-        </Alert>}
-
-        <form onSubmit={handleSubmit}>
-          <div className="p-2 flex flex-col justify-start rounded-md bg-white border border-black">
-            <div className="my-2">
-              {session?.user.name}, submit your beer for {event?.year}
-            </div>
-            <div className="my-2">
-              {StandardTextField("beer", "Beer Name", "text")}
-            </div>
-            <div className="my-2">
-              {StandardTextField("brewer", "Brewery Name", "text")}
-            </div>
-            <Typography className="text-gray-400 italic">
-              Optional Fields
-            </Typography>
-            <div className="flex flex-row">
-              {StandardTextField("type", "Beer Type", "text", false)}
-              {StandardTextField("abv", "ABV", "text", false)}
-            </div>
-            {StandardTextField(
-              "beeradvocate",
-              "Beer Advocate URL",
-              "text",
-              false
+          {authParticipant &&
+            authParticipant?.beers?.filter((b) => b).length > 0 && (
+              <Alert level="info">
+                Submitted Beers:
+                { authParticipant.days.map((day, i) => {
+                  let beer = beers?.find( (b) => b._id == authParticipant.beers[i] );
+                  return (
+                    <div key={i} className="w-full flex gap-1 mb-2">
+                      <DayIcon day={day} />
+                      <div className="flex flex-row gap-1 w-full items-start px-2">
+                        {beer &&
+                          <h3 className="font-bold">
+                            {beer.beer}{" "}
+                            <small className="font-light">{" "}{beer.brewer}</small>
+                          </h3>
+                        }
+                      </div>
+                      {beer &&
+                        <Button className="ml-auto" color="error" onClick={() => deleteBeer(beer._id.toString())} startIcon={<DeleteIcon />} />
+                      }
+                    </div>
+                  );
+                })}
+                {authParticipant.beers && authParticipant.beers.length > 1 && (
+                  <Button
+                    className="ml-auto"
+                    color="secondary"
+                    startIcon={<Shuffle />}
+                    sx={{ outline: "1px solid" }}
+                    onClick={(e) => swapBeers(e, authParticipant)}
+                  >{" "}Swap Days</Button>
+                )}
+              </Alert>
             )}
-            {StandardTextField("untappd", "Untappd URL", "text", false)}
-            <div className="my-2 flex flex-row lg:max-w-1/2 self-center flex-wrap justify-between gap-2">
-              <Button variant="outlined" type="button" onClick={clearForm}>
-                Clear
-              </Button>
-              <Button className="bg-orange-600 mx-1" variant="contained" type="button" color="warning"
-                disabled={!beer.beer} onClick={checkBeer} >
-                <Search />
-                Check
-              </Button>
-              <Button
-                className="bg-blue-600 mx-1"
-                variant="contained"
-                type="submit"
-                color="primary"
-                disabled={!beer.beer || !beer.brewer || !session || !success}
-              >
-                <Check /> Submit
-              </Button>
-            </div>
-          </div>
-        </form>
 
+          <form onSubmit={handleSubmit}>
+            <div className="p-2 flex flex-col justify-start rounded-md bg-white border border-black">
+              <div className="my-2">
+                {session?.user.name}, submit your beer for {event?.year}
+              </div>
+              <div className="my-2">
+                {StandardTextField("beer", "Beer Name", "text")}
+              </div>
+              <div className="my-2">
+                {StandardTextField("brewer", "Brewery Name", "text")}
+              </div>
+              <Typography className="text-gray-400 italic">Optional Fields</Typography>
+              <div className="flex flex-row">
+                {StandardTextField("type", "Beer Type", "text", false)}
+                {StandardTextField("abv", "ABV", "text", false)}
+              </div>
+              {StandardTextField(
+                "beeradvocate",
+                "Beer Advocate URL",
+                "text",
+                false
+              )}
+              {StandardTextField("untappd", "Untappd URL", "text", false)}
+              <div className="my-2 flex flex-row lg:max-w-1/2 self-center flex-wrap justify-between gap-2">
+                <Button variant="outlined" type="button" onClick={clearForm}>
+                  Clear
+                </Button>
+                <Button
+                  className="bg-orange-600 mx-1"
+                  variant="contained"
+                  type="button"
+                  color="warning"
+                  disabled={!beer.beer || thinking}
+                  onClick={checkBeer}
+                >
+                  <Search />
+                  Check
+                </Button>
+                <Button
+                  className="bg-blue-600 mx-1"
+                  variant="contained"
+                  type="submit"
+                  color="primary"
+                  disabled={!beer.beer || !beer.brewer || !session || !success}
+                >
+                  <Check /> Submit
+                </Button>
+              </div>
+
+              <div className="rounded-b-xl min-h-1">
+                {thinking && <LinearProgress />}
+              </div>
+            </div>
+          </form>
         </div>
-      )}
-      {thinking &&
-      <div className="bg-slate-100 rounded-b-xl p-2">
-        <LinearProgress /> 
-      </div>
       }
 
       <div className="bg-slate-100 flex flex-col">
         {error && error.map((e, i) => (
-            <div key={i} className={`${success ? "text-green-800" : "text-red-600"} px-5 py-2`}>
+            <div key={i} className={`${ success ? "text-green-800" : "text-red-600" } px-5 py-2`}>
               {e}{" "}
             </div>
-          ))}
+        ))}
       </div>
     </div>
   );

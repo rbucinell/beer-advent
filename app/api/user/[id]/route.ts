@@ -4,15 +4,10 @@ import { NextRequest, NextResponse } from "next/server";
 import AuthUser from '@/app/models/authuser';
 import { revalidatePath } from 'next/cache';
 
-export async function GET(
-  req: NextRequest, 
-  context: { params: Promise<{ id: string }> }
-  //route: { params: Promise<{ id: string }> }
-) {
+export async function GET( req: NextRequest,  context: { params: Promise<{ id: string }> } ) {
   try {
     await connectDB();
     const { id } = await context.params;
-    console.log('User ID:', id);
     let user = await AuthUser.findById(id);
     if (!user) user = await OldUsers.findById(id);
     if (!user) return NextResponse.json({ msg: ["User not found"] }, { status: 404 });
@@ -55,7 +50,6 @@ export async function PUT(req: NextRequest, route: { params: Promise<{ id: strin
         return _ === undefined ? null : _
       });
     }
-    console.log( 'preffered', user); //this object in memor is correct
     user.updatedAt = new Date();
     await user.save();
 

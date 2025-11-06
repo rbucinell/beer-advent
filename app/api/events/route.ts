@@ -21,7 +21,6 @@ export async function GET(req: NextRequest) {
 /**
  * Create event
  */
-
 export async function POST(req: NextRequest) {
   try {
     await connectDB();
@@ -42,7 +41,6 @@ export async function POST(req: NextRequest) {
     if (!event.name) event.name = `Beer Advent ${event.year}`;
 
     const response = await Event.create(event);
-    console.log(response);
 
     return NextResponse.json({ event: response }, { status: 201 });
   } catch (err) {

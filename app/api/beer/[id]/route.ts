@@ -23,15 +23,13 @@ export async function PUT(req: NextRequest) {
 
     const json = await req.json();
     const beer = await Beer.findOne({ _id: id });
-    console.log(`Updating beer: ${id} - ${beer.beer}`);
     if (!beer) return NextResponse.json({ msg: ["Beer not found"] }, { status: 500 });
 
     Object.entries(json).forEach(([key, value]) => {
-      console.log(`\t`, key, value);
       if (value != null) beer[key] = value;
     });
-    const response = await beer.save();
-    console.log(JSON.stringify(response));
+    
+    await beer.save();
     return new NextResponse(null, { status: 204 });
 
   } catch (error) {
