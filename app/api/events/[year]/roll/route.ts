@@ -35,7 +35,7 @@ export async function POST(req: NextRequest, route: { params: Promise<{ year: st
 
       let claimedCount = 0;
       let days:Array<{day:number,participantId:Types.ObjectId|undefined}> = Array.from(Array(event?.days ?? appConfig.MAX_EVENT_DAYS).keys()).map( _ => {
-        return { day: _, participantId: undefined };
+        return { day: appConfig.MAX_EVENT_DAYS - event.days + _ + 1, participantId: undefined };
       });
 
       //go through 1st and second choices, pre-assigning
@@ -77,7 +77,7 @@ export async function POST(req: NextRequest, route: { params: Promise<{ year: st
       for( let pu of participantUsers ){
         randomQueue.push( ...Array.from({length: pu.stock}, _ => pu.participant._id ) )
       }
-      days.forEach( _ => randomQueue.sort(shuffle ));
+      days.forEach( _ => randomQueue.sort(shuffle));
       for( let d of days ){
         if( d.participantId === undefined ){
           d.participantId = randomQueue.shift();
@@ -99,40 +99,44 @@ export async function POST(req: NextRequest, route: { params: Promise<{ year: st
         await Participant.findByIdAndUpdate( participant._id, participant);
       }
 
-
-      // let lowerNumbers = new Array(12).fill(0).map((_, index) => index + 1);
-      // lowerNumbers.sort(shuffle);
-      // let upperNumbers = new Array(12).fill(0).map((_, index) => index + 13);
-      // upperNumbers.sort(shuffle);
-
-      // for (let i = 0; i < participants.length; i++) {
-      //   let participant = participants[i];
-      //   participant.days = [lowerNumbers[i], upperNumbers[i]];
-
-      //   if( participant.beers[0])
-      //     await Beer.findByIdAndUpdate( participant.beers[0]._id, { day: lowerNumbers[i]});
-      //   if( participant.beers[1])
-      //     await Beer.findByIdAndUpdate( participant.beers[1]._id, { day: upperNumbers[i]});
-
-      //   const response = await Participant.findByIdAndUpdate( participant._id, participant );
-      // }
     }
 
     if (json.xmas) {
       console.log("Rolling Xmas");
 
-      let santas = participants.map(p => p._id);
+      let previousEvent = await Event.findOne<IEvent>({ year: event.year-1 });
+      let previousParticipants = await Participant.find<IParticipant>( {event:previousEvent?._id});
       
-      let rot = Math.random() * participants.length + 1;
-      if( rot === participants.length ) rot++;   
-      
-      for (let i = 0; i < rot; i++) {
-        const id = santas.shift();
-        if( id ) santas.push(id);
-      }
+      //pool of available secret santas
+      let pool:Array<{participantId:Types.ObjectId, userId:Types.ObjectId}> = participants.map( p => {
+        return { participantId: p._id, userId: p.user }
+      });
+      pool.sort(shuffle);
 
-      for (let participant of participants) {
-        await Participant.findByIdAndUpdate( participant._id, { xmas: santas.shift()} );
+      for( let curYearParticipant of participants ){        
+        //Previous Years Participant, where user id is the same as current years
+        let partipiationLastYear = previousParticipants.find( p => p.user.equals(curYearParticipant.user) );
+        //Get the Id of the last years Xmas assignment
+        let lastYearsXmasParticipantId = partipiationLastYear?.xmas;
+        //Get the Participant associated with Last Years Xmas assignment
+        let lastYearsXmasParticipant = previousParticipants.find( p => p._id.equals(lastYearsXmasParticipantId) );
+        //get the userId of last year's xmas assignment
+        let lastYearsXmasUserId = lastYearsXmasParticipant?.user;
+                
+        //Find an available assignment from the pool
+        let ss = null;
+        if( pool.length === 1 ){
+          ss = pool[0];
+        }else{
+          ss= pool.find( potential => 
+            !potential.userId.equals(curYearParticipant.user) && 
+            !potential.userId.equals(lastYearsXmasUserId) 
+          );
+        }
+        if( ss ){
+          pool = pool.filter( p => !p.participantId.equals(ss.participantId)); //remove ss from pool;
+          await Participant.findByIdAndUpdate( curYearParticipant._id, { xmas: ss.participantId} );
+        }
       }
 
     }

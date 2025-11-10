@@ -1,6 +1,6 @@
 "use client";
 
-import { List, ListItem, Stack } from '@mui/material';
+import { Card, CardContent, List, ListItem, Stack } from '@mui/material';
 import { useBeers, useEvent, useEventParticipants, useUsers } from "@/app/hooks/hooks";
 import { usePathname } from 'next/navigation';
 import DayIcon from '@/components/DayIcon';
@@ -20,7 +20,8 @@ export default function EventIdPage() {
   const { users, usersError, usersLoading } = useUsers();
 
   return (
-    <div className="overflow-y-auto h-[90vh] w-full flex flex-col bg-white border border-solid border-black rounded-md self-stretch">
+    <Card className='w-full'>
+      <CardContent>
       {event && <h1 className='self-center text-2xl'>{event.name}</h1>}
 
       <Stack direction={'column'} className='items-center' sx={{ width: '100%'}}>
@@ -46,6 +47,7 @@ export default function EventIdPage() {
           })}
         </List>
       </Stack>
-    </div>
+      </CardContent>
+    </Card>
   );
 }

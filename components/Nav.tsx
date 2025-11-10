@@ -5,6 +5,8 @@ import AppBar from '@mui/material/AppBar';
 import { Box, Toolbar, Container, Typography } from '@mui/material';
 import NavBarUserOrLogin from './NavBarUserOrLogin';
 import { Session } from '@/lib/auth-client';
+import { Home, EventRepeat, SportsBar  } from "@mui/icons-material";
+import ToolBarLinkDynamic from './ToolbarLinkDynamic';
 
 interface NavProps {
   session: Session | null;
@@ -18,9 +20,9 @@ export default function Nav({ session }: NavProps) {
           <Container>
             <Toolbar>
               
-              <h6 className="h-6 flex flex-grow uppercase font-bold"><Link href="/">Home</Link></h6>
-              <h6 className="h-6 flex flex-grow uppercase font-bold"><Link href="/event">Events</Link></h6>
-              <h6 className="h-6 flex flex-grow uppercase font-bold"><Link href="/history">History</Link></h6>
+              <ToolBarLinkDynamic text="Home" link="/" icon={Home} />
+              <ToolBarLinkDynamic text="Events" link="/event" icon={EventRepeat} />
+              <ToolBarLinkDynamic text="Beers" link="/history" icon={SportsBar} />
               
               { session && <h6 className="h-6 flex flex-grow uppercase font-bold disabled-link"><Link href="/submitbeer">Submit</Link></h6>}
 

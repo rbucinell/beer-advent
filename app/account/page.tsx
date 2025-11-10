@@ -3,6 +3,7 @@ import { redirect } from "next/navigation";
 import { Avatar, AvatarImage } from "@/components/ui/avatar";
 import { headers } from "next/headers";
 import { AccountForm } from "./components/AccountForm";
+import { CurrentEventBlock } from "./components/CurrentEventBlock";
 
 export default async function Account() {
 
@@ -28,8 +29,10 @@ export default async function Account() {
             </p>
           </div>
         </div>
-
-        <AccountForm sessionUser={session.user} />
+        <div className="flex flex-col gap-1">
+          <CurrentEventBlock sessionUser={session.user} />
+          <AccountForm sessionUser={session.user} />
+        </div>
       </div>
     </main>
   );
