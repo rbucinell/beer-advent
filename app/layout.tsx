@@ -35,7 +35,7 @@ export default async function RootLayout({ children, }: { children: React.ReactN
     <html className="h-full" lang="en">      
         <body className={`${inter.className} flex flex-col h-full items-stretch bg-green-200 repeating-beer-bg`}>
           <Nav session={session} />
-          <div className='p-2 h-full w-full flex max-w-3xl mx-auto justify-center overflow-hidden'>
+          <div className='p-2 h-full w-full flex max-w-3xl mx-auto justify-center'>
             {children}
           </div>
         <Toaster richColors />
