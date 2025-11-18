@@ -10,6 +10,7 @@ import { Get } from "@/app/util/RequestHelper";
 import { IBeer } from "@/app/models/beer";
 import { EventLinkListItem } from "@/app/event/components/EventLinkListItem";
 import AuthUser, { IAuthUser } from "@/app/models/authuser";
+import DayIcon from "@/components/DayIcon";
 
 interface CurrentEventBlockProps {
   sessionUser: User;
@@ -67,6 +68,13 @@ export function CurrentEventBlock({ sessionUser }: CurrentEventBlockProps) {
             </div>
             
             <div className="space-y-2">
+              {participant.days && participant.days.length > 0 && (
+                  <div className="flex items-center gap-2 p-3">
+                    <span className="font-medium text-gray-700">Your Day(s):</span>
+                    <span className="flex flex-row gap-1">{participant.days.map( d => <DayIcon day={d} key={d} />)}</span>
+                </div>
+              )}
+              
               <div className=" bg-no-repeat bg-cover bg-center bg-[url('/passed_out_santa.png')]">
                 <div className="flex flex-col gap-2 p-4 rounded-lg border border-red-200 bg-red-100">
                   <div className="flex flex-col w-full items-center">
@@ -81,13 +89,6 @@ export function CurrentEventBlock({ sessionUser }: CurrentEventBlockProps) {
                   }
                 </div>
               </div>
-              
-              {participant.days && participant.days.length > 0 && (
-                <div className="flex items-center gap-2">
-                  <span className="font-medium text-gray-700">Days:</span>
-                  <span>{participant.days.join(', ')}</span>
-                </div>
-              )}
 
               {participant.days && participant.days.length > 0 && (
                 <Alert level="info">
