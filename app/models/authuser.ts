@@ -10,6 +10,9 @@ export interface IAuthUser extends Document {
   updatedAt: MongooseDate;
   username: string;
   displayUsername: string;
+  preferences: {
+    beer: string|null;
+  }
   preferredDays: (number | null)[];
 }
 
@@ -46,6 +49,17 @@ export const authUserSchema = new Schema<IAuthUser>({
     type: String,
     required: false
   },
+  preferences: {
+    type: {
+      beer: {
+        type: String,
+        required: false,
+        default: null
+      }
+    },
+    required: false,
+    default: { beer: null }
+  },
   preferredDays: {
     type: [Schema.Types.Mixed],
     required: false
@@ -54,7 +68,8 @@ export const authUserSchema = new Schema<IAuthUser>({
   {
     collection: 'user',
     toJSON: { virtuals: true },
-    toObject: { virtuals: true }
+    toObject: { virtuals: true },
+    minimize: false 
   }
 );
 

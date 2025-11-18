@@ -1,7 +1,7 @@
 "use client";
 
 import appConfig from "@/app/app.config";
-import React from "react";
+import React, { useState } from "react";
 import { User } from "better-auth";
 import { useForm } from "react-hook-form";
 import { useUserById } from "@/app/hooks/hooks";
@@ -29,11 +29,11 @@ const FormSchema = z.object({
   username: z.string(),
   preferredDay1: z.coerce.number().min(0).max(appConfig.MAX_EVENT_DAYS).optional(),
   preferredDay2: z.coerce.number().min(0).max(appConfig.MAX_EVENT_DAYS).optional(),
+  beerPreference: z.string().optional()
 });
 
 export function AccountForm({ sessionUser }: AccountFormProps) {
-  const { user } = useUserById(sessionUser.id);
-  
+  const { user } = useUserById( sessionUser.id);
   const form = useForm<z.infer<typeof FormSchema>>({
     resolver: zodResolver(FormSchema),
     defaultValues: {
@@ -43,9 +43,11 @@ export function AccountForm({ sessionUser }: AccountFormProps) {
       username: "",
       preferredDay1: 0,
       preferredDay2: 0,
+      beerPreference: ""
     },
   });
 
+  //thisle 6905ec32feaf8b9ed5dffc9d
   // Reset form with user data when it loads
   React.useEffect(() => {
     if (user) {
@@ -56,12 +58,13 @@ export function AccountForm({ sessionUser }: AccountFormProps) {
         username: user.username || "",
         preferredDay1: user.preferredDays?.[0] ?? 0,
         preferredDay2: user.preferredDays?.[1] ?? 0,
+        beerPreference: user.preferences?.beer || ""
       });
     }
   }, [user, form]);
 
   async function onSubmit(data: z.infer<typeof FormSchema>) {
-    const { email, firstName, lastName, username, preferredDay1, preferredDay2 } = data;
+    const { email, firstName, lastName, username, preferredDay1, preferredDay2, beerPreference } = data;
 
     try {
       const response = await fetch(`/api/user/${(user as any).id}`, {
@@ -72,6 +75,9 @@ export function AccountForm({ sessionUser }: AccountFormProps) {
           email,
           username,
           preferredDays: [preferredDay1, preferredDay2],
+          preferences: {
+            beer: beerPreference
+          }
         }),
       });
 
@@ -174,6 +180,24 @@ export function AccountForm({ sessionUser }: AccountFormProps) {
                 />
               </div>
             </div>
+            <FormField
+              control={form.control}
+              name="beerPreference"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Beer Preference</FormLabel>
+                  <p className="text-xs text-muted-foreground">Your secret santa will be able to see this answer</p>
+                  <FormControl>
+                    <textarea
+                      placeholder="Enter your beer preferences..."
+                      className="flex min-h-[80px] w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+                      {...field}
+                    />
+                  </FormControl>     
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
             <div className="mt-6 flex justify-end">
               <Button type="submit">Save Changes</Button>
             </div>

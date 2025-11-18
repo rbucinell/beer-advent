@@ -9,6 +9,7 @@ import { Alert } from "@components/ui/alert";
 import { Get } from "@/app/util/RequestHelper";
 import { IBeer } from "@/app/models/beer";
 import { EventLinkListItem } from "@/app/event/components/EventLinkListItem";
+import AuthUser, { IAuthUser } from "@/app/models/authuser";
 
 interface CurrentEventBlockProps {
   sessionUser: User;
@@ -19,6 +20,7 @@ export function CurrentEventBlock({ sessionUser }: CurrentEventBlockProps) {
   const { event, eventError, eventLoading } = useEvent({ year: eventYear });
   let { participants, participantsError, participantsLoading } = useEventParticipants(event);
   const [ participant, setParticipant ] = useState<IParticipant | null>( null );
+  const [ secretSantaUser, setSecretSantaUser ] = useState<IAuthUser|null>(null);
   const [ beers, setBeers] = useState<Array<IBeer>>( [] );
   
   useEffect(() => {
@@ -39,6 +41,21 @@ export function CurrentEventBlock({ sessionUser }: CurrentEventBlockProps) {
     }
   }, [participants]);
 
+  useEffect(() => {
+    if( participant ){
+      let ssUser = null;
+      (async ()=>{
+        console.log( 'participant',participant );
+        let xmasParticipant = participants?.find( p => p._id.toString() === participant.xmas?.toString() );
+        ssUser = await Get<IAuthUser>(`/api/user/${xmasParticipant?.user}`);
+        console.log( 'ssUser', ssUser)
+        if( ssUser ){
+          setSecretSantaUser( ssUser );
+        }
+      })();
+    }
+  }, [participant]);
+
   return (
     <Card>
       <CardContent className="p-6">
@@ -50,10 +67,19 @@ export function CurrentEventBlock({ sessionUser }: CurrentEventBlockProps) {
             </div>
             
             <div className="space-y-2">
-              
-              <div className="flex items-center gap-2">
-                <span className="font-medium text-gray-700">Secret Santa Assignment:</span>
-                <span className="text-sm text-gray-600">{ participants?.find( p => p._id.toString() === participant.xmas?.toString())?.name ?? "" }</span>
+              <div className=" bg-no-repeat bg-cover bg-center bg-[url('/passed_out_santa.png')]">
+                <div className="flex flex-col gap-2 p-4 rounded-lg border border-red-200 bg-red-100">
+                  <div className="flex flex-col w-full items-center">
+                    <span className="font-medium text-gray-700">Secret Santa Assignment</span>
+                    <span className="font-bold text-red-900">{ participants?.find( p => p._id.toString() === participant.xmas?.toString())?.name ?? "" }</span>
+                  </div>
+                  {secretSantaUser?.preferences?.beer && 
+                    <div className="flex flex-col w-full items-center">
+                      <span className="font-medium text-gray-700">Your Asignee's Beer preferences</span>
+                      <span className="text-sm text-gray-600">{ secretSantaUser.preferences.beer }</span>
+                    </div>
+                  }
+                </div>
               </div>
               
               {participant.days && participant.days.length > 0 && (

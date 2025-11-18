@@ -1,7 +1,7 @@
 import connectDB from '@/lib/mongodb';
 import OldUsers from '@/app/models/oldusers';
 import { NextRequest, NextResponse } from "next/server";
-import AuthUser from '@/app/models/authuser';
+import AuthUser, { IAuthUser } from '@/app/models/authuser';
 import { revalidatePath } from 'next/cache';
 
 export async function GET( req: NextRequest,  context: { params: Promise<{ id: string }> } ) {
@@ -42,14 +42,29 @@ export async function PUT(req: NextRequest, route: { params: Promise<{ id: strin
     if (!user) 
       return NextResponse.json({ msg: ["User not found"] }, { status: 404 });
     const json = await req.json();
+
     if (json.firstName || json.lastName) user.name = json.firstName;
     if (json.email) user.email = json.email;
     if (json.imageUrl) user.image = json.imageUrl;
-    if( json.preferredDays){
-      user.preferredDays = json.preferredDays.map((_: any) => {
-        return _ === undefined ? null : _
-      });
+    if( json.preferences ){
+      if( !user.preferences ) {
+          user.preferences = { beer: null };
+          user.markModified('preferences');
+          await user.save();
+          user = await AuthUser.findById(id);
+      }
+      // Initialize preferences if it doesn't exist
+      if (!user.preferences) {
+        user.preferences = { beer: null };
+      }
+      // Update the beer preference
+      if (json.preferences.beer !== undefined) {
+        user.preferences.beer = json.preferences.beer;
+      }
+      // Mark as modified for Mongoose
+      user.markModified('preferences');
     }
+
     user.updatedAt = new Date();
     await user.save();
 
