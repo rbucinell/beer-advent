@@ -1,0 +1,32 @@
+import connectDB from '@/lib/mongodb';
+import OldUsers from '@/app/models/oldusers';
+import { NextRequest, NextResponse } from "next/server";
+
+export async function GET( req: NextRequest,  context: { params: Promise<{ id: string }> } ) {
+  try {
+    await connectDB();
+    const { id } = await context.params;
+    let user = await OldUsers.findById(id);
+    if (!user) return NextResponse.json({ msg: ["User not found"] }, { status: 404 });
+    return NextResponse.json(user);
+  } catch (error) {
+    console.log(error);
+    return NextResponse.json({ msg: ["Unable to retrieve User. " + error], error }, { status: 500 });
+  }
+}
+
+export async function DELETE(req: NextRequest, route: { params: Promise<{ id: string }> }) {
+  try {
+    await connectDB();
+    const { id } = await route.params;
+    const user = await OldUsers.findById(id);
+    if (!user) return NextResponse.json({ msg: ["User not found"] }, { status: 404 });
+    if (user.deleted) return NextResponse.json({ msg: ["User already deleted"] }, { status: 400 });
+    const deleteResponse = await OldUsers.deleteOne(user);
+    if (!deleteResponse.deletedCount) return NextResponse.json({ msg: ["Unable to delete User"] }, { status: 500 });
+    return new NextResponse(null, { status: 204 });
+  } catch (error) {
+    console.log(error);
+    return NextResponse.json({ msg: ["Unable to delete User. " + error], error }, { status: 500 });
+  }
+}

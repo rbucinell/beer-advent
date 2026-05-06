@@ -46,10 +46,8 @@ export function CurrentEventBlock({ sessionUser }: CurrentEventBlockProps) {
     if( participant ){
       let ssUser = null;
       (async ()=>{
-        console.log( 'participant',participant );
         let xmasParticipant = participants?.find( p => p._id.toString() === participant.xmas?.toString() );
         ssUser = await Get<IAuthUser>(`/api/user/${xmasParticipant?.user}`);
-        console.log( 'ssUser', ssUser)
         if( ssUser ){
           setSecretSantaUser( ssUser );
         }
