@@ -14,7 +14,7 @@ export default function EventPage() {
                 <List dense={true} className="flex flex-col w-full justify-start gap-3">
                     {events &&  events.toSorted((a, b) => b.year - a.year)
                     //.filter((e) => e.year !== new Date().getFullYear())
-                    .map((event: IEvent) => <EventLinkListItem event={event} /> )}
+                    .map((event: IEvent) => <EventLinkListItem event={event} key={event._id.toString()} /> )}
                 </List> 
             </CardContent>
         </Card>

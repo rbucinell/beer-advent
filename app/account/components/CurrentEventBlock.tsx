@@ -69,7 +69,7 @@ export function CurrentEventBlock({ sessionUser }: CurrentEventBlockProps) {
               {participant.days && participant.days.length > 0 && (
                   <div className="flex items-center gap-2 p-3">
                     <span className="font-medium text-gray-700">Your Day(s):</span>
-                    <span className="flex flex-row gap-1">{participant.days.map( d => <DayIcon day={d} key={d} />)}</span>
+                    <span className="flex flex-row gap-1">{participant.days.map( (d,i) => <DayIcon day={d} key={d} index={i} />)}</span>
                 </div>
               )}
               

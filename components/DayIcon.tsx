@@ -5,6 +5,7 @@ interface IDayIconProps {
   day?: number,
   variant?: 'circular' | 'rounded' | 'square',
   sx?: any
+  index?: number
 }
 
 export default class UserAvatar extends Component<IDayIconProps, {}> {

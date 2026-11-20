@@ -6,7 +6,6 @@ import { usePathname } from 'next/navigation';
 import DayIcon from '@/components/DayIcon';
 import UserAvatar from '@/components/UserAvatar';
 import BeerListItem from '@/components/Beer/BeerListItem';
-import { EventDayDisplay } from './components/EventDayDisplay';
 import appConfig from "@app/app.config";
 
 export default function EventIdPage() {

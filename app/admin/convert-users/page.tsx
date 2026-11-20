@@ -23,6 +23,9 @@ import {
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { IAuthUser } from "@/app/models/authuser";
+import { toast } from "sonner";
+import { Post } from "@/app/util/RequestHelper";
+import { ConvertUser } from "@/app/api/admin/convert-users/ConvertUser";
 
 /**
  * Old User
@@ -54,7 +57,7 @@ export default function ConvertUsers() {
   const userOptions =
     users?.map((user:IAuthUser) => ({
       value: user._id,
-      label: `${user.name} || ''} (${user.email || user._id})`.trim(),
+      label: `${user.name || ''} (${user.email || user._id})`.trim(),
     })) || [];
 
   const selectedOldUser = oldUsers?.find(user => user._id.toString() === oldUserValue);
@@ -62,13 +65,18 @@ export default function ConvertUsers() {
 
   const [deleteOldUser, setDeleteOldUser] = React.useState(false);
 
-  const handleConvert = () => {
-    console.log('Converting users:', {
-      oldUserId: oldUserValue,
-      currentUserId: userValue,
-      deleteOldUser: deleteOldUser
+  const handleConvert = async () => {
+    const response = await Post<any,ConvertUser>(`/api/admin/convert-users`, {
+        currentUserId: userValue,
+        oldUserId: oldUserValue,
+        deleteOldUser: deleteOldUser
     });
-    // Add your conversion logic here
+    const { msg, success } = response;
+    if( success ){
+      toast.success( msg );
+    }else{
+      toast.error( msg );
+    }
   };
 
   return (
@@ -95,10 +103,7 @@ export default function ConvertUsers() {
                     <CommandEmpty>No user found.</CommandEmpty>
                     <CommandGroup>
                       {oldUserOptions.map((user) => (
-                        <CommandItem
-                          key={user.value.toString()}
-                          value={user.value.toString()}
-                          onSelect={(currentValue) => {
+                        <CommandItem key={user.value.toString()} value={user.value.toString()} onSelect={(currentValue) => {
                             setOldUserValue(currentValue === oldUserValue ? "" : currentValue);
                             setOldUserOpen(false);
                           }}
@@ -159,12 +164,7 @@ export default function ConvertUsers() {
                           }}
                         >
                           {user.label}
-                          <Check
-                            className={cn(
-                              "ml-auto",
-                              userValue === user.value.toString() ? "opacity-100" : "opacity-0"
-                            )}
-                          />
+                          <Check className={ cn( "ml-auto", userValue === user.value.toString() ? "opacity-100" : "opacity-0" )} />
                         </CommandItem>
                       ))}
                     </CommandGroup>
