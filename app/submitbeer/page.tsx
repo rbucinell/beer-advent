@@ -1,6 +1,6 @@
 "use client";
 
-import { ChangeEvent, useEffect, useState } from "react";
+import { ChangeEvent, useEffect, useRef, useState } from "react";
 import { useBeers, useEvent, useEventParticipants } from "@/app/hooks/hooks";
 import { authClient } from "@/lib/auth-client";
 
@@ -84,39 +84,47 @@ export default function SubmitBeer() {
     return `${num.toFixed(2)}%`;
   };
 
-  const checkBeer = async () => {
-    setThinking(true);
-    setError(null);
-    const validation = await Get<BeerSimilarityValidation>(
-      `/api/beer/check?beer=${beer.beer}&brewer=${beer.brewer}`
-    );
+const checkedKey = useRef<string | null>(null);
+
+const checkBeer = async () => {
+  const key = `${beer.beer}|${beer.brewer}`;
+  checkedKey.current = key;
+  setThinking(true);
+  setError(null);
+  setSuccess(false);
+
+  try {
+    const params = new URLSearchParams({ beer: beer.beer, brewer: beer.brewer });
+    const validation = await Get<BeerSimilarityValidation>(`/api/beer/check?${params}`);
+
+    // ignore results for text the user has since changed
+    if (checkedKey.current !== key) return;
+
+    // only a well-formed response may unlock the button
+    if (typeof validation?.isTooSimilar !== "boolean") {
+      throw new Error("Unexpected response");
+    }
 
     if (validation.isTooSimilar) {
       const closest = validation.beer;
       setError([
         `"${beer.beer}" by ${beer.brewer}. Too close to existing [${closest?.beer} by ${closest?.brewer}]`,
-        `JaroWinkler Results: Beer Similartiy is ${toPercent(
-          validation.jaroWinkler.percentage.beer
-        )} and Brewer similarity is ${toPercent(
-          validation.jaroWinkler.percentage.brewer
-        )})`,
-        `Gemini Results: ${toPercent(
-          validation.gemini.percentage
-        )} chance it is too close to [${validation.gemini.beer} by ${
-          validation.gemini.brewer
-        }]`,
+        `JaroWinkler Results: Beer similarity is ${toPercent(validation.jaroWinkler.percentage.beer)} and Brewer similarity is ${toPercent(validation.jaroWinkler.percentage.brewer)}`,
+        `Gemini Results: ${toPercent(validation.gemini.percentage)} chance it is too close to [${validation.gemini.beer} by ${validation.gemini.brewer}]`,
       ]);
-
-      //   `"${beer.beer}" by ${beer.brewer}. Too close to existing [${closest?.beer} by ${closest?.brewer}]. Please tell, text Ryan if this is not correct.`,
-      // ]);
-      setSuccess(false);
       toast.warning("Beer not submitted, too close to existing");
     } else {
-      toast.success("No conflicting beers found");
       setSuccess(true);
+      toast.success("No conflicting beers found");
     }
+  } catch (err) {
+    console.error(err);
+    setSuccess(false);
+    toast.error("Couldn't check this beer. Please try again.");
+  } finally {
     setThinking(false);
-  };
+  }
+};
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -129,19 +137,22 @@ export default function SubmitBeer() {
 
     setThinking(true);
 
-    const res = await Post<any, any>(`/api/beer`, {
-      ...beer,
-      participant,
-      event,
-    });
+    try{
+      const res = await Post<any, any>(`/api/beer`, { ...beer, participant, event });
 
-    const { msg, success } = res;
-    setThinking(false);
-    setError(msg);
-    toast.info(msg);
-    setSuccess(success);
-    if (success) {
-      clearForm(null);
+      const { msg, success } = res;
+      setThinking(false);
+      setError(msg);
+      toast.info(msg);
+      setSuccess(success);
+      if (success) {
+        clearForm(null);
+      }
+    }catch (err: any) {
+      toast.error(err?.msg ?? "Submit failed");
+      setSuccess(false);
+    } finally {
+      setThinking(false);
     }
   };
 

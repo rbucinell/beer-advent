@@ -6,88 +6,27 @@
  */
 
 export async function Get<T>(url: string): Promise<T> {
-  const response = await fetch(url, { method: 'GET' });
-  console.log('response', response);
-  return new Promise<T>(async (resolve, reject) => {
-    console.log( 'GET url: ' + url)
-    try {
-      const response = await fetch(url, { method: 'GET' });
-       if (!response.ok) {
-          throw new Error(`HTTP error! status: ${response.status}`);
-        }
-        if (response.ok) {
-          const result = await <T>response.json();
-          resolve(result);
-      }
-      else {
-        console.error(`[${response.status}] Failed to fetch data from ${url}`);
-      }
-    }
-    catch (error) {
-      console.error('An error occurred:', error);
-    }
-    reject(null);
+  const response = await fetch(url, { method: "GET" });
+  if (!response.ok) {
+    throw new Error(`[${response.status}] Failed to fetch data from ${url}`);
+  }
+  return (await response.json()) as T;
+}
+async function request<T>(url: string, method: string, data?: unknown): Promise<T> {
+  const response = await fetch(url, {
+    method,
+    headers: { "Content-Type": "application/json" },
+    body: data === undefined ? undefined : JSON.stringify(data),
   });
+  if (!response.ok) {
+    const body = await response.json().catch(() => null);
+    throw body ?? new Error(`[${response.status}] ${method} ${url} failed`);
+  }
+  return (await response.json()) as T;
 }
 
-/**
- *
- * @param url the URL to post a request to
- * @returns
- */
-export async function Post<T, JSON>(url: string, data: JSON): Promise<T> {
-  console.debug(`[POST] ${url}`, data);
-  return new Promise<T>(async (resolve, reject) => {
-    try {
-      const response = await fetch(url, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify(data)
-      });
-      if (response.ok) {
-        const result = await response.json();
-        resolve(result);
-      }
-      else {
-        console.error(`[${response.status}] Failed to fetch data from ${url}`);
-        reject(await response.json());
-      }
-    }
-    catch (error) {
-      console.error('An error occured:', error);
-      reject(error);
-    }
-  });
-}
-
-export async function Put<T, JSON>(url: string, data: JSON|undefined = undefined): Promise<T> {
-  console.debug(`[PUT] ${url}`, data);
-  return new Promise<T>(async (resolve, reject) => {
-    try {
-      const response = await fetch(url, {
-        method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify(data)
-      });
-      if (response.ok) {
-        const result = await response.json();
-        resolve(result);
-      }
-      else {
-        console.error(`[${response.status}] Failed to fetch data from ${url}`);
-        reject(await response.json());
-      }
-    }
-    catch (error) {
-      console.error('An error occured:', error);
-      reject(error);
-    }
-  });
-}
+export const Post = <T, D>(url: string, data: D) => request<T>(url, "POST", data);
+export const Put = <T, D>(url: string, data?: D) => request<T>(url, "PUT", data);
 
 /**
  *
