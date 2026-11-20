@@ -18,6 +18,10 @@ export default function EventIdPage() {
   const { beers, beersError, beersLoading } = useBeers();
   const { users, usersError, usersLoading } = useUsers();
 
+  console.log( 'event', event );
+  console.log( 'participants', participants );
+  console.log( 'beers', beers );
+
   return (
     <Card className='w-full'>
       <CardContent>
@@ -26,7 +30,26 @@ export default function EventIdPage() {
       <Stack direction={'column'} className='items-center' sx={{ width: '100%'}}>
         <List className='w-full items-center'>
 
-          {event && users && participants && beers && Array.from(Array(event.days).keys()).map( i => {
+          { participants?.flatMap(p => p.days.map((day, i) => ({ day, beer: p.beers[i], user: p.user, })))
+            .sort((a, b) => a.day - b.day)
+            .map( ( daybeeruser,i ) => {
+
+              const participant = participants.find( p => p.days.includes(daybeeruser.day));
+              const user = users?.find( u => u._id === participant?.user);
+              const beer = beers?.find( b => b._id === daybeeruser.beer );
+              return <ListItem component={'div'} key={i} className='w-full items-center'>
+              <div className='flex flex-row gap-1 items-center w-full'>
+                <DayIcon day={daybeeruser.day} />
+                <UserAvatar user={user} />
+                {beer && <BeerListItem beer={beer} /> }
+              </div>
+            </ListItem>;
+            })
+          
+          
+          }
+
+          {/* {event && users && participants && beers && Array.from(Array(event.days).keys()).map( i => {
             
             const day = appConfig.MAX_EVENT_DAYS - event.days + i + 1;
             const participant = participants.find( p => p.days.includes(day));
@@ -36,6 +59,8 @@ export default function EventIdPage() {
             
             const user = users.find( u => u._id === participant?.user);
 
+            console.log( day, participant, participantBeer, user );
+
             return <ListItem component={'div'} key={i} className='w-full items-center'>
               <div className='flex flex-row gap-1 items-center w-full'>
                 <DayIcon day={day} />
@@ -43,7 +68,7 @@ export default function EventIdPage() {
                 {participantBeer && <BeerListItem beer={participantBeer} /> }
               </div>
             </ListItem>
-          })}
+          })} */}
         </List>
       </Stack>
       </CardContent>
