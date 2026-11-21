@@ -15,16 +15,14 @@ import { Google } from "@mui/icons-material";
 
 export default function SignIn() {
 
-  const form = useForm<z.infer<typeof signUpAuthForm>>({
-    resolver: zodResolver(signUpAuthForm),
-    defaultValues: {
-      "firstName": "",
-      "lastName": "",
-      "username": "",
-      "email": "",
-      "password": "",
-    }
-  });
+  type SignUpInput = z.input<typeof signUpAuthForm>;
+type SignUpOutput = z.output<typeof signUpAuthForm>;
+  
+const form = useForm<SignUpInput, unknown, SignUpOutput>({
+  resolver: zodResolver(signUpAuthForm),
+  defaultValues: { firstName: "", lastName: "", username: "", email: "", password: "" },
+});
+
 
   async function googleSignup() {
     await authClient.signIn.social({

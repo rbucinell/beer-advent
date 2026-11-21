@@ -1,78 +1,93 @@
 import Beer, { IBeer } from "@/app/models/beer";
-import jaroWinkler from 'jaro-winkler';
+import jaroWinkler from "jaro-winkler";
 import { BeerSimilarityValidation, GeminiSimilaryResults } from "../api/beer/check/BeerSimilarityValidation";
 import { askAI } from "@/lib/gemini";
 import appConfig from "../app.config";
 
-type Thresholds = {
-    beer:number,
-    brewer:number
+const SHORTLIST_SIZE = 10;
+
+export async function beerTooSimilar(beerName: string, brewerName: string): Promise<BeerSimilarityValidation> {
+  const thresholds = appConfig.similarityThresholds;
+
+  // only fetch the fields you need, as plain objects
+  const existingBeers = await Beer.find({}, { beer: 1, brewer: 1 }).lean<IBeer[]>();
+
+const normalize = (s?: string) =>
+  (s ?? "")
+    .toLowerCase()
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "") // strip accents
+    .replace(/[^a-z0-9 ]/g, " ")     // punctuation -> space
+    .replace(/\s+/g, " ")
+    .trim();
+
+const nBeer = normalize(beerName);
+const nBrewer = normalize(brewerName);
+
+const comparisons = existingBeers
+  .map((existing) => ({
+    beerSimilarity: jaroWinkler(normalize(existing.beer), nBeer),
+    brewerSimilarity: jaroWinkler(normalize(existing.brewer), nBrewer),
+    beer: existing,
+  }))
+  .sort((a, b) => b.beerSimilarity - a.beerSimilarity);
+
+  const closest = comparisons[0];
+  if (!closest) {
+    // empty table: nothing to compare against (adjust the type to allow beer?: IBeer)
+    return {
+      jaroWinkler: { percentage: { beer: 0, brewer: 0 } },
+      gemini: { percentage: 0, beer: null, brewer: null },
+      beer: undefined,
+      isTooSimilar: false,
+    } as unknown as BeerSimilarityValidation;
+  }
+
+  // per-row check, so beer and brewer scores come from the same existing beer
+  const fuzzyHit = comparisons.some(
+    (c) => c.beerSimilarity >= thresholds.beer && !!brewerName && c.brewerSimilarity < thresholds.brewer
+  );
+
+  // skip the AI call entirely if the cheap check already decided
+  const gemini: GeminiSimilaryResults = fuzzyHit
+    ? { percentage: 0, beer: null, brewer: null }
+    : await beerTooSimilarAiCheck(comparisons.slice(0, SHORTLIST_SIZE).map((c) => c.beer), beerName, brewerName);
+
+  return {
+    jaroWinkler: { percentage: { beer: closest.beerSimilarity, brewer: closest.brewerSimilarity } },
+    gemini,
+    beer: closest.beer,
+    isTooSimilar: fuzzyHit || gemini.percentage >= thresholds.beer,
+  };
 }
 
-export async function beerTooSimilar( beerName: string, brewerName: string ): Promise<BeerSimilarityValidation> {
+async function beerTooSimilarAiCheck( candidates: IBeer[], beerName: string, brewerName: string ): Promise<GeminiSimilaryResults> {
+  const empty = { percentage: 0, beer: null, brewer: null };
+  if (!candidates.length) return empty;
 
-    const thresholds:Thresholds = appConfig.similarityThresholds;
+  const list = candidates.map((b) => `- ${b.beer} by ${b.brewer}`).join("\n");
+  console.log( list );
+  const prompt = `Existing beers:
+    ${list}
 
-    const existingBeers:IBeer[] = await Beer.find();
-    const comparisons = existingBeers.map( (existingBeer:IBeer) => {
-        return { 
-            beerSimilarity:jaroWinkler(existingBeer.beer || '', beerName || ''),
-            brewerSimiliatriy: jaroWinkler(existingBeer.brewer || '', brewerName || ''),
-            beer:existingBeer
-        }
+    Is "${beerName}" by "${brewerName}" the same beer as any of these (allowing for typos, abbreviations, or renamed brewers)?
+    Reply with JSON only: {"percentage": number between 0 and 1, "beer": string|null, "brewer": string|null}
+    Use the closest existing entry for beer/brewer, or null for both if percentage is 0.`;
+
+  try {
+    const answer = await askAI(prompt, {
+      responseMimeType: "application/json",
+      thinkingConfig: { thinkingBudget: 0, includeThoughts: false}, // Gemini 3 models: { thinkingLevel: "low" } instead
     });
-    comparisons.sort( (a,b) => b.beerSimilarity - a.beerSimilarity );   
-    const closestComparison = comparisons[0];
-    const closestBeer:IBeer = closestComparison.beer;
-
-    const results = {
-        jaroWinkler: {
-            percentage: {
-                beer: closestComparison.beerSimilarity,
-                brewer: closestComparison.brewerSimiliatriy
-            }
-        },
-        gemini: await beerTooSimilarAiCheck( existingBeers, beerName, brewerName ),
-        beer: closestBeer,
-        isTooSimilar: false
+    const parsed = JSON.parse(answer ?? "{}");
+    const percentage = Number(parsed.percentage);
+    return {
+      percentage: Number.isFinite(percentage) ? Math.min(Math.max(percentage, 0), 1) : 0,
+      beer: parsed.beer ?? null,
+      brewer: parsed.brewer ?? null,
     };
-    
-    if( Math.max(...comparisons.map( b => b.beerSimilarity)) >= thresholds.beer )
-    {
-        if( brewerName ){
-            if( Math.max(...comparisons.map( b => b.brewerSimiliatriy)) < thresholds.brewer ) {
-                results.isTooSimilar = true;
-            }
-        }
-    }
-    if( results.gemini.percentage >= thresholds.beer ){
-        results.isTooSimilar = true;
-    }
-    return results;
-}
-
-
-
-
-async function beerTooSimilarAiCheck ( 
-    existingBeers:IBeer[], beerName: string, brewerName: string ): Promise<GeminiSimilaryResults> {
-    
-        let percentage = 0.0;
-    let beer = null;
-    let brewer = null;
-    
-    try{
-        const summary = existingBeers.map( (b:IBeer) => `${b.beer} by ${b.brewer}`).join(',');
-        const prompt = `Give the following comma seperated list of beers and the brewer: ${summary} . What is the likely hood that ${beerName} by ${brewerName} is in that list. Your only anser should only be: percentage,beer,brewer. Where  percentage of likelyhood that the beer is in the list as a digit: e.g. 20% => 0.2, beer and brewer are the most likely candidate that alread exists in the list, null for each if percentage is 0.0`;
-        const answer = await askAI( prompt );
-        if( answer ){
-            const split = answer.split(',');
-            percentage = parseFloat(split[0]);
-            beer = split[1];
-            brewer = split[2];
-        }
-    }
-    catch( err ) {}
-
-    return { percentage, beer, brewer };
+  } catch (err) {
+    console.error("Gemini similarity check failed:", err); // don't swallow silently
+    return empty; // fail open: fuzzy check still applies
+  }
 }

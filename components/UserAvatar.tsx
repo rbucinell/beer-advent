@@ -21,7 +21,7 @@ export default class UserAvatar extends Component<IUserAvatarProps, {}> {
     
     let username = 'username' in this.props.user ? (this.props.user as IAuthUser).username : (this.props.user as IOldUsers).email;
     let img = 'image' in this.props.user ? (this.props.user as IAuthUser).image : (this.props.user as IOldUsers).imageUrl;
-    
+
     return (
       <Link href={`/user/${username ?? this.props.user?._id}`} title={`/user/${username ?? this.props.user?._id}`}>
         {!img ?

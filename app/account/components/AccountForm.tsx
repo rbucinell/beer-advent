@@ -33,19 +33,23 @@ const FormSchema = z.object({
 });
 
 export function AccountForm({ sessionUser }: AccountFormProps) {
+  type FormInput = z.input<typeof FormSchema>;
+  type FormOutput = z.output<typeof FormSchema>;
+
   const { user } = useUserById( sessionUser.id);
-  const form = useForm<z.infer<typeof FormSchema>>({
-    resolver: zodResolver(FormSchema),
-    defaultValues: {
-      firstName: "",
-      lastName: "",
-      email: "",
-      username: "",
-      preferredDay1: 0,
-      preferredDay2: 0,
-      beerPreference: ""
-    },
-  });
+
+const form = useForm<FormInput, unknown, FormOutput>({
+  resolver: zodResolver(FormSchema),
+  defaultValues: {
+    firstName: "",
+    lastName: "",
+    email: "",
+    username: "",
+    preferredDay1: 0,
+    preferredDay2: 0,
+    beerPreference: "",
+  },
+});
 
   //thisle 6905ec32feaf8b9ed5dffc9d
   // Reset form with user data when it loads
@@ -159,7 +163,7 @@ export function AccountForm({ sessionUser }: AccountFormProps) {
                       <FormLabel>Day 1</FormLabel>
 
                       <FormControl>
-                        <Input type="number" placeholder="0" {...field} />
+                        <Input type="number" placeholder="0" {...field}  value={(field.value as number | string | undefined) ?? ""}/>
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -172,7 +176,7 @@ export function AccountForm({ sessionUser }: AccountFormProps) {
                     <FormItem className="flex-1">
                       <FormLabel>Day 2</FormLabel>
                       <FormControl>
-                        <Input type="number" placeholder="0" {...field} />
+                        <Input type="number" placeholder="0" {...field}  value={(field.value as number | string | undefined) ?? ""}/>
                       </FormControl>
                       <FormMessage />
                     </FormItem>

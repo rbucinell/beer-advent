@@ -7,6 +7,7 @@ import { IParticipant } from "@models/participant";
 import { IAuthUser } from "@models/authuser";
 import { IEvent } from "@models/event";
 import { IBeer } from "@models/beer";
+import { IOldUsers } from "../models/oldusers";
 
 export function useEvents() {
   const { data, error, isLoading } = useSWR<IEvent[], Error>('/api/events', fetcher);
@@ -24,6 +25,11 @@ export function useEventParticipants(event: IEvent | undefined) {
   const shouldFetch = event?.year ? `/api/events/${event.year}/participants` : null;
   const { data, error, isLoading } = useSWR<IParticipant[], Error>(shouldFetch, fetcher);
   return { participants: data, participantsError: error, participantsLoading: isLoading };
+}
+
+export function useOldUsers() {
+  const { data, error, isLoading } = useSWR<IOldUsers[], Error>(`/api/olduser`, fetcher);
+  return { oldUsers: data, oldUsersError: error, oldUsersLoading: isLoading };
 }
 
 export function useUsers() {

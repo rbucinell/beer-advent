@@ -8,7 +8,7 @@ interface EventLinkListItemProps {
 }
 
 export function EventLinkListItem( {event} : EventLinkListItemProps) {
-    return <ListItem className="border-b border-b-gray-400 flex flex-row justify-between">
+    return <ListItem className="border-b border-b-gray-400 flex flex-row justify-between" key={event._id.toString()}>
         <ListItemIcon>
             <IconButton size="large" aria-label="calendar" href={`/event/${event.year}`} >
                 <CalendarWithBadge num={event.year}/>
